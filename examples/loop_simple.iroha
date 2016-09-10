@@ -1,0 +1,33 @@
+(PARAMS)
+(MODULE 1 add
+  (PARAMS)
+  (TABLE 1
+    (REGISTERS
+      (REGISTER 1 counter REG   (UINT 32) ())
+      (REGISTER 2 cond    REG   (UINT  0) ())
+      (REGISTER 3 ()      CONST (UINT 32) 10)
+      (REGISTER 4 ()      CONST (UINT 32) 1 )
+    )
+    (RESOURCES
+      (RESOURCE 1 gt ((UINT 32) (UINT 32)) ((UINT 0)) (PARAMS))
+      (RESOURCE 2 tr () () (PARAMS))
+      (RESOURCE 3 add ((UINT 32) (UINT 32)) ((UINT 32)) (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 gt 1 () () (1 3) (2))
+      (INSN 2 tr 2 () (2) () ())
+    )
+    (STATE 2
+      (INSN 3 tr 2 () (3 5) (2) ())
+    )
+    (STATE 3
+      (INSN 4 add 3 () () (1 4) (1))
+      (INSN 5 tr 2 () (4) () ())
+    )
+    (STATE 4
+      (INSN 6 tr 2 () (1) () ())
+    )
+    (STATE 5)
+  )
+)

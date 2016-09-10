@@ -1,0 +1,25 @@
+(PARAMS)
+
+(MODULE 1 mod
+  (PARAMS)
+  (TABLE 1
+    (REGISTERS
+      (REGISTER 1 r1 REG (UINT 0) 1)
+      (REGISTER 2 r123 REG (UINT 32) 123)
+    )
+    (RESOURCES
+      (RESOURCE 1 tr () () (PARAMS))
+      (RESOURCE 2 print () () (PARAMS))
+      (RESOURCE 3 assert () () (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 tr 1 () (2) () ())
+      (INSN 2 print 2 () () (2) ())
+      (INSN 3 assert 3 () () (1) ())
+    )
+    (STATE 2
+      (INSN 4 tr 1 () (1) () ())
+    )
+  )
+)

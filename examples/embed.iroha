@@ -1,0 +1,30 @@
+(PARAMS )
+(MODULE 1 mod
+ (PARAMS )
+ (TABLE 1
+  (REGISTERS
+    (REGISTER 1 () CONST (UINT 32) 123)
+  )
+  (RESOURCES
+   (RESOURCE 1 embedded ((UINT 32)) ()
+    (PARAMS
+      (EMBEDDED-MODULE       mod_hello)
+      (EMBEDDED-MODULE-FILE  mod_hello.v)
+      (EMBEDDED-MODULE-CLOCK clk)
+      (EMBEDDED-MODULE-RESET rst_n)
+      (EMBEDDED-MODULE-ARGS  arg_hello)
+      (EMBEDDED-MODULE-REQ   req_hello)
+      (EMBEDDED-MODULE-ACK   ack_hello)
+    )
+   )
+   (RESOURCE 2 tr () () (PARAMS))
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 tr 2 () (2) () ())
+   (INSN 2 embedded 1 () () (1) ())
+  )
+  (STATE 2
+  )
+ )
+)

@@ -1,0 +1,25 @@
+(PARAMS)
+(MODULE 1 mod
+  (PARAMS)
+  (TABLE 1
+    (REGISTERS
+      (REGISTER 1 rdata REG   (UINT 32) ())
+      (REGISTER 2 ()    CONST (UINT 10) 0)
+      (REGISTER 3 ()    CONST (UINT 32) 123)
+      (REGISTER 4 ()    CONST (UINT 10) 0)
+    )
+    (RESOURCES
+      (RESOURCE 1 array () () (PARAMS)(ARRAY 10 (UINT 32) INTERNAL RAM))
+      (RESOURCE 2 tr () () (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 array 1 () () (2 3) ())
+      (INSN 2 tr    2 () (2) () ())
+    )
+    (STATE 2
+      (INSN 3 array 1 () () (4) (1))
+      (INSN 4 tr    2 () (1) () ())
+    )
+  )
+)

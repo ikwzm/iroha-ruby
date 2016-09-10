@@ -1,0 +1,45 @@
+(PARAMS )
+(MODULE 1 mod
+ (PARAMS )
+ (TABLE 1
+  (REGISTERS
+    (REGISTER 1 r_arg REG (UINT 32) ())
+  )
+  (RESOURCES
+   (RESOURCE 1 sibling-task ((UINT 32)) () (PARAMS))
+   (RESOURCE 2 tr           ()          () (PARAMS))
+   (RESOURCE 3 print        ()          () (PARAMS))
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 sibling-task 1 () () () (1))
+   (INSN 2 tr 2 () (2) () ())
+  )
+  (STATE 2
+   (INSN 3 print 3 () () (1) ())
+   (INSN 4 tr 2 () (3) () ())
+  )
+  (STATE 3
+  )
+ )
+ (TABLE 2
+  (REGISTERS
+    (REGISTER 1 () CONST (UINT 32) 456)
+  )
+  (RESOURCES
+   (RESOURCE 1 sibling-task-call ((UINT 32)) () (PARAMS) (CALLEE-TABLE 1 1))
+   (RESOURCE 2 tr () () (PARAMS))
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 sibling-task-call 1 () () (1) ())
+   (INSN 2 tr 2 () (2) () ())
+  )
+  (STATE 2
+   (INSN 3 sibling-task-call 1 (wait) () () ())
+   (INSN 4 tr 2 () (3) () ())
+  )
+  (STATE 3
+  )
+ )
+)

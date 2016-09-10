@@ -1,0 +1,43 @@
+(PARAMS)
+(MODULE 1 mod
+ (PARAMS)
+ (TABLE 1
+  (REGISTERS
+    (REGISTER 1 shared_reg REG (UINT 32) ())
+  )
+  (RESOURCES)
+ )
+ (TABLE 2
+  (REGISTERS
+    (REGISTER 1 r11 REG (UINT 32) 123)
+    (REGISTER 2 r12 REG (UINT 32) () )
+  )
+  (RESOURCES
+   (RESOURCE 1 foreign-reg () () (PARAMS) (FOREIGN-REG 1 1 1))
+   (RESOURCE 2 set         () () (PARAMS))
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 foreign-reg 1 () () (1) ())
+  )
+  (STATE 2
+   (INSN 2 foreign-reg 1 () () () (2))
+  )
+ )
+ (TABLE 3
+  (REGISTERS
+    (REGISTER 1 r21 REG (UINT 32) 456)
+    (REGISTER 2 r22 REG (UINT 32) 789)
+  )
+  (RESOURCES
+   (RESOURCE 1 foreign-reg () () (PARAMS) (FOREIGN-REG 1 1 1))
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 foreign-reg 1 () () (1) ())
+  )
+  (STATE 2
+   (INSN 2 foreign-reg 1 () () (2) ())
+  )
+ )
+)

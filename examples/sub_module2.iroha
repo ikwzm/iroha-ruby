@@ -1,0 +1,37 @@
+(PARAMS )
+(MODULE 1 m_top
+ (PARAMS )
+ (TABLE 1
+  (REGISTERS
+  )
+  (RESOURCES
+   (RESOURCE 1 sub-module-task-call
+    () ()
+    (PARAMS )
+    (CALLEE-TABLE 2 1)
+   )
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 sub-module-task-call 1 () () () ())
+  )
+ )
+)
+(MODULE 2 m_sub
+ (PARAMS )
+ (PARENT 1)
+ (TABLE 1
+  (REGISTERS
+  )
+  (RESOURCES
+   (RESOURCE 1 sub-module-task
+    () ()
+    (PARAMS )
+   )
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 sub-module-task 1 () () () ())
+  )
+ )
+)

@@ -1,0 +1,44 @@
+(PARAMS)
+(CHANNEL 1 (UINT 32) (1 2 1) (1 1 1))
+(MODULE 1 mod
+  (PARAMS)
+  (TABLE 1
+    (REGISTERS
+      (REGISTER 1 val_w CONST (UINT 32) 123)
+    )
+    (RESOURCES
+      (RESOURCE 1 channel-write ((UINT 32)) ((UINT 32)) (PARAMS))
+      (RESOURCE 2 tr () () (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 channel-write 1 () () (1) ())
+      (INSN 2 tr 2 () (2) () ())
+    )
+    (STATE 2
+      (INSN 3 tr 2 () (1) () ())
+    )
+  )
+  (TABLE 2
+    (REGISTERS
+      (REGISTER 1 val_r REG (UINT 32) ())
+    )
+    (RESOURCES
+      (RESOURCE 1 channel-read ((UINT 32)) ((UINT 32)) (PARAMS))
+      (RESOURCE 2 tr () () (PARAMS))
+      (RESOURCE 3 print () () (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 channel-read 1 () () () (1))
+      (INSN 2 tr 2 () (2) () ())
+    )
+    (STATE 2
+      (INSN 3 print 3 () () (1) ())
+      (INSN 4 tr 2 () (3) () ())
+    )
+    (STATE 3
+      (INSN 5 tr 2 () (1) () ())
+    )
+  )
+)

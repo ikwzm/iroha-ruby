@@ -1,0 +1,25 @@
+(PARAMS)
+(MODULE 1 mod
+  (PARAMS)
+  (TABLE 1
+    (REGISTERS
+      (REGISTER 1 r  REG   (UINT 32) ())
+      (REGISTER 2 () CONST (UINT 32) 123)
+    )
+    (RESOURCES
+      (RESOURCE 1 ext-input  () () (PARAMS  (INPUT data_in  )  (WIDTH 32)))
+      (RESOURCE 2 ext-output () () (PARAMS  (OUTPUT data_out)  (WIDTH 32)))
+      (RESOURCE 3 tr () () (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 tr 3 () (2) () ())
+      (INSN 2 ext-input 1 () () () (1))
+    )
+    (STATE 2
+      (INSN 3 tr 3 () (3) () ())
+      (INSN 4 ext-output 2 () () (2) ())
+    )
+    (STATE 3)
+  )
+)

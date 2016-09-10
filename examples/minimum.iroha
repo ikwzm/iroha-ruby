@@ -1,0 +1,21 @@
+(PARAMS  (RESET-POLARITY true))
+(MODULE 1 mod
+  (PARAMS    (RESET-NAME reset)  )
+  (TABLE 1
+    (REGISTERS
+      (REGISTER 1 r1 REG (INT 32) ())
+      (REGISTER 2 r2 REG (INT 32) 123)
+    )
+    (RESOURCES
+      (RESOURCE 1 tr () () (PARAMS))
+      (RESOURCE 2 set ((INT 32)) ((INT 32)) (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 tr 1 () (2) () ())
+      (INSN 2 set 2 () () (2) (1))
+    )
+    (STATE 2)
+  )
+)
+
