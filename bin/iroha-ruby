@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+# -*- coding: utf-8 -*-
+require 'optparse'
+class IrohaRuby
+  def initialize
+    @verbose           = false
+    @debug             = false
+    @ruby_command      = "ruby"
+    @iroha_command     = "../../iroha/iroha"
+    @output_file_name  = nil
+    @input_file_list   = Array.new
+    @verilog           = false
+    @opt               = OptionParser.new do |opt|
+      opt.on("--verilog"          ){|val| @verilog = true}
+      opt.on("--output FILE_NAME" ){|val| @output_file_name = val}
+    end
+  end
+  def parse_options(argv)
+    @opt.order(argv) do |path|
+      @input_file_list << path
+    end
+  end
+  def execute
+    @input_file_list.each do |input_file_name|
+      command_pipe = ["#{@ruby_command} #{input_file_name}"]
+      
+      command = "#{@ruby_command} #{input_file_name} | #{@iroha_command} - "
+      if @verilog == true then
+        command = command + " -v"
+      end
+      if @output_file_name != nil then
+        command = command + " -o #{@output_file_name}"
+      end
+      puts command
+      system(command)
+    end
+  end
+end
+main = IrohaRuby.new
+main.parse_options(ARGV)
+main.execute
