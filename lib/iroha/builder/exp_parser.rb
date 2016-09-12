@@ -715,7 +715,7 @@ module Exp
 
   module ParentModule1
     def get(design)
-      {PARENT: module_id.get(design)}
+      {:PARENT => module_id.get(design)}
     end
   end
 
@@ -1047,7 +1047,7 @@ module Exp
   module Resources1
     def get(design)
       # puts "==> RESOURCES"
-      {RESOURCES: resources.elements.map{|resource| resource.get(design)}}
+      {:RESOURCES => resources.elements.map{|resource| resource.get(design)}}
     end
   end
 
@@ -1483,7 +1483,7 @@ module Exp
     def get(design)
       is_external = (array_ownership.get(design) == :EXTERNAL)
 	is_ram      = (array_mem_type.get(design)  == :RAM     )
-      {ARRAY: {ADDR_WIDTH: address_width.text_value.to_i, VALUE_TYPE: value_type.get(design), EXTERNAL: is_external, RAM: is_ram}}
+      {:ARRAY => {:ADDR_WIDTH => address_width.text_value.to_i, :VALUE_TYPE => value_type.get(design), :EXTERNAL => is_external, :RAM => is_ram}}
     end
   end
 
@@ -1747,7 +1747,7 @@ module Exp
 
   module CalleeTaskDesc1
     def get(design)
-      {'CALLEE-TABLE': {MODULE: module_id.get(design), TABLE: table_id.get(design)}}
+      {:'CALLEE-TABLE' => {:MODULE => module_id.get(design), :TABLE => table_id.get(design)}}
     end
   end
 
@@ -1886,7 +1886,7 @@ module Exp
 
   module ForeignRegDesc1
     def get(design)
-      {'FOREIGN-REG': {MODULE: module_id.get(design), TABLE: table_id.get(design), REGISTER: register_id.get(design)}}
+      {:'FOREIGN-REG' => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :REGISTER => register_id.get(design)}}
     end
   end
 
@@ -2239,7 +2239,7 @@ module Exp
   module Registers1
     def get(design)
       # puts "==> REGISTERS"
-      {REGISTERS: registers.elements.map{|register| register.get(design)}}
+      {:REGISTERS => registers.elements.map{|register| register.get(design)}}
     end
   end
 
@@ -2670,7 +2670,7 @@ module Exp
 
   module InitialState1
     def get(design)
-      {INITIAL: state_id.get(design)}
+      {:INITIAL => state_id.get(design)}
     end
   end
 
@@ -2789,7 +2789,7 @@ module Exp
 
   module State1
     def get(design)
-      {STATE: Iroha::IState.new(state_id.get(design), nil, instructions.elements.map{|insn| insn.get(design)})}
+      {:STATE => Iroha::IState.new(state_id.get(design), nil, instructions.elements.map{|insn| insn.get(design)})}
     end
   end
 
@@ -3410,7 +3410,7 @@ module Exp
 
   module ChannelPoint1
     def get(design)
-      {MODULE: module_id.get(design), TABLE: table_id.get(design), RESOURCE: resource_id.get(design)}
+      {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :RESOURCE => resource_id.get(design)}
     end
   end
 

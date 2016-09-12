@@ -544,15 +544,15 @@ module Iroha::Builder::Simple
       attr_accessor :ref_regs
       RESOURCE_PROC = Proc.new do |name, regs|
         if    regs.class == IRegister then
-          resource = add_resource(__method__, name, [], [], {}, {"FOREIGN-REG": {MODULE: regs.owner_module.id, TABLE: regs.owner_table.id, REGISTER: regs.id}})
+          resource = add_resource(__method__, name, [], [], {}, Hash({:"FOREIGN-REG" => {:MODULE => regs.owner_module.id, :TABLE => regs.owner_table.id, :REGISTER => regs.id}}))
           resource.ref_regs = nil
           return resource
         elsif regs.class == Reference then
-          resource = add_resource(__method__, name, [], [], {}, {"FOREIGN-REG": nil})
+          resource = add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
           resource.ref_regs = regs
           return resource
         elsif regs == nil then
-          resource = add_resource(__method__, name, [], [], {}, {"FOREIGN-REG": nil})
+          resource = add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
           resource.ref_regs = nil
           return resource
         else
@@ -563,7 +563,7 @@ module Iroha::Builder::Simple
         if @ref_regs.class == Reference then
           regs = @ref_regs.resolve
           fail "Error: can not found register Reference(#{@ref_regs.args})" if regs.class != IRegister
-          self.option.update({"FOREIGN-REG": {MODULE: regs.owner_module.id, TABLE: regs.owner_table.id, REGISTER: regs.id}})
+          self.option.update({:"FOREIGN-REG" => {:MODULE => regs.owner_module.id, :TABLE => regs.owner_table.id, :REGISTER => regs.id}})
         end
       end
       define_method('<=') do |regs|
@@ -667,15 +667,15 @@ module Iroha::Builder::Simple
       attr_accessor :ref_task
       RESOURCE_PROC = Proc.new do  |name, task|
         if    task.class == SubModuleTask then
-          resource = add_resource(__method__, name, [], [], {}, {'CALLEE-TABLE': {MODULE: task.owner_module.id, TABLE: task.owner_table.id}})
+          resource = add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
           resource.ref_task = nil
           return resource
         elsif task.class == Reference then
-          resource = add_resource(__method__, name, [], [], {}, {'CALLEE-TABLE': nil})
+          resource = add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
           resource.ref_task = task
           return resource
         elsif task == nil then
-          resource = add_resource(__method__, name, [], [], {}, {'CALLEE-TABLE': nil})
+          resource = add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
           resource.ref_task = nil
           return resource
         else
@@ -691,7 +691,7 @@ module Iroha::Builder::Simple
       end
       def callee(task)
         if task.class == SubModuleTask then
-          self.option.update({'CALLEE-TABLE': {MODULE: task.owner_module.id, TABLE: task.owner_table.id}})
+          self.option.update({:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
         else
           fail "Error: invalid task"
         end
@@ -718,15 +718,15 @@ module Iroha::Builder::Simple
       attr_accessor :ref_task
       RESOURCE_PROC = Proc.new do  |name, type, task|
         if    task.class == SiblingTask then
-          resource = add_resource(__method__, name, [type], [], {}, {'CALLEE-TABLE': {MODULE: task.owner_module.id, TABLE: task.owner_table.id}})
+          resource = add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
           resource.ref_task = nil
           return resource
         elsif task.class == Reference then
-          resource = add_resource(__method__, name, [type], [], {}, {'CALLEE-TABLE': nil})
+          resource = add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
           resource.ref_task = task
           return resource
         elsif task == nil then
-          resource = add_resource(__method__, name, [type], [], {}, {'CALLEE-TABLE': nil})
+          resource = add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
           resource.ref_task = nil
           return resource
         else
@@ -742,7 +742,7 @@ module Iroha::Builder::Simple
       end
       def callee(task)
         if task.class == SiblingTask then
-          self.option.update({'CALLEE-TABLE': {MODULE: task.owner_module.id, TABLE: task.owner_table.id}})
+          self.option.update({:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
         else
           fail "Error: invalid task"
         end
