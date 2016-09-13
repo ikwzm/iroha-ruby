@@ -35,6 +35,15 @@ module Iroha
       return indent + "(INSN #{@id} #{@res_class} #{@res_id} #{op_res} #{next_states} #{input_regs} #{output_regs})"
     end
 
+    def id_to_str
+      if @owner_state != nil then
+        state_str = @owner_state.id_to_str
+      else
+        state_str = "UnknownState"
+      end
+      return state_str + "::Instruction[#{id}]"
+    end
+
     def self.convert_from(insn)
       id               = insn.id
       res_class        = insn.res_class.clone

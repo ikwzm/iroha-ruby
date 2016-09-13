@@ -39,6 +39,14 @@ module Iroha
       end
     end
     
+    def find_register(module_id, table_id, register_id)
+      if @modules.key?(module_id) then
+        return @modules[module_id].find_register(table_id, register_id)
+      else
+        return nil
+      end
+    end
+    
     def to_exp(indent)
       return @params.to_exp(indent) + "\n" +
              @channels.values.map{|c| c.to_exp(indent)}.join("\n") + "\n" +

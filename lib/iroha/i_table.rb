@@ -64,6 +64,19 @@ module Iroha
       return @resources[res_id]
     end
     
+    def find_register(reg_id)
+      return @registers[reg_id]
+    end
+    
+    def id_to_str
+      if @owner_module != nil then
+        module_str = @owner_module.id_to_str
+      else
+        module_str = "UnknownModule"
+      end
+      return module_str + "::ITable[#{@id}]"
+    end
+
     def to_exp(indent)
       return indent + "(TABLE #{@id}\n" +
              ((@registers.size > 0)?

@@ -41,6 +41,15 @@ module Iroha
       @instructions.values.each{|insn| insn.set_owner(owner_design, owner_module, owner_table, self)}
     end
 
+    def id_to_str
+      if @owner_table != nil
+        table_str = @owner_table.id_to_str
+      else
+        table_str = "UnknownTable"
+      end
+      return table_str + "::IState[{#@id}]"
+    end
+
     def to_exp(indent)
       if @instructions.size == 0 then
         return indent + "(STATE #{@id})"

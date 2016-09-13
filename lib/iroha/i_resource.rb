@@ -66,6 +66,15 @@ module Iroha
       self.new(id, input_types, output_types, params, option)
     end
 
+    def id_to_str
+      if @owner_table != nil
+        table_str = @owner_table.id_to_str
+      else
+        table_str = "UnknownTable"
+      end
+      return table_str + "::IResource(#{@class_name})[{#@id}]"
+    end
+
     class Params < Hash
       def to_exp(indent)
         if self.size == 0 then
@@ -193,6 +202,16 @@ module Iroha
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
         super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+      end
+      def get_foreign_register
+        if @option.key?(:"FOREIGN-REG") == true then
+          mod_id = resource.option[:"FOREIGN-REG"][:MODULE  ]
+          tab_id = resource.option[:"FOREIGN-REG"][:TABLE   ]
+          reg_id = resource.option[:"FOREIGN-REG"][:REGISTER]
+          return @owner_design.find_register(mod_id, tab_id, reg_id)
+        else
+          return nil
+        end
       end
     end
 

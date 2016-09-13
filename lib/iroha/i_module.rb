@@ -52,12 +52,24 @@ module Iroha
       end
     end
 
+    def find_register(tbl_id, reg_id)
+      if @tables.key?(tbl_id) then
+        return @tables[tbl_id].find_register(res_id)
+      else
+        return nil
+      end
+    end
+
     def to_exp(indent)
       return indent + "(MODULE #{@id} #{@name}\n" +
              @params.to_exp(indent+"  ") + "\n" +
              ((@owner_module != nil)? indent + "  (PARENT #{@owner_module.id})\n" : "") +
              @tables.values.map{|table| table.to_exp(indent+"  ")}.join("\n") + "\n" +
              indent + ")"
+    end
+
+    def id_to_str
+      return "IModule[#{@id}]"
     end
 
     def self.convert_from(mod)

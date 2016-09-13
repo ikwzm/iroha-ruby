@@ -42,6 +42,15 @@ module Iroha
       @value = value
     end
 
+    def id_to_str
+      if @owner_table != nil
+        table_str = @owner_table.id_to_str
+      else
+        table_str = "UnknownTable"
+      end
+      return table_str + "::IRegister[{#@id}]"
+    end
+
     def to_exp(indent)
       name  = (@name  == nil)? "()" : @name
       value = (@value == nil)? "()" : @value
