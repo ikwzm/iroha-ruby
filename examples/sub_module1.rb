@@ -14,7 +14,7 @@ design = IDesign :design do
       end
     end
     ITable :tab_top do
-      SubModuleTaskCall :task, @owner_design.m_sub.tab_sub.task
+      SubModuleTaskCall :task, _owner_design.m_sub.tab_sub.task
       IState            :st10
       st10.on {
         task.call

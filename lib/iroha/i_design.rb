@@ -2,63 +2,63 @@ module Iroha
 
   class IDesign
 
-    attr_reader :params, :modules, :channels, :resource_classes
+    attr_reader :_params, :_modules, :_channels, :_resource_classes
 
     def initialize
-      @params           = Iroha::IResource::Params.new  ## TYPE: Iroha::IResource::Params
-      @modules          = Hash.new                      ## TYPE: Hash {id:number, module:Iroha::IModule}
-      @channels         = Hash.new                      ## TYPE: Hash {id:number, channel:Iroha::IChannel}
-      @resource_classes = Hash[Iroha::STANDARD_RESOURSE_CLASSES.map{|res_class| [res_class::CLASS_NAME, res_class]}]
+      @_params           = Iroha::IResource::Params.new  ## TYPE: Iroha::IResource::Params
+      @_modules          = Hash.new                      ## TYPE: Hash {id:number, module:Iroha::IModule}
+      @_channels         = Hash.new                      ## TYPE: Hash {id:number, channel:Iroha::IChannel}
+      @_resource_classes = Hash[Iroha::STANDARD_RESOURSE_CLASSES.map{|res_class| [res_class::CLASS_NAME, res_class]}]
     end
 
-    def add_param(param)
-      @params.update(param)
+    def _add_param(param)
+      @_params.update(param)
     end
 
-    def add_module(mod)
-      abort "(MODULE #{mod.id} #{mod.name} ... ) is multi definition." if @modules.key?(mod.id)
-      @modules[mod.id] = mod
-      mod.set_owner(self)
+    def _add_module(mod)
+      abort "(MODULE #{mod._id} #{mod._name} ... ) is multi definition." if @_modules.key?(mod._id)
+      @_modules[mod._id] = mod
+      mod._set_owner(self)
     end
 
-    def add_channel(channel)
-      abort "(CHANNEL #{channel.id} ... ) is multi definition." if @channels.key?(channel.id)
-      @channels[channel.id] = channel
-      channel.set_owner(self)
+    def _add_channel(channel)
+      abort "(CHANNEL #{channel._id} ... ) is multi definition." if @_channels.key?(channel._id)
+      @_channels[channel._id] = channel
+      channel._set_owner(self)
     end
 
-    def find_module(module_id)
-      return @modules.fetch(module_id, nil)
+    def _find_module(module_id)
+      return @_modules.fetch(module_id, nil)
     end
 
-    def find_table(module_id, table_id)
-      if @modules.key?(module_id) then
-        return @modules[module_id].find_table(table_id)
+    def _find_table(module_id, table_id)
+      if @_modules.key?(module_id) then
+        return @_modules[module_id]._find_table(table_id)
       else
         return nil
       end
     end
 
-    def find_resource(module_id, table_id, resource_id)
-      if @modules.key?(module_id) then
-        return @modules[module_id].find_resource(table_id, resource_id)
+    def _find_resource(module_id, table_id, resource_id)
+      if @_modules.key?(module_id) then
+        return @_modules[module_id]._find_resource(table_id, resource_id)
       else
         return nil
       end
     end
     
-    def find_register(module_id, table_id, register_id)
-      if @modules.key?(module_id) then
-        return @modules[module_id].find_register(table_id, register_id)
+    def _find_register(module_id, table_id, register_id)
+      if @_modules.key?(module_id) then
+        return @_modules[module_id]._find_register(table_id, register_id)
       else
         return nil
       end
     end
     
     def to_exp(indent)
-      return @params.to_exp(indent) + "\n" +
-             @channels.values.map{|c| c.to_exp(indent)}.join("\n") + "\n" +
-             @modules.values.map{ |m| m.to_exp(indent)}.join("\n")
+      return @_params._to_exp(indent) + "\n" +
+             @_channels.values.map{|c| c._to_exp(indent)}.join("\n") + "\n" +
+             @_modules.values.map{ |m| m._to_exp(indent)}.join("\n")
     end
 
     def self.convert_from(design)
@@ -66,14 +66,14 @@ module Iroha
       parent_class  = Iroha.parent_class(self)
       module_class  = parent_class.const_get(:IModule )
       channel_class = parent_class.const_get(:IChannel)
-      design.params.each_pair {|key, value|
-        new_design.add_param({key => value})
+      design._params.each_pair {|key, value|
+        new_design._add_param({key => value})
       }
-      design.modules.values.each {|mod|
-        new_design.add_module(module_class.convert_from(mod))
+      design._modules.values.each {|mod|
+        new_design._add_module(module_class.convert_from(mod))
       }
-      design.channels.values.each {|channel|
-        new_design.add_channel(channel_class.convert_from(channel))
+      design._channels.values.each {|channel|
+        new_design._add_channel(channel_class.convert_from(channel))
       }
       return new_design
     end

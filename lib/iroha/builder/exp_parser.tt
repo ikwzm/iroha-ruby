@@ -10,15 +10,15 @@ grammar Exp
         design_contents.elements.each{ |element|
           info = element.get(design)
           if info.class == Iroha::IResource::Params then
-            design.add_param(info)
+            design._add_param(info)
             next
           end
           if info.class == Iroha::IModule then
-	    design.add_module(info)
+	    design._add_module(info)
             next
           end
           if info.class == Iroha::IChannel then
-            design.add_channel(info)
+            design._add_channel(info)
 	    next
           end
         }
@@ -166,18 +166,18 @@ grammar Exp
     name:label {
       def get(design)
         class_name = name.text_value
-        if design.resource_classes.key?(class_name) == false then
+        if design._resource_classes.key?(class_name) == false then
           abort "Unknown resource class #{class_name}"
 	end
-	design.resource_classes[class_name]
+	design._resource_classes[class_name]
       end
     }
   end
 
   rule resource_option
-    array_desc       /
-    callee_task_desc /
-    foreign_reg_desc
+    array_desc          /
+    callee_task_desc    /
+    foreign_reg_desc    
   end
 
   rule array_desc 
@@ -215,7 +215,7 @@ grammar Exp
       end
     }
   end
-  
+
   rule value_type
     space? '(' space? type:label space width:number space? ')' space? {
       def get(design)

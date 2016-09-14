@@ -22,49 +22,49 @@ module Iroha::Builder::Simple
 
     def initialize(&block)
       super
-      @module_last_id  = 1
-      @channel_last_id = 1
+      @_module_last_id  = 1
+      @_channel_last_id = 1
       if block_given? then
         self.instance_eval(&block)
       end
-      resolve_reference()
+      _resolve_reference()
       return self
     end
 
-    def resolve_reference
-      @modules.each_pair{|id, mod| mod.resolve_reference}
+    def _resolve_reference
+      @_modules.each_pair{|id, mod| mod._resolve_reference}
     end
 
-    def add_module(name, parent_id, &block)
+    def __add_module(name, parent_id, &block)
       params       = Iroha::Builder::Simple::IResource::Params.new
       tables       = []
       module_class = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::IModule))
-      module_inst  = module_class.new(@module_last_id, name, parent_id, params, tables)
-      @module_last_id = @module_last_id+1
-      self.class.send(:define_method, module_inst.name, Proc.new do module_inst; end)
-      super(module_inst)
+      module_inst  = module_class.new(@_module_last_id, name, parent_id, params, tables)
+      @_module_last_id = @_module_last_id+1
+      self.class.send(:define_method, module_inst._name, Proc.new do module_inst; end)
+      _add_module(module_inst)
       if block_given? then
         module_inst.instance_eval(&block)
       end
       return module_inst
     end
 
-    def add_channel(channel_write, channel_read)
-      channel = IChannel.new(@channel_last_id,
-                             channel_write.input_types[0],
-                             channel_write.owner_module.id,
-                             channel_write.owner_table.id,
-                             channel_write.id,
-                             channel_read.owner_module.id,
-                             channel_read.owner_table.id,
-                             channel_read.id)
-      @channel_last_id = @channel_last_id+1
-      super(channel)
+    def __add_channel(channel_write, channel_read)
+      channel = IChannel.new(@_channel_last_id,
+                             channel_write._input_types[0],
+                             channel_write._owner_module._id,
+                             channel_write._owner_table._id,
+                             channel_write._id,
+                             channel_read._owner_module._id,
+                             channel_read._owner_table._id,
+                             channel_read._id)
+      @_channel_last_id = @_channel_last_id+1
+      _add_channel(channel)
       return channel
     end
 
     def IModule(name, &block)
-      return add_module(name, nil, &block)
+      return __add_module(name, nil, &block)
     end
 
   end
@@ -73,19 +73,19 @@ module Iroha::Builder::Simple
 
     def initialize(id, name, parent_id, params, table_list)
       super
-      @table_last_id = 1
+      @_table_last_id = 1
     end
 
-    def add_table(table)
-      super
-      self.class.send(:define_method, table.name, Proc.new do table; end)
+    def __add_table(table)
+      _add_table(table)
+      self.class.send(:define_method, table._name, Proc.new do table; end)
     end
 
     def ITable(name, &block)
-      table_class    = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::ITable))
-      table          = table_class.new(@table_last_id, name, [], [], [], nil)
-      @table_last_id = @table_last_id+1
-      add_table(table)
+      table_class     = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::ITable))
+      table           = table_class.new(@_table_last_id, name, [], [], [], nil)
+      @_table_last_id = @_table_last_id+1
+      __add_table(table)
       if block_given? then
         table.instance_eval(&block)
       end
@@ -93,11 +93,11 @@ module Iroha::Builder::Simple
     end
 
     def IModule(name, &block)
-      return @owner_design.add_module(name, @id, &block)
+      return @_owner_design.__add_module(name, @_id, &block)
     end
 
-    def resolve_reference
-      @tables.each_pair{|id, table| table.resolve_reference}
+    def _resolve_reference
+      @_tables.each_pair{|id, table| table._resolve_reference}
     end
 
   end
@@ -118,55 +118,55 @@ module Iroha::Builder::Simple
   end
 
   class ITable
-    attr_reader   :init_state_id
+    attr_reader   :_init_state_id
 
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
       super(id, name, resource_list, register_list, state_list, init_state_id)
-      @register_last_id = 1
-      @resource_last_id = 1
-      @state_last_id    = 1
-      @insn_last_id     = 1
-      @init_state_id    = nil
-      @singleton_classes= Hash.new
-      @state_class      = self.class.const_set(:State, Class.new(Iroha::Builder::Simple::IState))
-      @on_state         = nil
+      @_register_last_id  = 1
+      @_resource_last_id  = 1
+      @_state_last_id     = 1
+      @_insn_last_id      = 1
+      @_init_state_id     = nil
+      @_singleton_classes = Hash.new
+      @_state_class       = self.class.const_set(:State, Class.new(Iroha::Builder::Simple::IState))
+      @_on_state          = nil
     end
 
-    def add_state(state)
-      super
-      self.class.send(  :define_method, state.name, Proc.new do state; end)
-      @state_class.send(:define_method, state.name, Proc.new do state; end)
+    def __add_state(state)
+      _add_state(state)
+      self   .class.send(:define_method, state._name, Proc.new do state; end)
+      @_state_class.send(:define_method, state._name, Proc.new do state; end)
     end
 
     def IState(name, &block)
-      state = @state_class.new(@state_last_id, name, [])
-      @state_last_id = @state_last_id + 1
-      if @init_state_id == nil
-        @init_state_id = state.id
+      state = @_state_class.new(@_state_last_id, name, [])
+      @_state_last_id = @_state_last_id + 1
+      if @_init_state_id == nil
+        @_init_state_id = state._id
       end
-      add_state(state)
+      __add_state(state)
       if block_given? then
-        state_entry(state)
+        _state_entry(state)
         state.instance_eval(&block)
-        state_exit
+        _state_exit
       end
       return state
     end
 
     def Resource(class_name, name, input_types, output_types, params, option)
-      return add_resource(class_name, name, input_types, output_types, params, option)
+      return __add_resource(class_name, name, input_types, output_types, params, option)
     end
 
     def Register(name, type)
-      return add_register(name, :REG  , type)
+      return __add_register(name, :REG  , type)
     end
         
     def Constant(name, type)
-      return add_register(name, :CONST, type)
+      return __add_register(name, :CONST, type)
     end
 
     def Wire(name, type)
-      return add_register(name, :WIRE , type)
+      return __add_register(name, :WIRE , type)
     end
 
     def Unsigned(width)
@@ -178,79 +178,79 @@ module Iroha::Builder::Simple
     end
 
     def Ref(*args)
-      return Reference.new(@owner_design, args)
+      return Reference.new(@_owner_design, args)
     end
 
-    def state_entry(state)
-      @on_state = state
+    def _state_entry(state)
+      @_on_state = state
     end
 
-    def state_exit
-      @on_state = nil
+    def _state_exit
+      @_on_state = nil
     end
 
-    def on_state
-      if @on_state.class == @state_class then
-        return @on_state
+    def _on_state
+      if @_on_state.class == @_state_class then
+        return @_on_state
       else
         return nil
       end
     end
 
-    def resolve_reference()
-      @resources.values.each do |resource|
-        if resource.class.method_defined?(:resolve_reference) then
-          resource.resolve_reference()
+    def _resolve_reference()
+      @_resources.values.each do |resource|
+        if resource.class.method_defined?(:_resolve_reference) then
+          resource._resolve_reference()
         end
       end
     end
 
-    def add_register(name, klass, type)
+    def __add_register(name, klass, type)
       fail "Error: illegal type(#{type.class})" if type.class != IValueType
-      register = IRegister.new(@register_last_id, name, klass, type, type.assign_value)
-      @register_last_id = @register_last_id + 1
-      super(register)
+      register = IRegister.new(@_register_last_id, name, klass, type, type._assign_value)
+      @_register_last_id = @_register_last_id + 1
+      _add_register(register)
       if name.class == Symbol then
-        self.class.send(  :define_method, name, Proc.new do register; end)
-        @state_class.send(:define_method, name, Proc.new do register; end)
+        self.class.send(   :define_method, name, Proc.new do register; end)
+        @_state_class.send(:define_method, name, Proc.new do register; end)
       end
       return register
     end
 
-    def add_resource(class_name, name, input_types, output_types, params, option)
+    def __add_resource(class_name, name, input_types, output_types, params, option)
       res_params = IResource::Params.new
       res_params.update(params)
       resource_class = IResource.const_get(class_name)
-      if resource_class.const_defined?(:SINGLETON) and @singleton_classes.key?(class_name) then
-        resource = @singleton_classes[class_name]
+      if resource_class.const_defined?(:SINGLETON) and @_singleton_classes.key?(class_name) then
+        resource = @_singleton_classes[class_name]
       else
-        resource = resource_class.new(@resource_last_id, input_types, output_types, res_params, option)
-        @resource_last_id = @resource_last_id + 1
-        super(resource)
+        resource = resource_class.new(@_resource_last_id, input_types, output_types, res_params, option)
+        @_resource_last_id = @_resource_last_id + 1
+        _add_resource(resource)
       end
       if resource_class.const_defined?(:SINGLETON) then
-        @singleton_classes[class_name] = resource
+        @_singleton_classes[class_name] = resource
       end
       if name.class == Symbol then
         self.class.send(  :define_method, name, Proc.new do resource; end)
         if resource.class.const_defined?(:INSTANCE_OPERATOR) and resource.class.const_get(:INSTANCE_OPERATOR) then
-          @state_class.send(:define_method, name, Proc.new{|*regs| Operator.new(resource, regs)})
+          @_state_class.send(:define_method, name, Proc.new{|*regs| Operator.new(resource, regs)})
         else
-          @state_class.send(:define_method, name, Proc.new do resource; end)
+          @_state_class.send(:define_method, name, Proc.new do resource; end)
         end
       end
       return resource
     end
 
-    def add_instruction(resource, op_resources, next_states, input_registers, output_registers)
-      insn = IInstruction.new(@insn_last_id,
-                              resource.class_name,
-                              resource.id,
+    def __add_instruction(resource, op_resources, next_states, input_registers, output_registers)
+      insn = IInstruction.new(@_insn_last_id,
+                              resource._class_name,
+                              resource._id,
                               op_resources,
-                              next_states.map{    |state   | state.id},
-                              input_registers.map{|register| register.id},
-                              output_registers.map{|register| register.id})
-      @insn_last_id = @insn_last_id + 1
+                              next_states     .map{|state   | state._id   },
+                              input_registers .map{|register| register._id},
+                              output_registers.map{|register| register._id})
+      @_insn_last_id = @_insn_last_id + 1
       return insn
     end
 
@@ -274,19 +274,19 @@ module Iroha::Builder::Simple
     end
 
     define_method('=>') do |regs|
-      state = @owner_table.on_state
+      state = @_owner_table._on_state
       fail "Error: not on state"           if state      == nil
       fail "Error: source is not register" if regs.class != IRegister
-      resource = @owner_table.add_resource(:Set,  nil, [self.type] , [regs.type],{},{})
-      insn     = state.add_instruction(resource,[],[], [self     ] , [regs     ]      )
+      resource = @_owner_table.__add_resource(:Set, nil, [self._type] , [regs._type],{},{})
+      insn     = state.__add_instruction(resource,[],[], [self      ] , [regs      ]      )
       return self
     end
 
     define_method('<=') do |value|
-      state = @owner_table.on_state
+      state = @_owner_table._on_state
       if state != nil then
-        if @klass == :CONST then
-          fail "Error: Can not set data to Constant({#self.name}) on State(state.name)"
+        if @_class == :CONST then
+          fail "Error: Can not set data to Constant({#self._name}) on State(state._name)"
         end
         dst = IRegister.clone(self)
         if value.class.method_defined?(:'=>') then
@@ -294,20 +294,20 @@ module Iroha::Builder::Simple
           return dst
         elsif value.class == Operator then
           src       = value
-          src_types = src.operand.map{|regs| regs.type}
+          src_types = src.operand.map{|regs| regs._type}
           if src.op.class == Symbol then
-            resource= @owner_table.add_resource(src.op,nil, src_types  , [dst.type],{},{})
-            insn    = state.add_instruction(resource, [],[],src.operand, [dst     ]      )
+            resource= @_owner_table.__add_resource(src.op ,nil, src_types  , [dst._type],{},{})
+            insn    = state.__add_instruction(resource, [], [], src.operand, [dst      ]      )
           else
             resource= src.op
-            insn    = state.add_instruction(resource, [],[],src.operand, [dst     ]      )
+            insn    = state.__add_instruction(resource, [], [], src.operand, [dst      ]      )
           end
         else
           fail "Error: illegal source value #{value.class}"
         end
         return dst
       else
-        set_value(value)
+        _set_value(value)
         return self
       end
     end
@@ -315,22 +315,22 @@ module Iroha::Builder::Simple
 
   class IState
 
-    def add_instruction(resource, op_resources, next_states, input_registers, output_registers)
-      ## p "add_instruction(#{resource}, op_resources, next_states, #{input_registers.map{|r|r.id}}, #{output_registers.map{|r|r.id}})"
-      insn = @owner_table.add_instruction(resource, op_resources, next_states, input_registers, output_registers)
-      super(insn)
+    def __add_instruction(resource, op_resources, next_states, input_registers, output_registers)
+      ## p "add_instruction(#{resource}, op_resources, next_states, #{input_registers.map{|r|r._id}}, #{output_registers.map{|r|r._id}})"
+      insn = @_owner_table.__add_instruction(resource, op_resources, next_states, input_registers, output_registers)
+      _add_instruction(insn)
       return insn
     end
 
-    def insn(resource, op_resources, next_states, input_registers, output_registers)
-      add_instruction(resource, op_resources, next_states, input_registers, output_registers)
+    def _insn(resource, op_resources, next_states, input_registers, output_registers)
+      __add_instruction(resource, op_resources, next_states, input_registers, output_registers)
     end
 
     def on( &block )
       if block_given? then
-        @owner_table.state_entry(self)
+        @_owner_table._state_entry(self)
         self.instance_eval(&block)
-        @owner_table.state_exit
+        @_owner_table._state_exit
       end
     end
 
@@ -348,38 +348,38 @@ module Iroha::Builder::Simple
       else
         next_state_list = []
       end
-      resource = @owner_table.add_resource(:Transition, nil, [], [], {}, {})
-      add_instruction(resource, [], next_state_list, [cond_regs], [])
+      resource = @_owner_table.__add_resource(:Transition, nil, [], [], {}, {})
+      __add_instruction(resource, [], next_state_list, [cond_regs], [])
     end
 
     def Goto(next_state)
-      resource = @owner_table.add_resource(:Transition, nil, [], [], {}, {})
-      add_instruction(resource, [], [next_state   ], [         ], [])
+      resource = @_owner_table.__add_resource(:Transition, nil, [], [], {}, {})
+      __add_instruction(resource, [], [next_state   ], [         ], [])
     end
 
     def To_Unsigned(value, width)
       type = IValueType.new(false, width)
-      type.assign_value = value
-      return @owner_table.add_register(nil, :CONST, type)
+      type._assign_value = value
+      return @_owner_table.__add_register(nil, :CONST, type)
     end
 
     def To_Signed(value, width)
       type = IValueType.new(true , width)
-      type.assign_value = value
-      return @owner_table.add_register(nil, :CONST, type)
+      type._assign_value = value
+      return @_owner_table.__add_register(nil, :CONST, type)
     end
 
   end
 
   class IValueType
-    attr_accessor :assign_value
+    attr_accessor :_assign_value
     def initialize(is_signed, width)
       super
-      @assign_value = nil
+      @_assign_value = nil
     end
 
     define_method('<=') do |value|
-      @assign_value = value
+      @_assign_value = value
       return self
     end
     
@@ -393,23 +393,23 @@ module Iroha::Builder::Simple
     end
 
     class ExtInput
-      RESOURCE_PROC     = Proc.new{|name, width| add_resource(__method__, name, [], [], {INPUT:  name, WIDTH: width}, {})}
+      RESOURCE_PROC     = Proc.new{|name, width| __add_resource(__method__, name, [], [], {INPUT:  name, WIDTH: width}, {})}
       define_method('=>') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [], [regs])
+        state.__add_instruction(self, [], [], [], [regs])
         return self
       end
     end
 
     class ExtOutput
-      RESOURCE_PROC     = Proc.new{|name, width| add_resource(__method__, name, [], [], {OUTPUT: name, WIDTH: width}, {})}
+      RESOURCE_PROC     = Proc.new{|name, width| __add_resource(__method__, name, [], [], {OUTPUT: name, WIDTH: width}, {})}
       define_method('<=') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [regs], [])
+        state.__add_instruction(self, [], [], [regs], [])
         return self
       end
     end
@@ -418,88 +418,88 @@ module Iroha::Builder::Simple
       BINARY_OPERATOR   = '+'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
     class Sub
       BINARY_OPERATOR   = '-'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
     class Mul
       BINARY_OPERATOR   = '*'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
       
     class Gt 
       BINARY_OPERATOR   = '>'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
     class Gte
       BINARY_OPERATOR   = '>='
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
     class Eq 
       BINARY_OPERATOR   = '=='
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
     class BitAnd
       BINARY_OPERATOR   = '&'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
     class BitOr 
       BINARY_OPERATOR   = '|'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
     class BitXor
       BINARY_OPERATOR   = '^'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
     class Shift 
       BINARY_OPERATOR   = '<<'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
       
     class BitInv
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
     class BitSel 
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
     class BitConcat
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
-      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
+      RESOURCE_PROC     = Proc.new{|name, i_types, o_types| __add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
     class Array    
@@ -508,7 +508,7 @@ module Iroha::Builder::Simple
         fail "Error Illegal mem type  #{mem_type}  of Array" if (mem_type  != :RAM      and mem_type  != :ROM     )
         is_external = (ownership == :EXTERNAL)
 	is_ram      = (mem_type  == :RAM     )
-        add_resource(__method__, name, [], [], {}, {ARRAY: {ADDR_WIDTH: addr_width, VALUE_TYPE: value_type, EXTERNAL: is_external, RAM: is_ram}})
+        __add_resource(__method__, name, [], [], {}, {ARRAY: {ADDR_WIDTH: addr_width, VALUE_TYPE: value_type, EXTERNAL: is_external, RAM: is_ram}})
       }
       class Data
         attr_reader :array, :addr
@@ -517,16 +517,16 @@ module Iroha::Builder::Simple
           @addr  = addr
         end
         define_method('<=') do |regs|
-          state = @array.owner_table.on_state
+          state = @array._owner_table._on_state
           fail "Error: not on state"           if state      == nil
           fail "Error: source is not register" if regs.class != IRegister
-          state.add_instruction(@array, [], [], [@addr,regs],[])
+          state.__add_instruction(@array, [], [], [@addr,regs],[])
         end
         define_method('=>') do |regs|
-          state = @array.owner_table.on_state
+          state = @array._owner_table._on_state
           fail "Error: not on state"           if state      == nil
           fail "Error: source is not register" if regs.class != IRegister
-          state.add_instruction(@array, [], [], [@addr], [regs])
+          state.__add_instruction(@array, [], [], [@addr], [regs])
           return self
         end
       end
@@ -537,43 +537,43 @@ module Iroha::Builder::Simple
     end
 
     class ForeignReg
-      attr_accessor :ref_regs
+      attr_accessor :_ref_regs
       RESOURCE_PROC = Proc.new do |name, regs|
         if    regs.class == IRegister then
-          resource = add_resource(__method__, name, [], [], {}, Hash({:"FOREIGN-REG" => {:MODULE => regs.owner_module.id, :TABLE => regs.owner_table.id, :REGISTER => regs.id}}))
-          resource.ref_regs = nil
+          resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => {:MODULE => regs._owner_module._id, :TABLE => regs._owner_table._id, :REGISTER => regs._id}})
+          resource._ref_regs = nil
           return resource
         elsif regs.class == Reference then
-          resource = add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
-          resource.ref_regs = regs
+          resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
+          resource._ref_regs = regs
           return resource
         elsif regs == nil then
-          resource = add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
-          resource.ref_regs = nil
+          resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
+          resource._ref_regs = nil
           return resource
         else
           fail "Error: invalid register"
         end
       end
-      def resolve_reference
-        if @ref_regs.class == Reference then
-          regs = @ref_regs.resolve
-          fail "Error: can not found register Reference(#{@ref_regs.args})" if regs.class != IRegister
-          self.option.update({:"FOREIGN-REG" => {:MODULE => regs.owner_module.id, :TABLE => regs.owner_table.id, :REGISTER => regs.id}})
+      def _resolve_reference
+        if @_ref_regs.class == Reference then
+          regs = @_ref_regs.resolve
+          fail "Error: can not found register Reference(#{@_ref_regs.args})" if regs.class != IRegister
+          @_foreign_register_id = {:MODULE => regs._owner_module._id, :TABLE => regs._owner_table._id, :REGISTER => regs._id}
         end
       end
       define_method('<=') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [regs], [])
+        state.__add_instruction(self, [], [], [regs], [])
         return self
       end
       define_method('=>') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [], [regs])
+        state.__add_instruction(self, [], [], [], [regs])
         return self
       end
     end
@@ -581,41 +581,41 @@ module Iroha::Builder::Simple
     class Assert
       SINGLETON  = true
       STATE_PROC = Proc.new { |*regs| 
-        resource = @owner_table.add_resource(:Assert, nil, [], [], {}, {})
-        return add_instruction(resource, [], [], regs , [])
+        resource = @_owner_table.__add_resource(:Assert, nil, [], [], {}, {})
+        return __add_instruction(resource, [], [], regs , [])
       }
     end
 
     class Print 
       SINGLETON  = true
       STATE_PROC = Proc.new { |*regs| 
-        resource = @owner_table.add_resource(:Print, nil, [], [], {}, {})
-        return add_instruction(resource, [], [], regs , [])
+        resource = @_owner_table.__add_resource(:Print, nil, [], [], {}, {})
+        return __add_instruction(resource, [], [], regs , [])
       }
     end
 
     class ChannelRead
-      RESOURCE_PROC     = Proc.new { |name, type| add_resource(__method__, name, [type], [type], {}, {}) }
+      RESOURCE_PROC     = Proc.new { |name, type| __add_resource(__method__, name, [type], [type], {}, {}) }
       define_method('<=') do |channel_read|
-        @owner_design.add_channel(self, channel_read)
+        @_owner_design.__add_channel(self, channel_read)
         return self
       end
       define_method('=>') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [], [regs])
+        state.__add_instruction(self, [], [], [], [regs])
         return self
       end
     end
 
     class ChannelWrite
-      RESOURCE_PROC     = Proc.new { |name, type| add_resource(__method__, name, [type], [type], {}, {}) }
+      RESOURCE_PROC     = Proc.new { |name, type| __add_resource(__method__, name, [type], [type], {}, {}) }
       define_method('<=') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [regs], [])
+        state.__add_instruction(self, [], [], [regs], [])
         return self
       end
     end
@@ -632,105 +632,105 @@ module Iroha::Builder::Simple
             params["EMBEDDED-MODULE-" + key.to_s] = value
           end
         end
-        add_resource(__method__, name, input_types, output_types, params, {})
+        __add_resource(__method__, name, input_types, output_types, params, {})
       end
       define_method('<=') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [regs], [])
+        state.__add_instruction(self, [], [], [regs], [])
         return self
       end
       define_method('=>') do |regs|
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [], [regs])
+        state.__add_instruction(self, [], [], [], [regs])
         return self
       end
     end
 
     class SubModuleTask
-      RESOURCE_PROC = Proc.new { |name| add_resource(__method__, name, [], [], {}, {}) }
+      RESOURCE_PROC = Proc.new { |name| __add_resource(__method__, name, [], [], {}, {}) }
       def entry
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state" if state == nil
-        state.add_instruction(self, [], [], [], [])
+        state.__add_instruction(self, [], [], [], [])
       end
     end
 
     class SubModuleTaskCall
-      attr_accessor :ref_task
+      attr_accessor :_ref_task
       RESOURCE_PROC = Proc.new do  |name, task|
         if    task.class == SubModuleTask then
-          resource = add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
-          resource.ref_task = nil
+          resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}})
+          resource._ref_task = nil
           return resource
         elsif task.class == Reference then
-          resource = add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
-          resource.ref_task = task
+          resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = task
           return resource
         elsif task == nil then
-          resource = add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
-          resource.ref_task = nil
+          resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = nil
           return resource
         else
           fail "Error: invalid task"
         end
       end
-      def resolve_reference
-        if @ref_task.class == Reference then
-          task  = @ref_task.resolve
-          fail "Error: can not found task Reference(#{@ref_task.args})" if task == nil
+      def _resolve_reference
+        if @_ref_task.class == Reference then
+          task  = @_ref_task.resolve
+          fail "Error: can not found task Reference(#{@_ref_task.args})" if task == nil
           callee(task)
         end
       end
       def callee(task)
         if task.class == SubModuleTask then
-          self.option.update({:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
+          @_callee_table_id = {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}
         else
           fail "Error: invalid task"
         end
       end
       def call
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state" if state == nil
-        state.add_instruction(self, [], [], [], [])
+        state.__add_instruction(self, [], [], [], [])
       end
     end
 
     class SiblingTask
-      RESOURCE_PROC = Proc.new { |name,type| add_resource(__method__, name, [type], [], {}, {}) }
+      RESOURCE_PROC = Proc.new { |name,type| __add_resource(__method__, name, [type], [], {}, {}) }
       def entry(regs)
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [], [regs])
+        state.__add_instruction(self, [], [], [], [regs])
         return self
       end
     end
     
     class SiblingTaskCall
-      attr_accessor :ref_task
+      attr_accessor :_ref_task
       RESOURCE_PROC = Proc.new do  |name, type, task|
         if    task.class == SiblingTask then
-          resource = add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
-          resource.ref_task = nil
+          resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}})
+          resource._ref_task = nil
           return resource
         elsif task.class == Reference then
-          resource = add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
-          resource.ref_task = task
+          resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = task
           return resource
         elsif task == nil then
-          resource = add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
-          resource.ref_task = nil
+          resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = nil
           return resource
         else
           fail "Error: invalid task"
         end
       end
-      def resolve_reference
-        if @ref_task.class == Reference then
+      def _resolve_reference
+        if @_ref_task.class == Reference then
           task  = @ref_task.resolve
           fail "Error: can not found task Reference(#{@ref_task.args})" if task == nil
           callee(task)
@@ -738,21 +738,21 @@ module Iroha::Builder::Simple
       end
       def callee(task)
         if task.class == SiblingTask then
-          self.option.update({:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
+          @_callee_table_id = {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}
         else
           fail "Error: invalid task"
         end
       end
       def call(regs)
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
         fail "Error: source is not register" if regs.class != IRegister
-        state.add_instruction(self, [], [], [regs], [])
+        state.__add_instruction(self, [], [], [regs], [])
       end
       def wait
-        state = @owner_table.on_state
+        state = @_owner_table._on_state
         fail "Error: not on state"           if state      == nil
-        state.add_instruction(self, [:wait], [], [], [])
+        state.__add_instruction(self, [:wait], [], [], [])
       end
     end
     

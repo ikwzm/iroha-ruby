@@ -15,7 +15,7 @@ design = IDesign :design do
       ITable :tab_sub do
         SubModuleTask   :task
         IState          :st20
-        @owner_design.m_top.tab_top.task.callee(task)
+        _owner_design.m_top.tab_top.task.callee(task)
         st20.on {
           task.entry
         }

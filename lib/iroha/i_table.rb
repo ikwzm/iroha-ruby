@@ -1,94 +1,94 @@
 module Iroha
 
   class ITable
-    attr_reader :id, :name, :resources, :registers, :states, :init_state_id
-    attr_reader :owner_design, :owner_module
+    attr_reader :_id, :_name, :_resources, :_registers, :_states, :_init_state_id
+    attr_reader :_owner_design, :_owner_module
 
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
-      @owner_design  = nil              ## TYPE: Iroha::Design
-      @owner_module  = nil              ## TYPE: Iroha::IModule
-      @id            = id               ## TYPE: number
-      set_name(name)                    ## TYPE: symbol or number or nil
-      @resources     = Hash.new         ## TYPE: Hash {id:number, resource:Iroha::IResource}
-      @registers     = Hash.new         ## TYPE: Hash {id:number, register:Iroha::IRegister}
-      @states        = Hash.new         ## TYPE: Hash {id:number, state   :Iroha::IState   }
-      @init_state_id = init_state_id    ## TYPE: number
-      resource_list.each {|resource| add_resource(resource)}
-      register_list.each {|register| add_register(register)}
-      state_list.each    {|state   | add_state(   state   )}
+      @_owner_design  = nil              ## TYPE: Iroha::Design
+      @_owner_module  = nil              ## TYPE: Iroha::IModule
+      @_id            = id               ## TYPE: number
+      _set_name(name)                    ## TYPE: symbol or number or nil
+      @_resources     = Hash.new         ## TYPE: Hash {id:number, resource:Iroha::IResource}
+      @_registers     = Hash.new         ## TYPE: Hash {id:number, register:Iroha::IRegister}
+      @_states        = Hash.new         ## TYPE: Hash {id:number, state   :Iroha::IState   }
+      @_init_state_id = init_state_id    ## TYPE: number
+      resource_list.each {|resource| _add_resource(resource)}
+      register_list.each {|register| _add_register(register)}
+      state_list   .each {|state   | _add_state(   state   )}
     end
 
-    def set_name(name)
+    def _set_name(name)
       if name.class == String then
         if name == "" then
-          @name = nil
+          @_name = nil
         else
-          @name = name.to_sym
+          @_name = name.to_sym
         end
       else
-          @name = name
+          @_name = name
       end
-      return @name
+      return @_name
     end
 
-    def add_resource(resource)
-      abort "(RESOURCE #{resource.id} ... ) is multi definition." if @resources.key?(resource.id)
-      @resources[resource.id] = resource
-      resource.set_owner(@owner_design, @owner_module, self)
+    def _add_resource(resource)
+      abort "(RESOURCE #{resource._id} ... ) is multi definition." if @_resources.key?(resource._id)
+      @_resources[resource._id] = resource
+      resource._set_owner(@_owner_design, @_owner_module, self)
       return resource
     end
 
-    def add_register(register)
-      abort "(REGISTER #{register.id} ... ) is multi definition." if @registers.key?(register.id)
-      @registers[register.id] = register
-      register.set_owner(@owner_design, @owner_module, self)
+    def _add_register(register)
+      abort "(REGISTER #{register._id} ... ) is multi definition." if @_registers.key?(register._id)
+      @_registers[register._id] = register
+      register._set_owner(@_owner_design, @_owner_module, self)
       return register
     end
 
-    def add_state(state)
-      abort "(STATE #{state.id} ... ) is multi definition." if @states.key?(state.id)
-      @states[state.id] = state
-      state.set_owner(@owner_design,  @owner_module, self)
+    def _add_state(state)
+      abort "(STATE #{state._id} ... ) is multi definition." if @_states.key?(state._id)
+      @_states[state._id] = state
+      state._set_owner(@_owner_design,  @_owner_module, self)
       return state
     end
     
-    def set_owner(owner_design, owner_module)
-      @owner_design = owner_design
-      @owner_module = owner_module
-      @registers.values.each{|e| e.set_owner(owner_design, owner_module, self)}
-      @resources.values.each{|e| e.set_owner(owner_design, owner_module, self)}
-      @states.values.each   {|e| e.set_owner(owner_design, owner_module, self)}
+    def _set_owner(owner_design, owner_module)
+      @_owner_design = owner_design
+      @_owner_module = owner_module
+      @_registers.values.each{|e| e._set_owner(owner_design, owner_module, self)}
+      @_resources.values.each{|e| e._set_owner(owner_design, owner_module, self)}
+      @_states.values.each   {|e| e._set_owner(owner_design, owner_module, self)}
     end
 
-    def find_resource(res_id)
-      return @resources[res_id]
+    def _find_resource(res_id)
+      return @_resources[res_id]
     end
     
-    def find_register(reg_id)
-      return @registers[reg_id]
+    def _find_register(reg_id)
+      return @_registers[reg_id]
     end
     
-    def id_to_str
-      if @owner_module != nil then
-        module_str = @owner_module.id_to_str
+    def _id_to_str
+      if @_owner_module != nil then
+        module_str = @_owner_module._id_to_str
       else
         module_str = "UnknownModule"
       end
-      return module_str + "::ITable[#{@id}]"
+      return module_str + "::ITable[#{@_id}]"
     end
 
-    def to_exp(indent)
-      return indent + "(TABLE #{@id}\n" +
-             ((@registers.size > 0)?
-                (indent + "  (REGISTERS\n" + @registers.values.map{|reg| reg.to_exp(indent+"    ")}.join("\n") + "\n" + indent + "  )\n") :
+    def _to_exp(indent)
+      return indent + "(TABLE #{@_id}\n" +
+             ((@_registers.size > 0)?
+                (indent + "  (REGISTERS\n" + @_registers.values.map{|reg| reg._to_exp(indent+"    ")}.join("\n") + "\n" + indent + "  )\n") :
                 (indent + "  (REGISTERS)\n")) +
-             ((@resources.size > 0)?
-                (indent + "  (RESOURCES\n" + @resources.values.map{|res| res.to_exp(indent+"    ")}.join("\n") + "\n" + indent + "  )\n") :
+             ((@_resources.size > 0)?
+                (indent + "  (RESOURCES\n" + @_resources.values.map{|res| res._to_exp(indent+"    ")}.join("\n") + "\n" + indent + "  )\n") :
                 (indent + "  (RESOURCES)\n")) +
-             ((@states.size > 0)?
-                (indent + "  (INITIAL #{@init_state_id})\n") : "") + 
-             ((@states.size > 0)?
-                (@states.values.map{|state| state.to_exp(indent+"  ")}.join("\n") + "\n") : "") +
+             ((@_states.size > 0)?
+                (indent + "  (INITIAL #{@_init_state_id})\n") : "") + 
+             ((@_states.size > 0)?
+                (@_states.values.map{|state| state._to_exp(indent+"  ")}.join("\n") + "\n") : "") +
              indent + ")"
     end
 
@@ -97,12 +97,12 @@ module Iroha
       resource_class = parent_class.const_get(:IResource)
       register_class = parent_class.const_get(:IRegister)
       state_class    = parent_class.const_get(:IState   )
-      id             = table.id
-      name           = table.name
-      resource_list  = table.resources.values.map{|resource| resource_class.convert_from(resource)}
-      register_list  = table.registers.values.map{|register| register_class.convert_from(register)}
-      state_list     = table.states.values.map   {|state   | state_class.convert_from(   state   )}
-      init_state_id  = table.init_state_id
+      id             = table._id
+      name           = table._name
+      resource_list  = table._resources.values.map{|resource| resource_class.convert_from(resource)}
+      register_list  = table._registers.values.map{|register| register_class.convert_from(register)}
+      state_list     = table._states   .values.map{|state   | state_class   .convert_from(state   )}
+      init_state_id  = table._init_state_id
       self.new(id, name, resource_list, register_list, state_list, init_state_id)
     end
 

@@ -23,15 +23,15 @@ module Exp
       design_contents.elements.each{ |element|
         info = element.get(design)
         if info.class == Iroha::IResource::Params then
-          design.add_param(info)
+          design._add_param(info)
           next
         end
         if info.class == Iroha::IModule then
-	    design.add_module(info)
+	    design._add_module(info)
           next
         end
         if info.class == Iroha::IChannel then
-          design.add_channel(info)
+          design._add_channel(info)
 	    next
         end
       }
@@ -1375,10 +1375,10 @@ module Exp
   module ResourceClass1
     def get(design)
       class_name = name.text_value
-      if design.resource_classes.key?(class_name) == false then
+      if design._resource_classes.key?(class_name) == false then
         abort "Unknown resource class #{class_name}"
 	end
-	design.resource_classes[class_name]
+	design._resource_classes[class_name]
     end
   end
 

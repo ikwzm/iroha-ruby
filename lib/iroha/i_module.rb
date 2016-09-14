@@ -2,90 +2,90 @@ module Iroha
 
   class IModule
 
-    attr_reader   :id, :name, :parent_id, :params, :tables
-    attr_reader   :owner_design, :owner_module
+    attr_reader   :_id, :_name, :_parent_id, :_params, :_tables
+    attr_reader   :_owner_design, :_owner_module
 
     def initialize(id, name, parent_id, params, table_list)
-      @owner_design = nil               ## TYPE: Iroha::Design
-      @owner_module = nil               ## TYPE: Iroha::Module
-      @id           = id                ## TYPE: number
-      set_name(name)                    ## TYPE: symbol or number or nil
-      @parent_id    = parent_id         ## TYPE: number
-      @params       = params            ## TYPE: Iroha::Resource::Params
-      @tables       = Hash.new          ## TYPE: Hash {id:number, table:Iroha::ITable}
-      table_list.each {|table| add_table(table)}
+      @_owner_design = nil               ## TYPE: Iroha::Design
+      @_owner_module = nil               ## TYPE: Iroha::Module
+      @_id           = id                ## TYPE: number
+      _set_name(name)                    ## TYPE: symbol or number or nil
+      @_parent_id    = parent_id         ## TYPE: number
+      @_params       = params            ## TYPE: Iroha::Resource::Params
+      @_tables       = Hash.new          ## TYPE: Hash {id:number, table:Iroha::ITable}
+      table_list.each {|table| _add_table(table)}
     end
 
-    def set_name(name)
+    def _set_name(name)
       if name.class == String then
         if name == "" then
-          @name = nil
+          @_name = nil
         else
-          @name = name.to_sym
+          @_name = name.to_sym
         end
       else
-          @name = name
+          @_name = name
       end
-      return @name
+      return @_name
     end
 
-    def set_owner(owner_design)
-      @owner_design = owner_design
-      if @parent_id != nil then
-        @owner_module = @owner_design.find_module(@parent_id)
-        abort "(MODULE #{@name} (PARENT #{@parent_id})...) unknown parent module." if @owner_module == nil
+    def _set_owner(owner_design)
+      @_owner_design = owner_design
+      if @_parent_id != nil then
+        @_owner_module = @_owner_design._find_module(@_parent_id)
+        abort "(MODULE #{@_name} (PARENT #{@_parent_id})...) unknown parent module." if @_owner_module == nil
       end
-      @tables.values.each{|table| table.set_owner(owner_design, self)}
+      @_tables.values.each{|table| table._set_owner(owner_design, self)}
     end
 
-    def add_table(table)
-      abort "(TABLE #{table.id} ... ) is multi definition." if @tables.key?(table.id)
-      @tables[table.id] = table
-      table.set_owner(@owner_design, self)
+    def _add_table(table)
+      abort "(TABLE #{table._id} ... ) is multi definition." if @_tables.key?(table._id)
+      @_tables[table._id] = table
+      table._set_owner(@_owner_design, self)
     end
 
-    def find_table(tab_id)
-      return @tables[tab_id]
+    def _find_table(tab_id)
+      return @_tables[tab_id]
     end
     
-    def find_resource(tbl_id, res_id)
-      if @tables.key?(tbl_id) then
-        return @tables[tbl_id].find_resource(res_id)
+    def _find_resource(tbl_id, res_id)
+      if @_tables.key?(tbl_id) then
+        return @_tables[tbl_id]._find_resource(res_id)
       else
         return nil
       end
     end
 
-    def find_register(tbl_id, reg_id)
-      if @tables.key?(tbl_id) then
-        return @tables[tbl_id].find_register(reg_id)
+    def _find_register(tbl_id, reg_id)
+      if @_tables.key?(tbl_id) then
+        return @_tables[tbl_id]._find_register(reg_id)
       else
         return nil
       end
     end
 
-    def to_exp(indent)
-      return indent + "(MODULE #{@id} #{@name}\n" +
-             @params.to_exp(indent+"  ") + "\n" +
-             ((@owner_module != nil)? indent + "  (PARENT #{@owner_module.id})\n" : "") +
-             @tables.values.map{|table| table.to_exp(indent+"  ")}.join("\n") + "\n" +
+    def _to_exp(indent)
+      return indent + "(MODULE #{@_id} #{@_name}\n" +
+             @_params._to_exp(indent+"  ") + "\n" +
+             ((@_owner_module != nil)? indent + "  (PARENT #{@_owner_module._id})\n" : "") +
+             @_tables.values.map{|table| table._to_exp(indent+"  ")}.join("\n") + "\n" +
              indent + ")"
     end
 
-    def id_to_str
-      return "IModule[#{@id}]"
+    def _id_to_str
+      return "IModule[#{@_id}]"
     end
 
     def self.convert_from(mod)
       parent_class = Iroha.parent_class(self)
       table_class  = parent_class.const_get(:ITable)
       param_class  = parent_class.const_get(:IResource).const_get(:Params)
-      id           = mod.id
-      name         = mod.name
-      parent_id    = (mod.owner_module != nil) ? mod.owner_module.id : nil
+      id           = mod._id
+      name         = mod._name
+      parent_id    = (mod._owner_module != nil) ? mod._owner_module._id : nil
       params       = param_class.new
-      mod.params.each_pair{ |key, value| params[key.clone] = value.clone }
-      table_list = mod.tables.values.map{|table| table_class.convert_from(table)}
+      mod._params.each_pair{ |key, value| params[key.clone] = value.clone }
+      table_list   = mod._tables.values.map{|table| table_class.convert_from(table)}
       self.new(id, name, parent_id, params, table_list)
     end
 

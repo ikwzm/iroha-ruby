@@ -15,8 +15,8 @@ design = IDesign :design do
       }
     end
   end
-  mod.params.update({"RESET-NAME" => "reset"})
+  mod._params.update({"RESET-NAME" => "reset"})
 end
-design.params.update({"RESET-POLARITY" => "true"})
+design._params.update({"RESET-POLARITY" => "true"})
 
 puts design.to_exp("")
