@@ -3,6 +3,7 @@ require_relative '../../iroha'
 module Iroha
   module Builder
     module Simple
+      Iroha.franchise_class(Iroha,self)
     end
   end
 end
@@ -17,7 +18,7 @@ module Iroha::Builder::Simple
     design_class.new(&block)
   end
 
-  class IDesign < Iroha::IDesign
+  class IDesign
 
     def initialize(&block)
       super
@@ -68,10 +69,7 @@ module Iroha::Builder::Simple
 
   end
 
-  class IChannel     < Iroha::IChannel
-  end
-
-  class IModule      < Iroha::IModule
+  class IModule
 
     def initialize(id, name, parent_id, params, table_list)
       super
@@ -119,7 +117,7 @@ module Iroha::Builder::Simple
     end
   end
 
-  class ITable < Iroha::ITable
+  class ITable
     attr_reader   :init_state_id
 
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
@@ -266,7 +264,7 @@ module Iroha::Builder::Simple
     end
   end
 
-  class IRegister    < Iroha::IRegister
+  class IRegister
     def self.clone(register)
       if register.class == IRegister then
         return IRegister.convert_from(register)
@@ -315,7 +313,7 @@ module Iroha::Builder::Simple
     end
   end
 
-  class IState < Iroha::IState
+  class IState
 
     def add_instruction(resource, op_resources, next_states, input_registers, output_registers)
       ## p "add_instruction(#{resource}, op_resources, next_states, #{input_registers.map{|r|r.id}}, #{output_registers.map{|r|r.id}})"
@@ -373,7 +371,7 @@ module Iroha::Builder::Simple
 
   end
 
-  class IValueType   < Iroha::IValueType
+  class IValueType
     attr_accessor :assign_value
     def initialize(is_signed, width)
       super
@@ -387,16 +385,14 @@ module Iroha::Builder::Simple
     
   end
 
-  class IChannel     < Iroha::IChannel    ; end
-  class IInstruction < Iroha::IInstruction; end
-  class IResource    < Iroha::IResource
+  class IResource
 
     def self.convert_from(resource)
       res_class = resource.class.to_s.split(/::/).last
       Iroha::Builder::Simple::IResource.const_get(res_class).convert_from(resource)
     end
 
-    class ExtInput          < Iroha::IResource::ExtInput
+    class ExtInput
       RESOURCE_PROC     = Proc.new{|name, width| add_resource(__method__, name, [], [], {INPUT:  name, WIDTH: width}, {})}
       define_method('=>') do |regs|
         state = @owner_table.on_state
@@ -407,7 +403,7 @@ module Iroha::Builder::Simple
       end
     end
 
-    class ExtOutput         < Iroha::IResource::ExtOutput
+    class ExtOutput
       RESOURCE_PROC     = Proc.new{|name, width| add_resource(__method__, name, [], [], {OUTPUT: name, WIDTH: width}, {})}
       define_method('<=') do |regs|
         state = @owner_table.on_state
@@ -418,95 +414,95 @@ module Iroha::Builder::Simple
       end
     end
 
-    class Add               < Iroha::IResource::Add
+    class Add
       BINARY_OPERATOR   = '+'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
-    class Sub               < Iroha::IResource::Sub
+    class Sub
       BINARY_OPERATOR   = '-'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
-    class Mul               < Iroha::IResource::Mul
+    class Mul
       BINARY_OPERATOR   = '*'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
       
-    class Gt                < Iroha::IResource::Gt
+    class Gt 
       BINARY_OPERATOR   = '>'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
-    class Gte               < Iroha::IResource::Gte
+    class Gte
       BINARY_OPERATOR   = '>='
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
-    class Eq                < Iroha::IResource::Eq
+    class Eq 
       BINARY_OPERATOR   = '=='
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
-    class BitAnd            < Iroha::IResource::BitAnd
+    class BitAnd
       BINARY_OPERATOR   = '&'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
-    class BitOr             < Iroha::IResource::BitOr
+    class BitOr 
       BINARY_OPERATOR   = '|'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
-    class BitXor            < Iroha::IResource::BitXor
+    class BitXor
       BINARY_OPERATOR   = '^'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
-    class Shift             < Iroha::IResource::Shift
+    class Shift 
       BINARY_OPERATOR   = '<<'
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
       
-    class BitInv            < Iroha::IResource::BitInv
+    class BitInv
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
-    class BitSel            < Iroha::IResource::BitSel
+    class BitSel 
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
 
-    class BitConcat         < Iroha::IResource::BitConcat
+    class BitConcat
       INSTANCE_OPERATOR = true
       STATE_PROC        = Proc.new{|*regs| Operator.new(__method__, regs)}
       RESOURCE_PROC     = Proc.new{|name, i_types, o_types| add_resource(__method__, name, i_types, o_types, {}, {})}
     end
     
-    class Array             < Iroha::IResource::Array
+    class Array    
       RESOURCE_PROC     = Proc.new{|name, addr_width, value_type, ownership, mem_type|
         fail "Error Illegal ownership #{ownership} of Array" if (ownership != :EXTERNAL and ownership != :INTERNAL)
         fail "Error Illegal mem type  #{mem_type}  of Array" if (mem_type  != :RAM      and mem_type  != :ROM     )
@@ -540,7 +536,7 @@ module Iroha::Builder::Simple
       end
     end
 
-    class ForeignReg        < Iroha::IResource::ForeignReg
+    class ForeignReg
       attr_accessor :ref_regs
       RESOURCE_PROC = Proc.new do |name, regs|
         if    regs.class == IRegister then
@@ -582,7 +578,7 @@ module Iroha::Builder::Simple
       end
     end
 
-    class Assert            < Iroha::IResource::Assert
+    class Assert
       SINGLETON  = true
       STATE_PROC = Proc.new { |*regs| 
         resource = @owner_table.add_resource(:Assert, nil, [], [], {}, {})
@@ -590,7 +586,7 @@ module Iroha::Builder::Simple
       }
     end
 
-    class Print             < Iroha::IResource::Print
+    class Print 
       SINGLETON  = true
       STATE_PROC = Proc.new { |*regs| 
         resource = @owner_table.add_resource(:Print, nil, [], [], {}, {})
@@ -598,7 +594,7 @@ module Iroha::Builder::Simple
       }
     end
 
-    class ChannelRead       < Iroha::IResource::ChannelRead
+    class ChannelRead
       RESOURCE_PROC     = Proc.new { |name, type| add_resource(__method__, name, [type], [type], {}, {}) }
       define_method('<=') do |channel_read|
         @owner_design.add_channel(self, channel_read)
@@ -613,7 +609,7 @@ module Iroha::Builder::Simple
       end
     end
 
-    class ChannelWrite      < Iroha::IResource::ChannelWrite
+    class ChannelWrite
       RESOURCE_PROC     = Proc.new { |name, type| add_resource(__method__, name, [type], [type], {}, {}) }
       define_method('<=') do |regs|
         state = @owner_table.on_state
@@ -624,7 +620,7 @@ module Iroha::Builder::Simple
       end
     end
     
-    class Embedded          < Iroha::IResource::Embedded
+    class Embedded    
       PARAMS        = {:NAME => nil, :FILE => nil, :CLOCK => nil, :RESET => nil, :ARGS => nil, :REQ => nil, :ACK => nil}
       RESOURCE_PROC = Proc.new do |name, input_types, output_types, args|
         params = Hash.new
@@ -654,7 +650,7 @@ module Iroha::Builder::Simple
       end
     end
 
-    class SubModuleTask     < Iroha::IResource::SubModuleTask
+    class SubModuleTask
       RESOURCE_PROC = Proc.new { |name| add_resource(__method__, name, [], [], {}, {}) }
       def entry
         state = @owner_table.on_state
@@ -663,7 +659,7 @@ module Iroha::Builder::Simple
       end
     end
 
-    class SubModuleTaskCall < Iroha::IResource::SubModuleTaskCall
+    class SubModuleTaskCall
       attr_accessor :ref_task
       RESOURCE_PROC = Proc.new do  |name, task|
         if    task.class == SubModuleTask then
@@ -703,7 +699,7 @@ module Iroha::Builder::Simple
       end
     end
 
-    class SiblingTask       < Iroha::IResource::SiblingTask
+    class SiblingTask
       RESOURCE_PROC = Proc.new { |name,type| add_resource(__method__, name, [type], [], {}, {}) }
       def entry(regs)
         state = @owner_table.on_state
@@ -714,7 +710,7 @@ module Iroha::Builder::Simple
       end
     end
     
-    class SiblingTaskCall   < Iroha::IResource::SiblingTaskCall
+    class SiblingTaskCall
       attr_accessor :ref_task
       RESOURCE_PROC = Proc.new do  |name, type, task|
         if    task.class == SiblingTask then
@@ -760,15 +756,10 @@ module Iroha::Builder::Simple
       end
     end
     
-    class Transition        < Iroha::IResource::Transition
+    class Transition
       SINGLETON = true
     end
 
-    class Params            < Iroha::IResource::Params           ; end
-    class Set               < Iroha::IResource::Set              ; end
-    class Phi               < Iroha::IResource::Phi              ; end
-    class Select            < Iroha::IResource::Select           ; end
-    class Mapped            < Iroha::IResource::Mapped           ; end
   end
 
   RESOURSE_CLASSES = ObjectSpace.each_object(Class).select{|klass| klass.to_s =~ /Iroha::Builder::Simple::IResource::*/}
