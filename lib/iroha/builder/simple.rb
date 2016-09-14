@@ -559,7 +559,7 @@ module Iroha::Builder::Simple
         if @ref_regs.class == Reference then
           regs = @ref_regs.resolve
           fail "Error: can not found register Reference(#{@ref_regs.args})" if regs.class != IRegister
-          self.option.update({:"FOREIGN-REG" => {:MODULE => regs.owner_module.id, :TABLE => regs.owner_table.id, :REGISTER => regs.id}})
+          @foreign_register_id = {:MODULE => regs.owner_module.id, :TABLE => regs.owner_table.id, :REGISTER => regs.id}
         end
       end
       define_method('<=') do |regs|
@@ -687,7 +687,7 @@ module Iroha::Builder::Simple
       end
       def callee(task)
         if task.class == SubModuleTask then
-          self.option.update({:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
+          @callee_table_id = {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}
         else
           fail "Error: invalid task"
         end
@@ -738,7 +738,7 @@ module Iroha::Builder::Simple
       end
       def callee(task)
         if task.class == SiblingTask then
-          self.option.update({:'CALLEE-TABLE' => {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}})
+          @callee_table_id = {:MODULE => task.owner_module.id, :TABLE => task.owner_table.id}
         else
           fail "Error: invalid task"
         end

@@ -16,9 +16,9 @@ module Iroha
       @owner_design = nil
       @owner_module = nil
       @owner_table  = nil
-      if  option.class == Hash  then
-        @option.update(option)
-      end
+      return if option == nil
+      return if option.class == Hash and option.size == 0
+      fail "(RESOURCE #{class_name} #{id} ... #{option}) is invalid option."
     end
 
     def set_owner(owner_design, owner_module, owner_table)
@@ -32,25 +32,15 @@ module Iroha
     end
 
     def to_exp(indent)
-      option_param = @option.to_a.map{|pair|
-        if    (pair[0] == :ARRAY) then
-          addr_width = pair[1][:ADDR_WIDTH]
-          value_type = pair[1][:VALUE_TYPE].to_exp
-          ref        = (pair[1][:EXTERNAL]) ? "EXTERNAL" : "INTERNAL"
-          ram        = (pair[1][:RAM     ]) ? "RAM"      : "ROM"
-          "(ARRAY #{addr_width} #{value_type} #{ref} #{ram})"
-        elsif (pair[0] == :"CALLEE-TABLE") then
-          "(CALLEE-TABLE #{pair[1][:MODULE]} #{pair[1][:TABLE]})"
-        elsif (pair[0] == :"FOREIGN-REG" ) then
-          "(FOREIGN-REG  #{pair[1][:MODULE]} #{pair[1][:TABLE]} #{pair[1][:REGISTER]})"
-        else
-          ""
-        end
-      }
+      if self.class.method_defined?(:option_to_exp) then
+        option_exp = option_to_exp()
+      else
+        option_exp = ""
+      end
       return indent + "(RESOURCE #{@id} #{@class_name} " +
              "(" + @input_types.map{ |t|t.to_exp}.join(" ") + ") " +
              "(" + @output_types.map{|t|t.to_exp}.join(" ") + ") " +
-             @params.to_exp("") + option_param.join("") + ")"
+             @params.to_exp("") + option_exp + ")"
     end
 
     def self.convert_from(resource)
@@ -72,7 +62,7 @@ module Iroha
       else
         table_str = "UnknownTable"
       end
-      return table_str + "::IResource(#{@class_name})[{#@id}]"
+      return table_str + "::IResource(#{@class_name})[#{@id}]"
     end
 
     class Params < Hash
@@ -161,7 +151,24 @@ module Iroha
       CLASS_NAME   = "sibling-task-call"
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        if option.key?(:"CALLEE-TABLE") then
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+          @callee_table_id = option[:"CALLEE-TABLE"]
+        else
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        end
+      end
+      def option_to_exp
+        table = get_callee_table()
+        fail "Not Found Callee Table in #{id_to_str}" if table == nil
+        return "(CALLEE-TABLE #{table.owner_module.id} #{table.id})"
+      end
+      def get_callee_table
+        if @callee_table_id.class == Hash then
+          return @owner_design.find_table(@callee_table_id[:MODULE], @callee_table_id[:TABLE])
+        else
+          return nil
+        end
       end
     end
 
@@ -169,7 +176,24 @@ module Iroha
       CLASS_NAME   = "sub-module-task-call"
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        if option.key?(:"CALLEE-TABLE") then
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+          @callee_table_id = option[:"CALLEE-TABLE"]
+        else
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        end
+      end
+      def option_to_exp
+        table = get_callee_table()
+        fail "Not Found Callee Table in #{id_to_str}" if table == nil
+        return "(CALLEE-TABLE #{table.owner_module.id} #{table.id})"
+      end
+      def get_callee_table
+        if @callee_table_id.class == Hash then
+          return @owner_design.find_table(@callee_table_id[:MODULE], @callee_table_id[:TABLE])
+        else
+          return nil
+        end
       end
     end
 
@@ -201,13 +225,23 @@ module Iroha
       CLASS_NAME   = "foreign-reg"
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        if option.key?(:"FOREIGN-REG") then
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+          @foreign_register_id = option[:"FOREIGN-REG"]
+        else
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        end
+      end
+      def option_to_exp
+        register = get_foreign_register()
+        fail "Not Found Register(#{@foreign_register_id}) in #{id_to_str}" if nil == register
+        return "(FOREIGN-REG #{register.owner_module.id} #{register.owner_table.id} #{register.id})"
       end
       def get_foreign_register
-        if @option.key?(:"FOREIGN-REG") == true then
-          mod_id = resource.option[:"FOREIGN-REG"][:MODULE  ]
-          tab_id = resource.option[:"FOREIGN-REG"][:TABLE   ]
-          reg_id = resource.option[:"FOREIGN-REG"][:REGISTER]
+        if @foreign_register_id.class == Hash then
+          mod_id = @foreign_register_id[:MODULE  ]
+          tab_id = @foreign_register_id[:TABLE   ]
+          reg_id = @foreign_register_id[:REGISTER]
           return @owner_design.find_register(mod_id, tab_id, reg_id)
         else
           return nil
@@ -235,7 +269,20 @@ module Iroha
       CLASS_NAME   = "array"
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        if option.key?(:ARRAY) then
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+          @addr_width  = option[:ARRAY][:ADDR_WIDTH]
+          @value_type  = option[:ARRAY][:VALUE_TYPE]
+          @is_external = option[:ARRAY][:EXTERNAL  ]
+          @is_ram      = option[:ARRAY][:RAM       ]
+        else
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        end
+      end
+      def option_to_exp
+        external = (@is_external == true) ? "EXTERNAL" : "INTERNAL"
+        ram      = (@is_ram      == true) ? "RAM"      : "ROM"
+        return "(ARRAY #{@addr_width} #{@value_type.to_exp} #{external} #{ram})"
       end
     end
 
