@@ -31,6 +31,14 @@ module Iroha
       return @modules.fetch(module_id, nil)
     end
 
+    def find_table(module_id, table_id)
+      if @modules.key?(module_id) then
+        return @modules[module_id].find_table(table_id)
+      else
+        return nil
+      end
+    end
+
     def find_resource(module_id, table_id, resource_id)
       if @modules.key?(module_id) then
         return @modules[module_id].find_resource(table_id, resource_id)
