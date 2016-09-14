@@ -44,6 +44,10 @@ module Iroha
       table.set_owner(@owner_design, self)
     end
 
+    def find_table(tab_id)
+      return @tables[tab_id]
+    end
+    
     def find_resource(tbl_id, res_id)
       if @tables.key?(tbl_id) then
         return @tables[tbl_id].find_resource(res_id)
@@ -54,7 +58,7 @@ module Iroha
 
     def find_register(tbl_id, reg_id)
       if @tables.key?(tbl_id) then
-        return @tables[tbl_id].find_register(res_id)
+        return @tables[tbl_id].find_register(reg_id)
       else
         return nil
       end
