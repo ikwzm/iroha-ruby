@@ -126,7 +126,6 @@ module Iroha::Builder::Simple
       @_resource_last_id  = 1
       @_state_last_id     = 1
       @_insn_last_id      = 1
-      @_init_state_id     = nil
       @_singleton_classes = Hash.new
       @_state_class       = self.class.const_set(:State, Class.new(Iroha::Builder::Simple::IState))
       @_on_state          = nil
