@@ -413,6 +413,74 @@ module Iroha::Builder::Simple
       end
     end
 
+    class PortInput
+      attr_accessor :_ref_resources
+      RESOURCE_PROC = Proc.new do |name, type, *resources|
+        params = {:"PORT-NAME" => name}
+        option = {:CONNECT => []}
+        resource = __add_resource(__method__, name, [], [type], params, {:"PORT-INPUT" => option})
+        resource._ref_resources = resources
+        return resource
+      end
+      def _resolve_reference
+        @_connections.concat(@_ref_resources.map { |ref|
+          if ref.class == Reference then
+            resource = ref.resolve()
+          else
+            resource = ref
+          end
+          fail "Error: can not found register Reference(#{ref.args})" if resource == nil
+          {:MODULE => resource._owner_module._id, :TABLE => resource._owner_table._id, :RESOURCE => resource._id}
+        })
+      end
+      define_method('=>') do |regs|
+        state = @_owner_table._on_state
+        fail "Error: not on state"           if state      == nil
+        fail "Error: source is not register" if regs.class != IRegister
+        state.__add_instruction(self, [], [], [], [regs])
+        return self
+      end
+      define_method('<=') do |regs|
+        fail "Error: can not connect PortOut(#{_id_to_str}) to #{regs._id_to_str}" if regs.class != PortOutput
+        port_in_id  = {:MODULE => self._owner_module._id, :TABLE => self._owner_table._id, :RESOURCE => self._id}
+        port_out_id = {:MODULE => regs._owner_module._id, :TABLE => regs._owner_table._id, :RESOURCE => regs._id}
+        ## p "#{port_in_id} <= #{port_out_id}"
+        self._connections.push(port_out_id)
+        regs._connections.push(port_in_id )
+        ## p "#{self._connections} <= #{regs._connections}"
+        return self
+      end
+    end
+
+    class PortOutput
+      attr_accessor :_ref_resources
+      RESOURCE_PROC = Proc.new do |name, type, *resources| 
+        params = {:"PORT-NAME" => name}
+        option = {:CONNECT => []}
+        resource = __add_resource(__method__, name, [type], [], params, {:"PORT-OUTPUT" => option})
+        resource._ref_resources = resources
+        return resource
+      end
+      def _resolve_reference
+        @_connections.concat(@_ref_resources.map { |ref|
+          if ref.class == Reference then
+            resource = ref.resolve
+          else
+            resource = ref
+          end
+          fail "Error: can not found register Reference(#{ref.args})" if resource == nil
+          {:MODULE => resource._owner_module._id, :TABLE => resource._owner_table._id, :RESOURCE => resource._id}
+        })
+      end
+      define_method('<=') do |regs|
+        state = @_owner_table._on_state
+        fail "Error: not on state"           if state      == nil
+        fail "Error: source is not register" if regs.class != IRegister
+        state.__add_instruction(self, [], [], [regs], [])
+        return self
+      end
+    end
+
     class Add
       BINARY_OPERATOR   = '+'
       INSTANCE_OPERATOR = true

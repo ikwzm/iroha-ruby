@@ -177,7 +177,8 @@ grammar Exp
   rule resource_option
     array_desc          /
     callee_task_desc    /
-    foreign_reg_desc    
+    foreign_reg_desc    /
+    port_io_desc        
   end
 
   rule array_desc 
@@ -216,6 +217,29 @@ grammar Exp
     }
   end
 
+  rule port_io_desc
+    space? '(' space? name:('PORT-INPUT' / 'PORT-OUTPUT') contents:inter_connection* space? ')' space? {
+      def get(design)
+        connections = Array.new
+        contents.elements.each do |element|
+          info = element.get(design)
+          if info.key?(:CONNECT) then
+            connections.push(info[:CONNECT])
+	  end
+	end
+        {name.text_value.to_sym => {:CONNECT => connections}}
+      end
+    }
+  end
+
+  rule inter_connection
+    space? '(' space? 'CONNECT' space module_id space table_id space resource_id space? ')' space? {
+      def get(design)
+        {:CONNECT => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :RESOURCE => resource_id.get(design)}}
+      end
+    }
+  end
+  
   rule value_type
     space? '(' space? type:label space width:number space? ')' space? {
       def get(design)

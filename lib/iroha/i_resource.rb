@@ -285,6 +285,62 @@ module Iroha
       end
     end
 
+    class PortInput         < Iroha::IResource
+      attr_accessor :_connections
+      CLASS_NAME   = "port-input"
+      OPTION_NAME  = "PORT-INPUT".to_sym
+      IS_EXCLUSIVE = true
+      def initialize(id, input_types, output_types, params, option)
+        if option.key?(OPTION_NAME) then
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+          @_connections = option[OPTION_NAME].fetch(:CONNECT, [])
+        else
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        end
+      end
+      def _option_clone
+        return {OPTION_NAME => {:CONNECT => @_connections.map{|conn| conn.clone}}}
+      end
+      def _option_to_exp
+        connections_exp = @_connections.map{|conn|
+          resource = @_owner_design._find_resource(conn[:MODULE], conn[:TABLE], conn[:RESOURCE])
+          if resource == nil then
+            fail "Not found #{CLASS_NAME} resource(#{conn}) in #{_id_to_str}"
+          end
+          "(CONNECT #{resource._owner_module._id} #{resource._owner_table._id} #{resource._id})"
+        }.join(" ")
+        return "(#{OPTION_NAME} #{connections_exp})"
+      end
+    end
+
+    class PortOutput        < Iroha::IResource
+      attr_accessor :_connections
+      CLASS_NAME   = "port-output"
+      OPTION_NAME  = "PORT-OUTPUT".to_sym
+      IS_EXCLUSIVE = true
+      def initialize(id, input_types, output_types, params, option)
+        if option.key?(OPTION_NAME) then
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+          @_connections = option[OPTION_NAME].fetch(:CONNECT, [])
+        else
+          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        end
+      end
+      def _option_clone
+        return {OPTION_NAME => {:CONNECT => @_connections.map{|conn| conn.clone}}}
+      end
+      def _option_to_exp
+        connections_exp = @_connections.map{|conn|
+          resource = @_owner_design._find_resource(conn[:MODULE], conn[:TABLE], conn[:RESOURCE])
+          if resource == nil then
+            fail "Not found #{CLASS_NAME} resource(#{conn}) in #{_id_to_str}"
+          end
+          "(CONNECT #{resource._owner_module._id} #{resource._owner_table._id} #{resource._id})"
+        }.join(" ")
+        return "(#{OPTION_NAME} #{connections_exp})"
+      end
+    end
+
     class ExtInput          < Iroha::IResource
       CLASS_NAME   = "ext-input"
       IS_EXCLUSIVE = true
