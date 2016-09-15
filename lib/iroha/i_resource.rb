@@ -55,8 +55,7 @@ module Iroha
       id           = resource._id
       input_types  = resource._input_types.map{ |value_type| type_class.convert_from(value_type)}
       output_types = resource._output_types.map{|value_type| type_class.convert_from(value_type)}
-      params       = params_class.new
-      resource._params.each_pair{ |key, value| params[key.clone] = value.clone}
+      params       = params_class.convert_from(resource._params)
       option       = resource._option_clone
       parent_class.const_get(:IResource).const_get(class_name).new(id, input_types, output_types, params, option)
     end
@@ -77,6 +76,17 @@ module Iroha
         else
           return ([indent + "(PARAMS"] + self.to_a.map{|pair| indent + "  (#{pair[0]} #{pair[1]})"} + [indent + ")"]).join("")
         end
+      end
+      def self.convert_from(params)
+        new_params = self.new
+        params.each_pair do |key, value|
+          if value.class == String then
+            new_params[key] = value.clone
+          else
+            new_params[key] = value
+          end
+        end
+        return new_params
       end
     end
     
