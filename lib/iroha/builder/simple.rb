@@ -416,7 +416,7 @@ module Iroha::Builder::Simple
     class PortInput
       attr_accessor :_ref_resources
       RESOURCE_PROC = Proc.new do |name, type, *resources|
-        params = {:"INPUT" => name}
+        params = {:INPUT => name, :WIDTH => type._width}
         resource = __add_resource(__method__, name, [], [type], params, {:"PORT-INPUT" => nil})
         resource._ref_resources = resources
         return resource
@@ -452,7 +452,7 @@ module Iroha::Builder::Simple
     class PortOutput
       attr_accessor :_ref_resources
       RESOURCE_PROC = Proc.new do |name, type, *resources| 
-        params = {:"OUTPUT"=> name}
+        params = {:OUTPUT => name, :WIDTH => type._width}
         resource = __add_resource(__method__, name, [type], [], params, nil)
         resource._ref_resources = resources
         return resource
