@@ -27,7 +27,7 @@ design = IDesign :design do
       Register   :din     , Unsigned(32)
       Constant   :dout    , Unsigned(32) <= 8
       PortInput  :data_in , Unsigned(32)
-      PortOutput :data_out, Unsigned(32), @_owner_design.mod.tab_1.data_in
+      PortOutput :data_out, Unsigned(32)
       IState     :st21
       IState     :st22
       IState     :st23

@@ -1437,7 +1437,7 @@ module Exp
           r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
           r0 = r3
         else
-          r4 = _nt_port_io_desc
+          r4 = _nt_port_input_desc
           if r4
             r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
             r0 = r4
@@ -2010,154 +2010,7 @@ module Exp
     r0
   end
 
-  module PortIoDesc0
-    def name
-      elements[3]
-    end
-
-    def contents
-      elements[4]
-    end
-
-  end
-
-  module PortIoDesc1
-    def get(design)
-      connections = Array.new
-      contents.elements.each do |element|
-        info = element.get(design)
-        if info.key?(:CONNECT) then
-          connections.push(info[:CONNECT])
-	  end
-	end
-      {name.text_value.to_sym => {:CONNECT => connections}}
-    end
-  end
-
-  def _nt_port_io_desc
-    start_index = index
-    if node_cache[:port_io_desc].has_key?(index)
-      cached = node_cache[:port_io_desc][index]
-      if cached
-        node_cache[:port_io_desc][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r2 = _nt_space
-    if r2
-      r1 = r2
-    else
-      r1 = instantiate_node(SyntaxNode,input, index...index)
-    end
-    s0 << r1
-    if r1
-      if (match_len = has_terminal?('(', false, index))
-        r3 = true
-        @index += match_len
-      else
-        terminal_parse_failure('\'(\'')
-        r3 = nil
-      end
-      s0 << r3
-      if r3
-        r5 = _nt_space
-        if r5
-          r4 = r5
-        else
-          r4 = instantiate_node(SyntaxNode,input, index...index)
-        end
-        s0 << r4
-        if r4
-          i6 = index
-          if (match_len = has_terminal?('PORT-INPUT', false, index))
-            r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'PORT-INPUT\'')
-            r7 = nil
-          end
-          if r7
-            r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
-            r6 = r7
-          else
-            if (match_len = has_terminal?('PORT-OUTPUT', false, index))
-              r8 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-              @index += match_len
-            else
-              terminal_parse_failure('\'PORT-OUTPUT\'')
-              r8 = nil
-            end
-            if r8
-              r8 = SyntaxNode.new(input, (index-1)...index) if r8 == true
-              r6 = r8
-            else
-              @index = i6
-              r6 = nil
-            end
-          end
-          s0 << r6
-          if r6
-            s9, i9 = [], index
-            loop do
-              r10 = _nt_inter_connection
-              if r10
-                s9 << r10
-              else
-                break
-              end
-            end
-            r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
-            s0 << r9
-            if r9
-              r12 = _nt_space
-              if r12
-                r11 = r12
-              else
-                r11 = instantiate_node(SyntaxNode,input, index...index)
-              end
-              s0 << r11
-              if r11
-                if (match_len = has_terminal?(')', false, index))
-                  r13 = true
-                  @index += match_len
-                else
-                  terminal_parse_failure('\')\'')
-                  r13 = nil
-                end
-                s0 << r13
-                if r13
-                  r15 = _nt_space
-                  if r15
-                    r14 = r15
-                  else
-                    r14 = instantiate_node(SyntaxNode,input, index...index)
-                  end
-                  s0 << r14
-                end
-              end
-            end
-          end
-        end
-      end
-    end
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(PortIoDesc0)
-      r0.extend(PortIoDesc1)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:port_io_desc][start_index] = r0
-
-    r0
-  end
-
-  module InterConnection0
+  module PortInputDesc0
     def space1
       elements[4]
     end
@@ -2184,18 +2037,18 @@ module Exp
 
   end
 
-  module InterConnection1
+  module PortInputDesc1
     def get(design)
-      {:CONNECT => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :RESOURCE => resource_id.get(design)}}
+      {:'PORT-INPUT'  => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :RESOURCE => resource_id.get(design)}}
     end
   end
 
-  def _nt_inter_connection
+  def _nt_port_input_desc
     start_index = index
-    if node_cache[:inter_connection].has_key?(index)
-      cached = node_cache[:inter_connection][index]
+    if node_cache[:port_input_desc].has_key?(index)
+      cached = node_cache[:port_input_desc][index]
       if cached
-        node_cache[:inter_connection][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:port_input_desc][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -2227,11 +2080,11 @@ module Exp
         end
         s0 << r4
         if r4
-          if (match_len = has_terminal?('CONNECT', false, index))
+          if (match_len = has_terminal?('PORT-INPUT', false, index))
             r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
             @index += match_len
           else
-            terminal_parse_failure('\'CONNECT\'')
+            terminal_parse_failure('\'PORT-INPUT\'')
             r6 = nil
           end
           s0 << r6
@@ -2292,14 +2145,14 @@ module Exp
     end
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(InterConnection0)
-      r0.extend(InterConnection1)
+      r0.extend(PortInputDesc0)
+      r0.extend(PortInputDesc1)
     else
       @index = i0
       r0 = nil
     end
 
-    node_cache[:inter_connection][start_index] = r0
+    node_cache[:port_input_desc][start_index] = r0
 
     r0
   end

@@ -7,8 +7,8 @@
       (REGISTER 2 dout CONST (UINT 32)  8)
     )
     (RESOURCES
-      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS (PORT-NAME data_in )) (PORT-INPUT  (CONNECT 1 2 2)))
-      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS (PORT-NAME data_out)) (PORT-OUTPUT (CONNECT 1 2 1) (CONNECT 1 3 1)))
+      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS (INPUT  data_in )) (PORT-INPUT 1 2 2))
+      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS (OUTPUT data_out)))
       (RESOURCE 3 tr () () (PARAMS))
     )
     (INITIAL 1)
@@ -28,8 +28,8 @@
       (REGISTER 2 dout CONST (UINT 32)  8)
     )
     (RESOURCES
-      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS  (PORT-NAME data_in )) (PORT-INPUT  (CONNECT 1 1 2)))
-      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS  (PORT-NAME data_out)) (PORT-OUTPUT (CONNECT 1 1 1)))
+      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS  (INPUT  data_in )) (PORT-INPUT  1 1 2))
+      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS  (OUTPUT data_out)))
       (RESOURCE 3 tr () () (PARAMS))
     )
     (INITIAL 1)
@@ -49,8 +49,8 @@
       (REGISTER 2 dout CONST (UINT 32)  8)
     )
     (RESOURCES
-      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS  (PORT-NAME data_in )) (PORT-INPUT  (CONNECT 1 1 2)))
-      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS  (PORT-NAME data_out)) (PORT-OUTPUT ))
+      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS  (INPUT  data_in )) (PORT-INPUT  1 1 2))
+      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS  (OUTPUT data_out)))
     )
     (INITIAL 1)
     (STATE 1

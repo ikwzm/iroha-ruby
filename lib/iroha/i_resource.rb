@@ -292,52 +292,61 @@ module Iroha
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
         if option.key?(OPTION_NAME) then
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
-          @_connections = option[OPTION_NAME].fetch(:CONNECT, [])
+          if    option[OPTION_NAME].class == Hash   and
+                option[OPTION_NAME].key?(:MODULE  ) and
+                option[OPTION_NAME].key?(:TABLE   ) and
+                option[OPTION_NAME].key?(:RESOURCE) then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_connections = []
+            _add_connection(option[OPTION_NAME][:MODULE], option[OPTION_NAME][:TABLE], option[OPTION_NAME][:RESOURCE])
+          elsif option[OPTION_NAME] == nil then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_connections = []
+          else
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+          end
         else
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        end
+      end
+      def _add_connection(module_id, table_id, resource_id)
+        if @_connections.size == 0 then
+          @_connections.push({:MODULE => module_id, :TABLE => table_id, :RESOURCE => resource_id})
+        else
+          fail "Can not connect two of the resources to #{CLASS_NAME} #{_id_to_str}"
         end
       end
       def _option_clone
-        return {OPTION_NAME => {:CONNECT => @_connections.map{|conn| conn.clone}}}
+        if @_connections.size == 0 then
+          return {OPTION_NAME => nil}
+        else
+          return {OPTION_NAME => @_connections[0]}
+        end
       end
       def _option_to_exp
-        connections_exp = @_connections.map{|conn|
+        if @_connections.size == 0 then
+          return "(#{OPTION_NAME})"
+        else
+          conn     = @_connections[0]
           resource = @_owner_design._find_resource(conn[:MODULE], conn[:TABLE], conn[:RESOURCE])
           if resource == nil then
             fail "Not found #{CLASS_NAME} resource(#{conn}) in #{_id_to_str}"
           end
-          "(CONNECT #{resource._owner_module._id} #{resource._owner_table._id} #{resource._id})"
-        }.join(" ")
-        return "(#{OPTION_NAME} #{connections_exp})"
+          return "(#{OPTION_NAME} #{resource._owner_module._id} #{resource._owner_table._id} #{resource._id})"
+        end
       end
     end
 
     class PortOutput        < Iroha::IResource
       attr_accessor :_connections
       CLASS_NAME   = "port-output"
-      OPTION_NAME  = "PORT-OUTPUT".to_sym
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        if option.key?(OPTION_NAME) then
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
-          @_connections = option[OPTION_NAME].fetch(:CONNECT, [])
-        else
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
-        end
+        super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+        @_connections = []
       end
-      def _option_clone
-        return {OPTION_NAME => {:CONNECT => @_connections.map{|conn| conn.clone}}}
-      end
-      def _option_to_exp
-        connections_exp = @_connections.map{|conn|
-          resource = @_owner_design._find_resource(conn[:MODULE], conn[:TABLE], conn[:RESOURCE])
-          if resource == nil then
-            fail "Not found #{CLASS_NAME} resource(#{conn}) in #{_id_to_str}"
-          end
-          "(CONNECT #{resource._owner_module._id} #{resource._owner_table._id} #{resource._id})"
-        }.join(" ")
-        return "(#{OPTION_NAME} #{connections_exp})"
+      def _add_connection(module_id, table_id, resource_id)
+        @_connections.push({:MODULE => module_id, :TABLE => table_id, :RESOURCE => resource_id})
       end
     end
 
