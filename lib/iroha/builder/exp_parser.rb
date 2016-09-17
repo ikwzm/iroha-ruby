@@ -22,7 +22,7 @@ module Exp
       channels = Array.new
       design_contents.elements.each{ |element|
         info = element.get(design)
-        if info.class == Iroha::IResource::Params then
+        if info.class == Iroha::IParams then
           design._add_param(info)
           next
         end
@@ -105,11 +105,11 @@ module Exp
 
   module Params1
     def get(design)
-      resource_params = Iroha::IResource::Params.new
-      params.elements.each { |resource_param|
-        resource_params.update(resource_param.get(design))
+      i_params = Iroha::IParams.new
+      params.elements.each { |param|
+        i_params.update(param.get(design))
       }
-      resource_params
+      i_params
     end
   end
 
@@ -465,11 +465,11 @@ module Exp
   module Module1
     def get(design)
       parent = nil
-      params = Iroha::IResource::Params.new
+      params = Iroha::IParams.new
       tables = Array.new
       contents.elements.each{ |element|
         info = element.get(design)
-        if info.class == Iroha::IResource::Params then
+        if info.class == Iroha::IParams then
           params.update(info)
           next
         end
