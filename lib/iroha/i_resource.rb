@@ -11,7 +11,7 @@ module Iroha
       @_id           = id              ## TYPE: id
       @_input_types  = input_types     ## TYPE: Array[Iroha::IValueType]
       @_output_types = output_types    ## TYPE: Array[Iroha::IValueType]
-      @_params       = params          ## TYPE: Iroha::IResource::Params
+      @_params       = params          ## TYPE: Iroha::IParams
       @_option       = Hash.new;       ## Type: Hash {name:string, value:string or number}
       @_owner_design = nil
       @_owner_module = nil
@@ -50,7 +50,7 @@ module Iroha
     def self.convert_from(resource)
       class_name   = resource.class.to_s.split(/::/).last
       parent_class = Iroha.parent_class(Iroha.parent_class(self))
-      params_class = parent_class.const_get(:IResource).const_get(:Params)
+      params_class = parent_class.const_get(:IParams)
       type_class   = parent_class.const_get(:IValueType)
       id           = resource._id
       input_types  = resource._input_types.map{ |value_type| type_class.convert_from(value_type)}
@@ -69,27 +69,6 @@ module Iroha
       return table_str + "::IResource(#{@_class_name})[#{@_id}]"
     end
 
-    class Params < Hash
-      def _to_exp(indent)
-        if self.size == 0 then
-          return indent + "(PARAMS)"
-        else
-          return ([indent + "(PARAMS"] + self.to_a.map{|pair| indent + "  (#{pair[0]} #{pair[1]})"} + [indent + ")"]).join("")
-        end
-      end
-      def self.convert_from(params)
-        new_params = self.new
-        params.each_pair do |key, value|
-          if value.class == String then
-            new_params[key] = value.clone
-          else
-            new_params[key] = value
-          end
-        end
-        return new_params
-      end
-    end
-    
     class Set               < Iroha::IResource
       CLASS_NAME   = "set"
       IS_EXCLUSIVE = false

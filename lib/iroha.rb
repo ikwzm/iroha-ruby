@@ -8,6 +8,7 @@ module Iroha
   require_relative 'iroha/i_state'
   require_relative 'iroha/i_instruction'
   require_relative 'iroha/i_value_type'
+  require_relative 'iroha/i_params'
 
   def self.parent_class(klass)
     class_name_list = klass.to_s.split(/::/)
@@ -27,13 +28,15 @@ module Iroha
     franchisee.const_set(:IState      , Class.new(franchisor.const_get(:IState      )))
     franchisee.const_set(:IInstruction, Class.new(franchisor.const_get(:IInstruction)))
     franchisee.const_set(:IValueType  , Class.new(franchisor.const_get(:IValueType  )))
+    franchisee.const_set(:IParams     , Class.new(franchisor.const_get(:IParams     )))
     franchisor_resource_class = franchisor.const_get(:IResource)
     ObjectSpace.each_object(Class).select{|klass| klass.superclass == franchisor_resource_class}.each do |res_class|
       class_name = res_class.to_s.split(/::/).last.to_sym
-      franchisee.const_get(:IResource).const_set(class_name, Class.new(res_class))
-      ## p "== #{class_name} == #{franchisee.const_get(:IResource).const_get(class_name)}"
+      if class_name != :IResource then
+        franchisee.const_get(:IResource).const_set(class_name, Class.new(res_class))
+        ## p "== #{class_name} == #{franchisee.const_get(:IResource).const_get(class_name)}"
+      end
     end
-    franchisee.const_get(:IResource).const_set(:Params, Class.new(franchisor_resource_class.const_get(:Params)))
   end
 
 end

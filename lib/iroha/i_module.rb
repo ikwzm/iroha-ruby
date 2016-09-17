@@ -11,7 +11,7 @@ module Iroha
       @_id           = id                ## TYPE: number
       _set_name(name)                    ## TYPE: symbol or number or nil
       @_parent_id    = parent_id         ## TYPE: number
-      @_params       = params            ## TYPE: Iroha::Resource::Params
+      @_params       = params            ## TYPE: Iroha::IParams
       @_tables       = Hash.new          ## TYPE: Hash {id:number, table:Iroha::ITable}
       table_list.each {|table| _add_table(table)}
     end
@@ -79,12 +79,11 @@ module Iroha
     def self.convert_from(mod)
       parent_class = Iroha.parent_class(self)
       table_class  = parent_class.const_get(:ITable)
-      param_class  = parent_class.const_get(:IResource).const_get(:Params)
+      params_class = parent_class.const_get(:IParams)
       id           = mod._id
       name         = mod._name
       parent_id    = (mod._owner_module != nil) ? mod._owner_module._id : nil
-      params       = param_class.new
-      mod._params.each_pair{ |key, value| params[key.clone] = value.clone }
+      params       = params_class.convert_from(mod._params)
       table_list   = mod._tables.values.map{|table| table_class.convert_from(table)}
       self.new(id, name, parent_id, params, table_list)
     end

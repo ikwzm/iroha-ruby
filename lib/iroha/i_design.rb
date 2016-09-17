@@ -5,7 +5,7 @@ module Iroha
     attr_reader :_params, :_modules, :_channels, :_resource_classes
 
     def initialize
-      @_params           = Iroha::IResource::Params.new  ## TYPE: Iroha::IResource::Params
+      @_params           = Iroha::IParams.new            ## TYPE: Iroha::IParams
       @_modules          = Hash.new                      ## TYPE: Hash {id:number, module:Iroha::IModule}
       @_channels         = Hash.new                      ## TYPE: Hash {id:number, channel:Iroha::IChannel}
       @_resource_classes = Hash[Iroha::STANDARD_RESOURSE_CLASSES.map{|res_class| [res_class::CLASS_NAME, res_class]}]

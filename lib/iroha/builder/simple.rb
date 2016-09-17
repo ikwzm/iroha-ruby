@@ -36,7 +36,7 @@ module Iroha::Builder::Simple
     end
 
     def __add_module(name, parent_id, &block)
-      params       = Iroha::Builder::Simple::IResource::Params.new
+      params       = Iroha::Builder::Simple::IParams.new
       tables       = []
       module_class = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::IModule))
       module_inst  = module_class.new(@_module_last_id, name, parent_id, params, tables)
@@ -217,7 +217,7 @@ module Iroha::Builder::Simple
     end
 
     def __add_resource(class_name, name, input_types, output_types, params, option)
-      res_params = IResource::Params.new
+      res_params = IParams.new
       res_params.update(params)
       resource_class = IResource.const_get(class_name)
       if resource_class.const_defined?(:SINGLETON) and @_singleton_classes.key?(class_name) then
