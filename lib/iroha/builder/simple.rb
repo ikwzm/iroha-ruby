@@ -1,4 +1,5 @@
 require_relative '../../iroha'
+require_relative '../../iroha/utility/addable'
 
 module Iroha
   module Builder
@@ -71,21 +72,17 @@ module Iroha::Builder::Simple
 
   class IModule
 
+    include Iroha::Utility::Addable::IModule
+
     def initialize(id, name, parent_id, params, table_list)
       super
-      @_table_last_id = 1
-    end
-
-    def __add_table(table)
-      _add_table(table)
-      self.class.send(:define_method, table._name, Proc.new do table; end)
+      _add_new_initialize()
     end
 
     def ITable(name, &block)
-      table_class     = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::ITable))
-      table           = table_class.new(@_table_last_id, name, [], [], [], nil)
-      @_table_last_id = @_table_last_id+1
-      __add_table(table)
+      table_class = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::ITable))
+      table       = _add_new_table(table_class, name, [], [], [], nil)
+      self.class.send(:define_method, table._name, Proc.new do table; end)
       if block_given? then
         table.instance_eval(&block)
       end
@@ -118,32 +115,24 @@ module Iroha::Builder::Simple
   end
 
   class ITable
-    attr_reader   :_init_state_id
+
+    include Iroha::Utility::Addable::ITable
 
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
       super(id, name, resource_list, register_list, state_list, init_state_id)
-      @_register_last_id  = 1
-      @_resource_last_id  = 1
-      @_state_last_id     = 1
-      @_insn_last_id      = 1
+      _add_new_initialize()
       @_singleton_classes = Hash.new
       @_state_class       = self.class.const_set(:State, Class.new(Iroha::Builder::Simple::IState))
       @_on_state          = nil
     end
 
-    def __add_state(state)
-      _add_state(state)
-      self   .class.send(:define_method, state._name, Proc.new do state; end)
-      @_state_class.send(:define_method, state._name, Proc.new do state; end)
-    end
-
     def IState(name, &block)
-      state = @_state_class.new(@_state_last_id, name, [])
-      @_state_last_id = @_state_last_id + 1
+      state = _add_new_state(@_state_class, name, [])
       if @_init_state_id == nil
         @_init_state_id = state._id
       end
-      __add_state(state)
+      self   .class.send(:define_method, state._name, Proc.new do state; end)
+      @_state_class.send(:define_method, state._name, Proc.new do state; end)
       if block_given? then
         _state_entry(state)
         state.instance_eval(&block)
@@ -206,9 +195,7 @@ module Iroha::Builder::Simple
 
     def __add_register(name, klass, type)
       fail "Error: illegal type(#{type.class})" if type.class != IValueType
-      register = IRegister.new(@_register_last_id, name, klass, type, type._assign_value)
-      @_register_last_id = @_register_last_id + 1
-      _add_register(register)
+      register = _add_new_register(IRegister, name, klass, type, type._assign_value)
       if name.class == Symbol then
         self.class.send(   :define_method, name, Proc.new do register; end)
         @_state_class.send(:define_method, name, Proc.new do register; end)
@@ -223,9 +210,7 @@ module Iroha::Builder::Simple
       if resource_class.const_defined?(:SINGLETON) and @_singleton_classes.key?(class_name) then
         resource = @_singleton_classes[class_name]
       else
-        resource = resource_class.new(@_resource_last_id, input_types, output_types, res_params, option)
-        @_resource_last_id = @_resource_last_id + 1
-        _add_resource(resource)
+        resource = _add_new_resource(resource_class, input_types, output_types, res_params, option)
       end
       if resource_class.const_defined?(:SINGLETON) then
         @_singleton_classes[class_name] = resource
@@ -239,18 +224,6 @@ module Iroha::Builder::Simple
         end
       end
       return resource
-    end
-
-    def __add_instruction(resource, op_resources, next_states, input_registers, output_registers)
-      insn = IInstruction.new(@_insn_last_id,
-                              resource._class_name,
-                              resource._id,
-                              op_resources,
-                              next_states     .map{|state   | state._id   },
-                              input_registers .map{|register| register._id},
-                              output_registers.map{|register| register._id})
-      @_insn_last_id = @_insn_last_id + 1
-      return insn
     end
 
   end
@@ -314,11 +287,19 @@ module Iroha::Builder::Simple
 
   class IState
 
+    include Iroha::Utility::Addable::IState
+
     def __add_instruction(resource, op_resources, next_states, input_registers, output_registers)
       ## p "add_instruction(#{resource}, op_resources, next_states, #{input_registers.map{|r|r._id}}, #{output_registers.map{|r|r._id}})"
-      insn = @_owner_table.__add_instruction(resource, op_resources, next_states, input_registers, output_registers)
-      _add_instruction(insn)
-      return insn
+      return _add_new_instruction(
+        IInstruction,
+        resource._class_name,
+        resource._id,
+        op_resources,
+        next_states     .map{|state   | state._id   },
+        input_registers .map{|register| register._id},
+        output_registers.map{|register| register._id}
+      )
     end
 
     def _insn(resource, op_resources, next_states, input_registers, output_registers)

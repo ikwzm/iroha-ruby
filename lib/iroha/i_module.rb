@@ -42,6 +42,7 @@ module Iroha
       abort "(TABLE #{table._id} ... ) is multi definition." if @_tables.key?(table._id)
       @_tables[table._id] = table
       table._set_owner(@_owner_design, self)
+      return table
     end
 
     def _find_table(tab_id)
