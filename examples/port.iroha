@@ -1,0 +1,60 @@
+(PARAMS)
+(MODULE 1 mod
+  (PARAMS)
+  (TABLE 1
+    (REGISTERS
+      (REGISTER 1 din  REG   (UINT 32) ())
+      (REGISTER 2 dout CONST (UINT 32)  8)
+    )
+    (RESOURCES
+      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS (INPUT  data_in ) (WIDTH 32)) (PORT-INPUT 1 2 2))
+      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS (OUTPUT data_out) (WIDTH 32)))
+      (RESOURCE 3 tr () () (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 tr 3 () (2) () ())
+      (INSN 2 port-input  1 () () () (1))
+    )
+    (STATE 2
+      (INSN 3 tr 3 () (3) () ())
+      (INSN 4 port-output 2 () () (2) ())
+    )
+    (STATE 3)
+  )
+  (TABLE 2
+    (REGISTERS
+      (REGISTER 1 din  REG   (UINT 32) ())
+      (REGISTER 2 dout CONST (UINT 32)  8)
+    )
+    (RESOURCES
+      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS  (INPUT  data_in ) (WIDTH 32)) (PORT-INPUT  1 1 2))
+      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS  (OUTPUT data_out) (WIDTH 32)))
+      (RESOURCE 3 tr () () (PARAMS))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 tr 3 () (2) () ())
+      (INSN 2 port-input  1 () () () (1))
+    )
+    (STATE 2
+      (INSN 3 tr 3 () (3) () ())
+      (INSN 4 port-output 2 () () (2) ())
+    )
+    (STATE 3)
+  )
+  (TABLE 3
+    (REGISTERS
+      (REGISTER 1 din  REG   (UINT 32) ())
+      (REGISTER 2 dout CONST (UINT 32)  8)
+    )
+    (RESOURCES
+      (RESOURCE 1 port-input  () ((UINT 32)) (PARAMS  (INPUT  data_in ) (WIDTH 32)) (PORT-INPUT  1 1 2))
+      (RESOURCE 2 port-output ((UINT 32)) () (PARAMS  (OUTPUT data_out) (WIDTH 32)))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 port-input  1 () () () (1))
+    )
+  )
+)

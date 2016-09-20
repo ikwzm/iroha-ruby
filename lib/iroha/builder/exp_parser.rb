@@ -1437,8 +1437,14 @@ module Exp
           r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
           r0 = r3
         else
-          @index = i0
-          r0 = nil
+          r4 = _nt_port_input_desc
+          if r4
+            r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
+            r0 = r4
+          else
+            @index = i0
+            r0 = nil
+          end
         end
       end
     end
@@ -2000,6 +2006,153 @@ module Exp
     end
 
     node_cache[:foreign_reg_desc][start_index] = r0
+
+    r0
+  end
+
+  module PortInputDesc0
+    def space1
+      elements[4]
+    end
+
+    def module_id
+      elements[5]
+    end
+
+    def space2
+      elements[6]
+    end
+
+    def table_id
+      elements[7]
+    end
+
+    def space3
+      elements[8]
+    end
+
+    def resource_id
+      elements[9]
+    end
+
+  end
+
+  module PortInputDesc1
+    def get(design)
+      {:'PORT-INPUT'  => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :RESOURCE => resource_id.get(design)}}
+    end
+  end
+
+  def _nt_port_input_desc
+    start_index = index
+    if node_cache[:port_input_desc].has_key?(index)
+      cached = node_cache[:port_input_desc][index]
+      if cached
+        node_cache[:port_input_desc][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    r2 = _nt_space
+    if r2
+      r1 = r2
+    else
+      r1 = instantiate_node(SyntaxNode,input, index...index)
+    end
+    s0 << r1
+    if r1
+      if (match_len = has_terminal?('(', false, index))
+        r3 = true
+        @index += match_len
+      else
+        terminal_parse_failure('\'(\'')
+        r3 = nil
+      end
+      s0 << r3
+      if r3
+        r5 = _nt_space
+        if r5
+          r4 = r5
+        else
+          r4 = instantiate_node(SyntaxNode,input, index...index)
+        end
+        s0 << r4
+        if r4
+          if (match_len = has_terminal?('PORT-INPUT', false, index))
+            r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
+            @index += match_len
+          else
+            terminal_parse_failure('\'PORT-INPUT\'')
+            r6 = nil
+          end
+          s0 << r6
+          if r6
+            r7 = _nt_space
+            s0 << r7
+            if r7
+              r8 = _nt_module_id
+              s0 << r8
+              if r8
+                r9 = _nt_space
+                s0 << r9
+                if r9
+                  r10 = _nt_table_id
+                  s0 << r10
+                  if r10
+                    r11 = _nt_space
+                    s0 << r11
+                    if r11
+                      r12 = _nt_resource_id
+                      s0 << r12
+                      if r12
+                        r14 = _nt_space
+                        if r14
+                          r13 = r14
+                        else
+                          r13 = instantiate_node(SyntaxNode,input, index...index)
+                        end
+                        s0 << r13
+                        if r13
+                          if (match_len = has_terminal?(')', false, index))
+                            r15 = true
+                            @index += match_len
+                          else
+                            terminal_parse_failure('\')\'')
+                            r15 = nil
+                          end
+                          s0 << r15
+                          if r15
+                            r17 = _nt_space
+                            if r17
+                              r16 = r17
+                            else
+                              r16 = instantiate_node(SyntaxNode,input, index...index)
+                            end
+                            s0 << r16
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(PortInputDesc0)
+      r0.extend(PortInputDesc1)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:port_input_desc][start_index] = r0
 
     r0
   end
