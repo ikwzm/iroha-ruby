@@ -47,6 +47,10 @@ module Iroha::Utility::Addable
   module IModule
 
     def _add_new_initialize
+      _add_new_table_id_initialize
+    end
+
+    def _add_new_table_id_initialize
       @_add_new_table_id = 1
       self._tables.values.each do |table|
         if table._id >= @_add_new_table_id then
@@ -65,10 +69,12 @@ module Iroha::Utility::Addable
     
   module ITable
 
+    attr_writer :_init_state_id
+
     def _add_new_initialize
       _add_new_register_id_initialize
       _add_new_resource_id_initialize
-      _add_new_state_id_initialzie
+      _add_new_state_id_initialize
       _add_new_instruction_id_initialize
     end
 
@@ -90,7 +96,7 @@ module Iroha::Utility::Addable
       end
     end
 
-    def _add_new_state_id_initialzie
+    def _add_new_state_id_initialize
       @_add_new_state_id = 1
       self._states.values.each do |state|
         if state._id >= @_add_new_state_id then
