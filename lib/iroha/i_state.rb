@@ -42,7 +42,7 @@ module Iroha
     end
 
     def _id_to_str
-      if @_owner_table != nil
+      if @_owner_table.nil? == false then
         table_str = @_owner_table._id_to_str
       else
         table_str = "UnknownTable"
