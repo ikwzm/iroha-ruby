@@ -31,7 +31,7 @@ module Iroha
 
     def _set_owner(owner_design)
       @_owner_design = owner_design
-      if @_parent_id != nil then
+      if @_parent_id.nil? == false then
         @_owner_module = @_owner_design._find_module(@_parent_id)
         abort "(MODULE #{@_name} (PARENT #{@_parent_id})...) unknown parent module." if @_owner_module.nil?
       end

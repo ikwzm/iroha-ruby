@@ -19,12 +19,14 @@ module Iroha
       abort "(MODULE #{mod._id} #{mod._name} ... ) is multi definition." if @_modules.key?(mod._id)
       @_modules[mod._id] = mod
       mod._set_owner(self)
+      return mod
     end
 
     def _add_channel(channel)
       abort "(CHANNEL #{channel._id} ... ) is multi definition." if @_channels.key?(channel._id)
       @_channels[channel._id] = channel
       channel._set_owner(self)
+      return channel
     end
 
     def _find_module(module_id)

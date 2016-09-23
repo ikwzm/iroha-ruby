@@ -5,6 +5,45 @@ end
 
 module Iroha::Utility::Addable
 
+  module IDesign
+
+    def _add_new_initialize
+      _add_new_module_id_initialize
+      _add_new_channel_id_initialize
+    end
+
+    def _add_new_module_id_initialize
+      @_add_new_module_id  = 1
+      self._modules.values.each do |mod|
+        if mod._id >= @_add_new_module_id then
+          @_add_new_module_id = mod._id + 1
+        end
+      end
+    end
+      
+    def _add_new_channel_id_initialize
+      @_add_new_channel_id  = 1
+      self._channels.values.each do |channel|
+        if channel._id >= @_add_new_channel_id then
+          @_add_new_channel_id = channel._id + 1
+        end
+      end
+    end
+
+    def _add_new_module(module_class, name, parent_id, params, table_list)
+      mod = module_class.new(@_add_new_module_id, name, parent_id, params, table_list)
+      @_add_new_module_id = @_add_new_module_id + 1
+      return self._add_module(mod)
+    end
+
+    def _add_new_channel(channel_class, type, r_module_id, r_table_id, r_resource_id, w_module_id, w_table_id, w_resource_id)
+      channel = channel_class.new(@_add_new_channel_id, type, r_module_id, r_table_id, r_resource_id, w_module_id, w_table_id, w_resource_id)
+      @_add_new_channel_id = @_add_new_channel_id + 1
+      return self._add_channel(channel)
+    end
+      
+  end
+
   module IModule
 
     def _add_new_initialize
@@ -25,6 +64,7 @@ module Iroha::Utility::Addable
   end
     
   module ITable
+
     def _add_new_initialize
       _add_new_register_id_initialize
       _add_new_resource_id_initialize
