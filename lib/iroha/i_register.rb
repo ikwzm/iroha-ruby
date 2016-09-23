@@ -43,7 +43,7 @@ module Iroha
     end
 
     def _id_to_str
-      if @_owner_table != nil
+      if @_owner_table.nil? == false then
         table_str = @_owner_table._id_to_str
       else
         table_str = "UnknownTable"
@@ -52,8 +52,8 @@ module Iroha
     end
 
     def _to_exp(indent)
-      name  = (@_name  == nil)? "()" : @_name
-      value = (@_value == nil)? "()" : @_value
+      name  = (@_name .nil?) ? "()" : @_name
+      value = (@_value.nil?) ? "()" : @_value
       return indent + "(REGISTER #{@_id} #{name} #{@_class} #{@_type._to_exp} #{value})"
     end
 

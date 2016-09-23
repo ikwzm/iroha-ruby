@@ -27,16 +27,16 @@ module Iroha
     end
 
     def _to_exp(indent)
-      abort "Undefined Owner Table at (INSN #{@_id} ...)" if @_owner_table == nil
-      op_res      = "(" + @_op_resources.map{    |op| op                              }.join(" ") + ")"
-      next_states = "(" + @_next_states.map{     |id| @_owner_table._states[   id]._id}.join(" ") + ")"
-      input_regs  = "(" + @_input_registers.map{ |id| @_owner_table._registers[id]._id}.join(" ") + ")"
+      abort "Undefined Owner Table at (INSN #{@_id} ...)" if @_owner_table.nil?
+      op_res      = "(" + @_op_resources    .map{|op| op                              }.join(" ") + ")"
+      next_states = "(" + @_next_states     .map{|id| @_owner_table._states[   id]._id}.join(" ") + ")"
+      input_regs  = "(" + @_input_registers .map{|id| @_owner_table._registers[id]._id}.join(" ") + ")"
       output_regs = "(" + @_output_registers.map{|id| @_owner_table._registers[id]._id}.join(" ") + ")"
       return indent + "(INSN #{@_id} #{@_res_class} #{@_res_id} #{op_res} #{next_states} #{input_regs} #{output_regs})"
     end
 
     def _id_to_str
-      if @_owner_state != nil then
+      if @_owner_state.nil? == false then
         state_str = @_owner_state._id_to_str
       else
         state_str = "UnknownState"

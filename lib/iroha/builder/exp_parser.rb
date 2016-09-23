@@ -478,7 +478,7 @@ module Exp
           next
         end
         if info.key?(:PARENT) then
-          abort "(PARENT #{info[:PARENT]} ... ) is multi definition." if parent != nil
+          abort "(PARENT #{info[:PARENT]} ... ) is multi definition." if parent.nil? == false
           parent = info[:PARENT]
           next
         end
@@ -853,7 +853,7 @@ module Exp
           next
         end
         if info.key?(:INITIAL) then
-          abort "(INITIAL #{info[:INITIAL]}) is multi definition." if init_state_id != nil
+          abort "(INITIAL #{info[:INITIAL]}) is multi definition." if init_state_id.nil? == false
           init_state_id = info[:INITIAL]
           next
         end

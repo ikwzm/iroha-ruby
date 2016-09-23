@@ -247,7 +247,7 @@ module Iroha::Builder::Simple
 
     define_method('=>') do |regs|
       state = @_owner_table._on_state
-      fail "Error: not on state"           if state      == nil
+      fail "Error: not on state"           if state.nil?
       fail "Error: source is not register" if regs.class != IRegister
       resource = @_owner_table.__add_resource(:Set, nil, [self._type] , [regs._type],{},{})
       insn     = state.__add_instruction(resource,[],[], [self      ] , [regs      ]      )
@@ -256,7 +256,7 @@ module Iroha::Builder::Simple
 
     define_method('<=') do |value|
       state = @_owner_table._on_state
-      if state != nil then
+      if state.nil? == false then
         if @_class == :CONST then
           fail "Error: Can not set data to Constant({#self._name}) on State(state._name)"
         end
@@ -376,7 +376,7 @@ module Iroha::Builder::Simple
       RESOURCE_PROC     = Proc.new{|name, width| __add_resource(__method__, name, [], [], {INPUT:  name, WIDTH: width}, {})}
       define_method('=>') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [], [regs])
         return self
@@ -387,7 +387,7 @@ module Iroha::Builder::Simple
       RESOURCE_PROC     = Proc.new{|name, width| __add_resource(__method__, name, [], [], {OUTPUT: name, WIDTH: width}, {})}
       define_method('<=') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [regs], [])
         return self
@@ -409,7 +409,7 @@ module Iroha::Builder::Simple
           else
             resource = ref
           end
-          if resource == nil then
+          if resource.nil?  then
             fail "Error: can not found register Reference(#{ref.args})"
           end
           _add_connection(resource._owner_module._id, resource._owner_table._id, resource._id)
@@ -417,7 +417,7 @@ module Iroha::Builder::Simple
       end
       define_method('=>') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [], [regs])
         return self
@@ -445,7 +445,7 @@ module Iroha::Builder::Simple
           else
             resource = ref
           end
-          if resource == nil then
+          if resource.nil?
             fail "Error: can not found register Reference(#{ref.args})"
           end
           _add_connection(resource._owner_module._id, resource._owner_table._id, resource._id)
@@ -453,7 +453,7 @@ module Iroha::Builder::Simple
       end
       define_method('<=') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [regs], [])
         return self
@@ -564,13 +564,13 @@ module Iroha::Builder::Simple
         end
         define_method('<=') do |regs|
           state = @array._owner_table._on_state
-          fail "Error: not on state"           if state      == nil
+          fail "Error: not on state"           if state.nil?
           fail "Error: source is not register" if regs.class != IRegister
           state.__add_instruction(@array, [], [], [@addr,regs],[])
         end
         define_method('=>') do |regs|
           state = @array._owner_table._on_state
-          fail "Error: not on state"           if state      == nil
+          fail "Error: not on state"           if state.nil?
           fail "Error: source is not register" if regs.class != IRegister
           state.__add_instruction(@array, [], [], [@addr], [regs])
           return self
@@ -593,7 +593,7 @@ module Iroha::Builder::Simple
           resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
           resource._ref_regs = regs
           return resource
-        elsif regs == nil then
+        elsif regs.nil?
           resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
           resource._ref_regs = nil
           return resource
@@ -610,14 +610,14 @@ module Iroha::Builder::Simple
       end
       define_method('<=') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [regs], [])
         return self
       end
       define_method('=>') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [], [regs])
         return self
@@ -648,7 +648,7 @@ module Iroha::Builder::Simple
       end
       define_method('=>') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [], [regs])
         return self
@@ -659,7 +659,7 @@ module Iroha::Builder::Simple
       RESOURCE_PROC     = Proc.new { |name, type| __add_resource(__method__, name, [type], [type], {}, {}) }
       define_method('<=') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [regs], [])
         return self
@@ -682,14 +682,14 @@ module Iroha::Builder::Simple
       end
       define_method('<=') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [regs], [])
         return self
       end
       define_method('=>') do |regs|
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [], [regs])
         return self
@@ -700,7 +700,7 @@ module Iroha::Builder::Simple
       RESOURCE_PROC = Proc.new { |name| __add_resource(__method__, name, [], [], {}, {}) }
       def entry
         state = @_owner_table._on_state
-        fail "Error: not on state" if state == nil
+        fail "Error: not on state" if state.nil?
         state.__add_instruction(self, [], [], [], [])
       end
     end
@@ -716,7 +716,7 @@ module Iroha::Builder::Simple
           resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
           resource._ref_task = task
           return resource
-        elsif task == nil then
+        elsif task.nil? then
           resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
           resource._ref_task = nil
           return resource
@@ -727,7 +727,7 @@ module Iroha::Builder::Simple
       def _resolve_reference
         if @_ref_task.class == Reference then
           task  = @_ref_task.resolve
-          fail "Error: can not found task Reference(#{@_ref_task.args})" if task == nil
+          fail "Error: can not found task Reference(#{@_ref_task.args})" if task.nil?
           callee(task)
         end
       end
@@ -740,7 +740,7 @@ module Iroha::Builder::Simple
       end
       def call
         state = @_owner_table._on_state
-        fail "Error: not on state" if state == nil
+        fail "Error: not on state" if state.nil?
         state.__add_instruction(self, [], [], [], [])
       end
     end
@@ -749,7 +749,7 @@ module Iroha::Builder::Simple
       RESOURCE_PROC = Proc.new { |name,type| __add_resource(__method__, name, [type], [], {}, {}) }
       def entry(regs)
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [], [regs])
         return self
@@ -767,7 +767,7 @@ module Iroha::Builder::Simple
           resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
           resource._ref_task = task
           return resource
-        elsif task == nil then
+        elsif task.nil? then
           resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
           resource._ref_task = nil
           return resource
@@ -778,7 +778,7 @@ module Iroha::Builder::Simple
       def _resolve_reference
         if @_ref_task.class == Reference then
           task  = @ref_task.resolve
-          fail "Error: can not found task Reference(#{@ref_task.args})" if task == nil
+          fail "Error: can not found task Reference(#{@ref_task.args})" if task.nil?
           callee(task)
         end
       end
@@ -791,13 +791,13 @@ module Iroha::Builder::Simple
       end
       def call(regs)
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         fail "Error: source is not register" if regs.class != IRegister
         state.__add_instruction(self, [], [], [regs], [])
       end
       def wait
         state = @_owner_table._on_state
-        fail "Error: not on state"           if state      == nil
+        fail "Error: not on state"           if state.nil?
         state.__add_instruction(self, [:wait], [], [], [])
       end
     end

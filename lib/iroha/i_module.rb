@@ -33,7 +33,7 @@ module Iroha
       @_owner_design = owner_design
       if @_parent_id != nil then
         @_owner_module = @_owner_design._find_module(@_parent_id)
-        abort "(MODULE #{@_name} (PARENT #{@_parent_id})...) unknown parent module." if @_owner_module == nil
+        abort "(MODULE #{@_name} (PARENT #{@_parent_id})...) unknown parent module." if @_owner_module.nil?
       end
       @_tables.values.each{|table| table._set_owner(owner_design, self)}
     end
@@ -68,7 +68,7 @@ module Iroha
     def _to_exp(indent)
       return indent + "(MODULE #{@_id} #{@_name}\n" +
              @_params._to_exp(indent+"  ") + "\n" +
-             ((@_owner_module != nil)? indent + "  (PARENT #{@_owner_module._id})\n" : "") +
+             ((@_owner_module.nil? == false) ? indent + "  (PARENT #{@_owner_module._id})\n" : "") +
              @_tables.values.map{|table| table._to_exp(indent+"  ")}.join("\n") + "\n" +
              indent + ")"
     end
@@ -83,7 +83,7 @@ module Iroha
       params_class = parent_class.const_get(:IParams)
       id           = mod._id
       name         = mod._name
-      parent_id    = (mod._owner_module != nil) ? mod._owner_module._id : nil
+      parent_id    = (mod._owner_module.nil? == false) ? mod._owner_module._id : nil
       params       = params_class.convert_from(mod._params)
       table_list   = mod._tables.values.map{|table| table_class.convert_from(table)}
       self.new(id, name, parent_id, params, table_list)

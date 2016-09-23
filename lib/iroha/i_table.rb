@@ -69,7 +69,7 @@ module Iroha
     end
     
     def _id_to_str
-      if @_owner_module != nil then
+      if @_owner_module.nil? == false then
         module_str = @_owner_module._id_to_str
       else
         module_str = "UnknownModule"
