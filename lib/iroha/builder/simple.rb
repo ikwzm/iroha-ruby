@@ -21,10 +21,11 @@ module Iroha::Builder::Simple
 
   class IDesign
 
+    include Iroha::Utility::Addable::IDesign
+
     def initialize(&block)
       super
-      @_module_last_id  = 1
-      @_channel_last_id = 1
+      _add_new_initialize
       if block_given? then
         self.instance_eval(&block)
       end
@@ -40,10 +41,8 @@ module Iroha::Builder::Simple
       params       = Iroha::Builder::Simple::IParams.new
       tables       = []
       module_class = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::IModule))
-      module_inst  = module_class.new(@_module_last_id, name, parent_id, params, tables)
-      @_module_last_id = @_module_last_id+1
+      module_inst  = _add_new_module(module_class, name, parent_id, params, tables)
       self.class.send(:define_method, module_inst._name, Proc.new do module_inst; end)
-      _add_module(module_inst)
       if block_given? then
         module_inst.instance_eval(&block)
       end
@@ -51,17 +50,14 @@ module Iroha::Builder::Simple
     end
 
     def __add_channel(channel_write, channel_read)
-      channel = IChannel.new(@_channel_last_id,
-                             channel_write._input_types[0],
-                             channel_write._owner_module._id,
-                             channel_write._owner_table._id,
-                             channel_write._id,
-                             channel_read._owner_module._id,
-                             channel_read._owner_table._id,
-                             channel_read._id)
-      @_channel_last_id = @_channel_last_id+1
-      _add_channel(channel)
-      return channel
+      return _add_new_channel(IChannel, 
+                              channel_write._input_types[0],
+                              channel_write._owner_module._id,
+                              channel_write._owner_table._id,
+                              channel_write._id,
+                              channel_read._owner_module._id,
+                              channel_read._owner_table._id,
+                              channel_read._id)
     end
 
     def IModule(name, &block)
