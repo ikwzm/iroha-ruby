@@ -6,6 +6,7 @@ end
 module Iroha::Utility::Addable
 
   module IModule
+
     def _add_new_initialize
       @_add_new_table_id = 1
       self._tables.values.each do |table|
@@ -14,33 +15,53 @@ module Iroha::Utility::Addable
         end
       end
     end
+
     def _add_new_table(table_class, name, resource_list, register_list, state_list, init_state_id)
       table = table_class.new(@_add_new_table_id, name, resource_list, register_list, state_list, init_state_id)
       @_add_new_table_id = @_add_new_table_id + 1
       return self._add_table(table)
     end
+
   end
     
   module ITable
     def _add_new_initialize
-      @_add_new_register_id    = 1
-      @_add_new_resource_id    = 1
-      @_add_new_state_id       = 1
-      @_add_new_instruction_id = 1
+      _add_new_register_id_initialize
+      _add_new_resource_id_initialize
+      _add_new_state_id_initialzie
+      _add_new_instruction_id_initialize
+    end
+
+    def _add_new_register_id_initialize
+      @_add_new_register_id = 1
       self._registers.values.each do |register|
         if register._id >= @_add_new_register_id then
           @_add_new_register_id = register._id + 1
         end
       end
+    end
+
+    def _add_new_resource_id_initialize
+      @_add_new_resource_id = 1
       self._resources.values.each do |resource|
         if resource._id >= @_add_new_resource_id then
           @_add_new_resource_id = resource._id + 1
         end
       end
+    end
+
+    def _add_new_state_id_initialzie
+      @_add_new_state_id = 1
       self._states.values.each do |state|
         if state._id >= @_add_new_state_id then
           @_add_new_state_id = state._id + 1
         end
+      end
+    end
+
+    def _add_new_instruction_id_initialize
+      @_add_new_instruction_id = 1
+      self._states.values.each do |state|
         state._instructions.values.each do |insn|
           if insn._id >= @_add_new_instruction_id then
             @_add_new_instruction_id = insn._id + 1
@@ -48,7 +69,7 @@ module Iroha::Utility::Addable
         end
       end
     end
-
+      
     def _add_new_register(register_class, name, klass, type, value)
       register = register_class.new(@_add_new_register_id, name, klass, type, value)
       @_add_new_register_id = @_add_new_register_id + 1
@@ -97,7 +118,6 @@ module Iroha::Utility::Addable
       )
       return self._add_instruction(instruction)
     end
-
   end
 
 end
