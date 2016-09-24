@@ -548,9 +548,7 @@ module Iroha::Builder::Simple
       RESOURCE_PROC     = Proc.new{|name, addr_width, value_type, ownership, mem_type|
         fail "Error Illegal ownership #{ownership} of Array" if (ownership != :EXTERNAL and ownership != :INTERNAL)
         fail "Error Illegal mem type  #{mem_type}  of Array" if (mem_type  != :RAM      and mem_type  != :ROM     )
-        is_external = (ownership == :EXTERNAL)
-	is_ram      = (mem_type  == :RAM     )
-        __add_resource(__method__, name, [], [], {}, {ARRAY: {ADDR_WIDTH: addr_width, VALUE_TYPE: value_type, EXTERNAL: is_external, RAM: is_ram}})
+        __add_resource(__method__, name, [], [], {}, {ARRAY: [addr_width, value_type, ownership, mem_type]})
       }
       class Data
         attr_reader :array, :addr
@@ -582,7 +580,7 @@ module Iroha::Builder::Simple
       attr_accessor :_ref_regs
       RESOURCE_PROC = Proc.new do |name, regs|
         if    regs.class == IRegister then
-          resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => {:MODULE => regs._owner_module._id, :TABLE => regs._owner_table._id, :REGISTER => regs._id}})
+          resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => [regs._owner_module._id, regs._owner_table._id, regs._id]})
           resource._ref_regs = nil
           return resource
         elsif regs.class == Reference then
@@ -705,7 +703,7 @@ module Iroha::Builder::Simple
       attr_accessor :_ref_task
       RESOURCE_PROC = Proc.new do  |name, task|
         if    task.class == SubModuleTask then
-          resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}})
+          resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
           resource._ref_task = nil
           return resource
         elsif task.class == Reference then
@@ -756,7 +754,7 @@ module Iroha::Builder::Simple
       attr_accessor :_ref_task
       RESOURCE_PROC = Proc.new do  |name, type, task|
         if    task.class == SiblingTask then
-          resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}})
+          resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
           resource._ref_task = nil
           return resource
         elsif task.class == Reference then

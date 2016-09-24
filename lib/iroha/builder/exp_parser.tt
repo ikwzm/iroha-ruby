@@ -175,54 +175,17 @@ grammar Exp
   end
 
   rule resource_option
-    array_desc          /
-    callee_task_desc    /
-    foreign_reg_desc    /
-    port_input_desc
-  end
-
-  rule array_desc 
-    space? '(' space? 'ARRAY' space address_width:number space value_type space* array_ownership space array_mem_type space? ')' space? {
+    space? '(' space? label params:resource_option_params* space? ')' space? {
       def get(design)
-        is_external = (array_ownership.get(design) == :EXTERNAL)
-	is_ram      = (array_mem_type.get(design)  == :RAM     )
-        {:ARRAY => {:ADDR_WIDTH => address_width.text_value.to_i, :VALUE_TYPE => value_type.get(design), :EXTERNAL => is_external, :RAM => is_ram}}
+        {label.text_value.to_sym => params.elements.map{|param| param.get(design)}}
       end
     }
   end
 
-  rule array_ownership
-    'EXTERNAL' { def get(design) :EXTERNAL; end} /
-    'INTERNAL' { def get(design) :INTERNAL; end}
-  end
-
-  rule array_mem_type
-    'RAM' { def get(design) :RAM; end} /
-    'ROM' { def get(design) :ROM; end}
-  end
-
-  rule callee_task_desc
-    space? '(' space? 'CALLEE-TABLE' space module_id space table_id space? ')' space? {
-      def get(design)
-        {:'CALLEE-TABLE' => {:MODULE => module_id.get(design), :TABLE => table_id.get(design)}}
-      end
-    }
-  end
-
-  rule foreign_reg_desc
-    space? '(' space? 'FOREIGN-REG' space module_id space table_id space register_id space? ')' space? {
-      def get(design)
-        {:'FOREIGN-REG' => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :REGISTER => register_id.get(design)}}
-      end
-    }
-  end
-
-  rule port_input_desc
-    space? '(' space? 'PORT-INPUT' space module_id space table_id space resource_id space? ')' space? {
-      def get(design)
-        {:'PORT-INPUT'  => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :RESOURCE => resource_id.get(design)}}
-      end
-    }
+  rule resource_option_params
+    space? val:number     space? {def get(design) val.text_value.to_i  ;end} /
+    space? val:graph      space? {def get(design) val.text_value.to_sym;end} /
+    space? val:value_type space? {def get(design) val.get(design)      ;end}
   end
 
   rule value_type

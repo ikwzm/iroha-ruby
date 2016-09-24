@@ -143,26 +143,36 @@ module Iroha
 
     class SiblingTaskCall   < Iroha::IResource
       CLASS_NAME   = "sibling-task-call"
+      OPTION_NAME  = "CALLEE-TABLE".to_sym
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        if option.key?(:"CALLEE-TABLE") then
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
-          @_callee_table_id = option[:"CALLEE-TABLE"]
+        if option.key?(OPTION_NAME) then
+          if    option[OPTION_NAME].nil? then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_callee_table_id = nil
+          elsif option[OPTION_NAME].size == 2 and
+                option[OPTION_NAME][0].kind_of?(Integer) and
+                option[OPTION_NAME][1].kind_of?(Integer) then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_callee_table_id = {:MODULE => option[OPTION_NAME][0], :TABLE => option[OPTION_NAME][1]}
+          else
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+          end
         else
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
         end
       end
       def _option_clone
         if @_callee_table_id.class == Hash then
-          return {:"CALLEE-TABLE" => @_callee_table_id.clone}
+          return {OPTION_NAME => @_callee_table_id.clone}
         else
-          return {:"CALLEE-TABLE" => nil}
+          return {OPTION_NAME => nil}
         end
       end
       def _option_to_exp
         table = _get_callee_table()
         fail "Not Found Callee Table in #{_id_to_str}" if table == nil
-        return "(CALLEE-TABLE #{table._owner_module._id} #{table._id})"
+        return "(#{OPTION_NAME} #{table._owner_module._id} #{table._id})"
       end
       def _get_callee_table
         if @_callee_table_id.class == Hash then
@@ -175,26 +185,36 @@ module Iroha
 
     class SubModuleTaskCall < Iroha::IResource
       CLASS_NAME   = "sub-module-task-call"
+      OPTION_NAME  = "CALLEE-TABLE".to_sym
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        if option.key?(:"CALLEE-TABLE") then
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
-          @_callee_table_id = option[:"CALLEE-TABLE"]
+        if option.key?(OPTION_NAME) then
+          if    option[OPTION_NAME].nil? then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_callee_table_id = nil
+          elsif option[OPTION_NAME].size == 2 and
+                option[OPTION_NAME][0].kind_of?(Integer) and
+                option[OPTION_NAME][1].kind_of?(Integer) then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_callee_table_id = {:MODULE => option[OPTION_NAME][0], :TABLE => option[OPTION_NAME][1]}
+          else
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+          end
         else
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
         end
       end
       def _option_clone
         if @_callee_table_id.class == Hash then
-          return {:"CALLEE-TABLE" => @_callee_table_id.clone}
+          return {OPTION_NAME => @_callee_table_id.clone}
         else
-          return {:"CALLEE-TABLE" => nil}
+          return {OPTION_NAME => nil}
         end
       end
       def _option_to_exp
         table = _get_callee_table()
         fail "Not Found Callee Table in #{_id_to_str}" if table == nil
-        return "(CALLEE-TABLE #{table._owner_module._id} #{table._id})"
+        return "(#{OPTION_NAME} #{table._owner_module._id} #{table._id})"
       end
       def _get_callee_table
         if @_callee_table_id.class == Hash then
@@ -231,26 +251,39 @@ module Iroha
 
     class ForeignReg        < Iroha::IResource
       CLASS_NAME   = "foreign-reg"
+      OPTION_NAME  = "FOREIGN-REG".to_sym
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        if option.key?(:"FOREIGN-REG") then
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
-          @_foreign_register_id = option[:"FOREIGN-REG"]
+        if option.key?(OPTION_NAME) then
+          if    option[OPTION_NAME].nil? then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_foreign_register_id = nil
+          elsif option[OPTION_NAME].size == 3            and
+                option[OPTION_NAME][0].kind_of?(Integer) and
+                option[OPTION_NAME][1].kind_of?(Integer) and
+                option[OPTION_NAME][2].kind_of?(Integer) then
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
+            @_foreign_register_id = {:MODULE   => option[OPTION_NAME][0],
+                                     :TABLE    => option[OPTION_NAME][1],
+                                     :REGISTER => option[OPTION_NAME][2]}
+          else
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+          end
         else
-          super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
+            super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
         end
       end
       def _option_clone
         if @_foreign_register_id.class == Hash then
-          return {:"FOREIGN-REG" => @_foreign_register_id.clone}
+          return {OPTION_NAME => @_foreign_register_id.clone}
         else
-          return {:"FOREIGN-REG" => nil}
+          return {OPTION_NAME => nil}
         end
       end
       def _option_to_exp
         register = _get_foreign_register()
         fail "Not Found Register(#{@_foreign_register_id}) in #{_id_to_str}" if nil == register
-        return "(FOREIGN-REG #{register._owner_module._id} #{register._owner_table._id} #{register._id})"
+        return "(#{OPTION_NAME} #{register._owner_module._id} #{register._owner_table._id} #{register._id})"
       end
       def _get_foreign_register
         if @_foreign_register_id.class == Hash then
@@ -271,16 +304,16 @@ module Iroha
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
         if option.key?(OPTION_NAME) then
-          if    option[OPTION_NAME].class == Hash   and
-                option[OPTION_NAME].key?(:MODULE  ) and
-                option[OPTION_NAME].key?(:TABLE   ) and
-                option[OPTION_NAME].key?(:RESOURCE) then
+          if option[OPTION_NAME].nil? then
             super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
             @_connections = []
-            _add_connection(option[OPTION_NAME][:MODULE], option[OPTION_NAME][:TABLE], option[OPTION_NAME][:RESOURCE])
-          elsif option[OPTION_NAME] == nil then
+          elsif option[OPTION_NAME].size == 3 and
+                option[OPTION_NAME][0].kind_of?(Integer) and
+                option[OPTION_NAME][1].kind_of?(Integer) and
+                option[OPTION_NAME][2].kind_of?(Integer) then
             super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
             @_connections = []
+            _add_connection(option[OPTION_NAME][0], option[OPTION_NAME][1], option[OPTION_NAME][2])
           else
             super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
           end
@@ -349,12 +382,16 @@ module Iroha
       CLASS_NAME   = "array"
       IS_EXCLUSIVE = true
       def initialize(id, input_types, output_types, params, option)
-        if option.key?(:ARRAY) then
+        if option.key?(:ARRAY) and
+           (option[:ARRAY][0].kind_of?(Integer   )) and
+           (option[:ARRAY][1].kind_of?(IValueType)) and
+           (option[:ARRAY][2] == :EXTERNAL or option[:ARRAY][2] == :INTERNAL) and
+           (option[:ARRAY][3] == :RAM      or option[:ARRAY][3] == :ROM     ) then
           super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)
-          @_addr_width  = option[:ARRAY][:ADDR_WIDTH]
-          @_value_type  = option[:ARRAY][:VALUE_TYPE]
-          @_is_external = option[:ARRAY][:EXTERNAL  ]
-          @_is_ram      = option[:ARRAY][:RAM       ]
+          @_addr_width  = option[:ARRAY][0]
+          @_value_type  = option[:ARRAY][1]
+          @_is_external = (option[:ARRAY][2] == :EXTERNAL)
+          @_is_ram      = (option[:ARRAY][3] == :RAM     )
         else
           super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
         end

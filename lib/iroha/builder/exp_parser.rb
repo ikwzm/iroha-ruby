@@ -1410,6 +1410,23 @@ module Exp
     r0
   end
 
+  module ResourceOption0
+    def label
+      elements[3]
+    end
+
+    def params
+      elements[4]
+    end
+
+  end
+
+  module ResourceOption1
+    def get(design)
+      {label.text_value.to_sym => params.elements.map{|param| param.get(design)}}
+    end
+  end
+
   def _nt_resource_option
     start_index = index
     if node_cache[:resource_option].has_key?(index)
@@ -1421,32 +1438,85 @@ module Exp
       return cached
     end
 
-    i0 = index
-    r1 = _nt_array_desc
-    if r1
-      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
-      r0 = r1
+    i0, s0 = index, []
+    r2 = _nt_space
+    if r2
+      r1 = r2
     else
-      r2 = _nt_callee_task_desc
-      if r2
-        r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-        r0 = r2
+      r1 = instantiate_node(SyntaxNode,input, index...index)
+    end
+    s0 << r1
+    if r1
+      if (match_len = has_terminal?('(', false, index))
+        r3 = true
+        @index += match_len
       else
-        r3 = _nt_foreign_reg_desc
-        if r3
-          r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-          r0 = r3
+        terminal_parse_failure('\'(\'')
+        r3 = nil
+      end
+      s0 << r3
+      if r3
+        r5 = _nt_space
+        if r5
+          r4 = r5
         else
-          r4 = _nt_port_input_desc
-          if r4
-            r4 = SyntaxNode.new(input, (index-1)...index) if r4 == true
-            r0 = r4
-          else
-            @index = i0
-            r0 = nil
+          r4 = instantiate_node(SyntaxNode,input, index...index)
+        end
+        s0 << r4
+        if r4
+          r6 = _nt_label
+          s0 << r6
+          if r6
+            s7, i7 = [], index
+            loop do
+              r8 = _nt_resource_option_params
+              if r8
+                s7 << r8
+              else
+                break
+              end
+            end
+            r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+            s0 << r7
+            if r7
+              r10 = _nt_space
+              if r10
+                r9 = r10
+              else
+                r9 = instantiate_node(SyntaxNode,input, index...index)
+              end
+              s0 << r9
+              if r9
+                if (match_len = has_terminal?(')', false, index))
+                  r11 = true
+                  @index += match_len
+                else
+                  terminal_parse_failure('\')\'')
+                  r11 = nil
+                end
+                s0 << r11
+                if r11
+                  r13 = _nt_space
+                  if r13
+                    r12 = r13
+                  else
+                    r12 = instantiate_node(SyntaxNode,input, index...index)
+                  end
+                  s0 << r12
+                end
+              end
+            end
           end
         end
       end
+    end
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(ResourceOption0)
+      r0.extend(ResourceOption1)
+    else
+      @index = i0
+      r0 = nil
     end
 
     node_cache[:resource_option][start_index] = r0
@@ -1454,705 +1524,157 @@ module Exp
     r0
   end
 
-  module ArrayDesc0
-    def space1
-      elements[4]
-    end
-
-    def address_width
-      elements[5]
-    end
-
-    def space2
-      elements[6]
-    end
-
-    def value_type
-      elements[7]
-    end
-
-    def array_ownership
-      elements[9]
-    end
-
-    def space3
-      elements[10]
-    end
-
-    def array_mem_type
-      elements[11]
+  module ResourceOptionParams0
+    def val
+      elements[1]
     end
 
   end
 
-  module ArrayDesc1
-    def get(design)
-      is_external = (array_ownership.get(design) == :EXTERNAL)
-	is_ram      = (array_mem_type.get(design)  == :RAM     )
-      {:ARRAY => {:ADDR_WIDTH => address_width.text_value.to_i, :VALUE_TYPE => value_type.get(design), :EXTERNAL => is_external, :RAM => is_ram}}
-    end
+  module ResourceOptionParams1
+    def get(design) val.text_value.to_i  ;end
   end
 
-  def _nt_array_desc
+  module ResourceOptionParams2
+    def val
+      elements[1]
+    end
+
+  end
+
+  module ResourceOptionParams3
+    def get(design) val.text_value.to_sym;end
+  end
+
+  module ResourceOptionParams4
+    def val
+      elements[1]
+    end
+
+  end
+
+  module ResourceOptionParams5
+    def get(design) val.get(design)      ;end
+  end
+
+  def _nt_resource_option_params
     start_index = index
-    if node_cache[:array_desc].has_key?(index)
-      cached = node_cache[:array_desc][index]
+    if node_cache[:resource_option_params].has_key?(index)
+      cached = node_cache[:resource_option_params][index]
       if cached
-        node_cache[:array_desc][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r2 = _nt_space
-    if r2
-      r1 = r2
-    else
-      r1 = instantiate_node(SyntaxNode,input, index...index)
-    end
-    s0 << r1
-    if r1
-      if (match_len = has_terminal?('(', false, index))
-        r3 = true
-        @index += match_len
-      else
-        terminal_parse_failure('\'(\'')
-        r3 = nil
-      end
-      s0 << r3
-      if r3
-        r5 = _nt_space
-        if r5
-          r4 = r5
-        else
-          r4 = instantiate_node(SyntaxNode,input, index...index)
-        end
-        s0 << r4
-        if r4
-          if (match_len = has_terminal?('ARRAY', false, index))
-            r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'ARRAY\'')
-            r6 = nil
-          end
-          s0 << r6
-          if r6
-            r7 = _nt_space
-            s0 << r7
-            if r7
-              r8 = _nt_number
-              s0 << r8
-              if r8
-                r9 = _nt_space
-                s0 << r9
-                if r9
-                  r10 = _nt_value_type
-                  s0 << r10
-                  if r10
-                    s11, i11 = [], index
-                    loop do
-                      r12 = _nt_space
-                      if r12
-                        s11 << r12
-                      else
-                        break
-                      end
-                    end
-                    r11 = instantiate_node(SyntaxNode,input, i11...index, s11)
-                    s0 << r11
-                    if r11
-                      r13 = _nt_array_ownership
-                      s0 << r13
-                      if r13
-                        r14 = _nt_space
-                        s0 << r14
-                        if r14
-                          r15 = _nt_array_mem_type
-                          s0 << r15
-                          if r15
-                            r17 = _nt_space
-                            if r17
-                              r16 = r17
-                            else
-                              r16 = instantiate_node(SyntaxNode,input, index...index)
-                            end
-                            s0 << r16
-                            if r16
-                              if (match_len = has_terminal?(')', false, index))
-                                r18 = true
-                                @index += match_len
-                              else
-                                terminal_parse_failure('\')\'')
-                                r18 = nil
-                              end
-                              s0 << r18
-                              if r18
-                                r20 = _nt_space
-                                if r20
-                                  r19 = r20
-                                else
-                                  r19 = instantiate_node(SyntaxNode,input, index...index)
-                                end
-                                s0 << r19
-                              end
-                            end
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
-    end
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(ArrayDesc0)
-      r0.extend(ArrayDesc1)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:array_desc][start_index] = r0
-
-    r0
-  end
-
-  module ArrayOwnership0
-    def get(design) :EXTERNAL; end
-  end
-
-  module ArrayOwnership1
-    def get(design) :INTERNAL; end
-  end
-
-  def _nt_array_ownership
-    start_index = index
-    if node_cache[:array_ownership].has_key?(index)
-      cached = node_cache[:array_ownership][index]
-      if cached
-        node_cache[:array_ownership][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:resource_option_params][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
     end
 
     i0 = index
-    if (match_len = has_terminal?('EXTERNAL', false, index))
-      r1 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-      r1.extend(ArrayOwnership0)
-      @index += match_len
+    i1, s1 = index, []
+    r3 = _nt_space
+    if r3
+      r2 = r3
     else
-      terminal_parse_failure('\'EXTERNAL\'')
+      r2 = instantiate_node(SyntaxNode,input, index...index)
+    end
+    s1 << r2
+    if r2
+      r4 = _nt_number
+      s1 << r4
+      if r4
+        r6 = _nt_space
+        if r6
+          r5 = r6
+        else
+          r5 = instantiate_node(SyntaxNode,input, index...index)
+        end
+        s1 << r5
+      end
+    end
+    if s1.last
+      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+      r1.extend(ResourceOptionParams0)
+      r1.extend(ResourceOptionParams1)
+    else
+      @index = i1
       r1 = nil
     end
     if r1
       r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
     else
-      if (match_len = has_terminal?('INTERNAL', false, index))
-        r2 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-        r2.extend(ArrayOwnership1)
-        @index += match_len
+      i7, s7 = index, []
+      r9 = _nt_space
+      if r9
+        r8 = r9
       else
-        terminal_parse_failure('\'INTERNAL\'')
-        r2 = nil
+        r8 = instantiate_node(SyntaxNode,input, index...index)
       end
-      if r2
-        r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-        r0 = r2
-      else
-        @index = i0
-        r0 = nil
-      end
-    end
-
-    node_cache[:array_ownership][start_index] = r0
-
-    r0
-  end
-
-  module ArrayMemType0
-    def get(design) :RAM; end
-  end
-
-  module ArrayMemType1
-    def get(design) :ROM; end
-  end
-
-  def _nt_array_mem_type
-    start_index = index
-    if node_cache[:array_mem_type].has_key?(index)
-      cached = node_cache[:array_mem_type][index]
-      if cached
-        node_cache[:array_mem_type][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0 = index
-    if (match_len = has_terminal?('RAM', false, index))
-      r1 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-      r1.extend(ArrayMemType0)
-      @index += match_len
-    else
-      terminal_parse_failure('\'RAM\'')
-      r1 = nil
-    end
-    if r1
-      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
-      r0 = r1
-    else
-      if (match_len = has_terminal?('ROM', false, index))
-        r2 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-        r2.extend(ArrayMemType1)
-        @index += match_len
-      else
-        terminal_parse_failure('\'ROM\'')
-        r2 = nil
-      end
-      if r2
-        r2 = SyntaxNode.new(input, (index-1)...index) if r2 == true
-        r0 = r2
-      else
-        @index = i0
-        r0 = nil
-      end
-    end
-
-    node_cache[:array_mem_type][start_index] = r0
-
-    r0
-  end
-
-  module CalleeTaskDesc0
-    def space1
-      elements[4]
-    end
-
-    def module_id
-      elements[5]
-    end
-
-    def space2
-      elements[6]
-    end
-
-    def table_id
-      elements[7]
-    end
-
-  end
-
-  module CalleeTaskDesc1
-    def get(design)
-      {:'CALLEE-TABLE' => {:MODULE => module_id.get(design), :TABLE => table_id.get(design)}}
-    end
-  end
-
-  def _nt_callee_task_desc
-    start_index = index
-    if node_cache[:callee_task_desc].has_key?(index)
-      cached = node_cache[:callee_task_desc][index]
-      if cached
-        node_cache[:callee_task_desc][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r2 = _nt_space
-    if r2
-      r1 = r2
-    else
-      r1 = instantiate_node(SyntaxNode,input, index...index)
-    end
-    s0 << r1
-    if r1
-      if (match_len = has_terminal?('(', false, index))
-        r3 = true
-        @index += match_len
-      else
-        terminal_parse_failure('\'(\'')
-        r3 = nil
-      end
-      s0 << r3
-      if r3
-        r5 = _nt_space
-        if r5
-          r4 = r5
-        else
-          r4 = instantiate_node(SyntaxNode,input, index...index)
-        end
-        s0 << r4
-        if r4
-          if (match_len = has_terminal?('CALLEE-TABLE', false, index))
-            r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
+      s7 << r8
+      if r8
+        r10 = _nt_graph
+        s7 << r10
+        if r10
+          r12 = _nt_space
+          if r12
+            r11 = r12
           else
-            terminal_parse_failure('\'CALLEE-TABLE\'')
-            r6 = nil
+            r11 = instantiate_node(SyntaxNode,input, index...index)
           end
-          s0 << r6
-          if r6
-            r7 = _nt_space
-            s0 << r7
-            if r7
-              r8 = _nt_module_id
-              s0 << r8
-              if r8
-                r9 = _nt_space
-                s0 << r9
-                if r9
-                  r10 = _nt_table_id
-                  s0 << r10
-                  if r10
-                    r12 = _nt_space
-                    if r12
-                      r11 = r12
-                    else
-                      r11 = instantiate_node(SyntaxNode,input, index...index)
-                    end
-                    s0 << r11
-                    if r11
-                      if (match_len = has_terminal?(')', false, index))
-                        r13 = true
-                        @index += match_len
-                      else
-                        terminal_parse_failure('\')\'')
-                        r13 = nil
-                      end
-                      s0 << r13
-                      if r13
-                        r15 = _nt_space
-                        if r15
-                          r14 = r15
-                        else
-                          r14 = instantiate_node(SyntaxNode,input, index...index)
-                        end
-                        s0 << r14
-                      end
-                    end
-                  end
-                end
-              end
-            end
-          end
+          s7 << r11
         end
       end
-    end
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(CalleeTaskDesc0)
-      r0.extend(CalleeTaskDesc1)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:callee_task_desc][start_index] = r0
-
-    r0
-  end
-
-  module ForeignRegDesc0
-    def space1
-      elements[4]
-    end
-
-    def module_id
-      elements[5]
-    end
-
-    def space2
-      elements[6]
-    end
-
-    def table_id
-      elements[7]
-    end
-
-    def space3
-      elements[8]
-    end
-
-    def register_id
-      elements[9]
-    end
-
-  end
-
-  module ForeignRegDesc1
-    def get(design)
-      {:'FOREIGN-REG' => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :REGISTER => register_id.get(design)}}
-    end
-  end
-
-  def _nt_foreign_reg_desc
-    start_index = index
-    if node_cache[:foreign_reg_desc].has_key?(index)
-      cached = node_cache[:foreign_reg_desc][index]
-      if cached
-        node_cache[:foreign_reg_desc][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r2 = _nt_space
-    if r2
-      r1 = r2
-    else
-      r1 = instantiate_node(SyntaxNode,input, index...index)
-    end
-    s0 << r1
-    if r1
-      if (match_len = has_terminal?('(', false, index))
-        r3 = true
-        @index += match_len
+      if s7.last
+        r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+        r7.extend(ResourceOptionParams2)
+        r7.extend(ResourceOptionParams3)
       else
-        terminal_parse_failure('\'(\'')
-        r3 = nil
+        @index = i7
+        r7 = nil
       end
-      s0 << r3
-      if r3
-        r5 = _nt_space
-        if r5
-          r4 = r5
-        else
-          r4 = instantiate_node(SyntaxNode,input, index...index)
-        end
-        s0 << r4
-        if r4
-          if (match_len = has_terminal?('FOREIGN-REG', false, index))
-            r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'FOREIGN-REG\'')
-            r6 = nil
-          end
-          s0 << r6
-          if r6
-            r7 = _nt_space
-            s0 << r7
-            if r7
-              r8 = _nt_module_id
-              s0 << r8
-              if r8
-                r9 = _nt_space
-                s0 << r9
-                if r9
-                  r10 = _nt_table_id
-                  s0 << r10
-                  if r10
-                    r11 = _nt_space
-                    s0 << r11
-                    if r11
-                      r12 = _nt_register_id
-                      s0 << r12
-                      if r12
-                        r14 = _nt_space
-                        if r14
-                          r13 = r14
-                        else
-                          r13 = instantiate_node(SyntaxNode,input, index...index)
-                        end
-                        s0 << r13
-                        if r13
-                          if (match_len = has_terminal?(')', false, index))
-                            r15 = true
-                            @index += match_len
-                          else
-                            terminal_parse_failure('\')\'')
-                            r15 = nil
-                          end
-                          s0 << r15
-                          if r15
-                            r17 = _nt_space
-                            if r17
-                              r16 = r17
-                            else
-                              r16 = instantiate_node(SyntaxNode,input, index...index)
-                            end
-                            s0 << r16
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
-    end
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(ForeignRegDesc0)
-      r0.extend(ForeignRegDesc1)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:foreign_reg_desc][start_index] = r0
-
-    r0
-  end
-
-  module PortInputDesc0
-    def space1
-      elements[4]
-    end
-
-    def module_id
-      elements[5]
-    end
-
-    def space2
-      elements[6]
-    end
-
-    def table_id
-      elements[7]
-    end
-
-    def space3
-      elements[8]
-    end
-
-    def resource_id
-      elements[9]
-    end
-
-  end
-
-  module PortInputDesc1
-    def get(design)
-      {:'PORT-INPUT'  => {:MODULE => module_id.get(design), :TABLE => table_id.get(design), :RESOURCE => resource_id.get(design)}}
-    end
-  end
-
-  def _nt_port_input_desc
-    start_index = index
-    if node_cache[:port_input_desc].has_key?(index)
-      cached = node_cache[:port_input_desc][index]
-      if cached
-        node_cache[:port_input_desc][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r2 = _nt_space
-    if r2
-      r1 = r2
-    else
-      r1 = instantiate_node(SyntaxNode,input, index...index)
-    end
-    s0 << r1
-    if r1
-      if (match_len = has_terminal?('(', false, index))
-        r3 = true
-        @index += match_len
+      if r7
+        r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+        r0 = r7
       else
-        terminal_parse_failure('\'(\'')
-        r3 = nil
-      end
-      s0 << r3
-      if r3
-        r5 = _nt_space
-        if r5
-          r4 = r5
+        i13, s13 = index, []
+        r15 = _nt_space
+        if r15
+          r14 = r15
         else
-          r4 = instantiate_node(SyntaxNode,input, index...index)
+          r14 = instantiate_node(SyntaxNode,input, index...index)
         end
-        s0 << r4
-        if r4
-          if (match_len = has_terminal?('PORT-INPUT', false, index))
-            r6 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'PORT-INPUT\'')
-            r6 = nil
-          end
-          s0 << r6
-          if r6
-            r7 = _nt_space
-            s0 << r7
-            if r7
-              r8 = _nt_module_id
-              s0 << r8
-              if r8
-                r9 = _nt_space
-                s0 << r9
-                if r9
-                  r10 = _nt_table_id
-                  s0 << r10
-                  if r10
-                    r11 = _nt_space
-                    s0 << r11
-                    if r11
-                      r12 = _nt_resource_id
-                      s0 << r12
-                      if r12
-                        r14 = _nt_space
-                        if r14
-                          r13 = r14
-                        else
-                          r13 = instantiate_node(SyntaxNode,input, index...index)
-                        end
-                        s0 << r13
-                        if r13
-                          if (match_len = has_terminal?(')', false, index))
-                            r15 = true
-                            @index += match_len
-                          else
-                            terminal_parse_failure('\')\'')
-                            r15 = nil
-                          end
-                          s0 << r15
-                          if r15
-                            r17 = _nt_space
-                            if r17
-                              r16 = r17
-                            else
-                              r16 = instantiate_node(SyntaxNode,input, index...index)
-                            end
-                            s0 << r16
-                          end
-                        end
-                      end
-                    end
-                  end
-                end
-              end
+        s13 << r14
+        if r14
+          r16 = _nt_value_type
+          s13 << r16
+          if r16
+            r18 = _nt_space
+            if r18
+              r17 = r18
+            else
+              r17 = instantiate_node(SyntaxNode,input, index...index)
             end
+            s13 << r17
           end
+        end
+        if s13.last
+          r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+          r13.extend(ResourceOptionParams4)
+          r13.extend(ResourceOptionParams5)
+        else
+          @index = i13
+          r13 = nil
+        end
+        if r13
+          r13 = SyntaxNode.new(input, (index-1)...index) if r13 == true
+          r0 = r13
+        else
+          @index = i0
+          r0 = nil
         end
       end
-    end
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(PortInputDesc0)
-      r0.extend(PortInputDesc1)
-    else
-      @index = i0
-      r0 = nil
     end
 
-    node_cache[:port_input_desc][start_index] = r0
+    node_cache[:resource_option_params][start_index] = r0
 
     r0
   end
