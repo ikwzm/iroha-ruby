@@ -8,7 +8,7 @@ module Iroha
       @_params           = Iroha::IParams.new            ## TYPE: Iroha::IParams
       @_modules          = Hash.new                      ## TYPE: Hash {id:number, module:Iroha::IModule}
       @_channels         = Hash.new                      ## TYPE: Hash {id:number, channel:Iroha::IChannel}
-      @_resource_classes = Hash[Iroha::STANDARD_RESOURSE_CLASSES.map{|res_class| [res_class::CLASS_NAME, res_class]}]
+      @_resource_classes = Hash[Iroha::RESOURSE_CLASSES.map{|res_class| [res_class::CLASS_NAME, res_class]}]
     end
 
     def _add_param(param)

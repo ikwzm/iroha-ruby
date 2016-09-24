@@ -370,8 +370,8 @@ module Iroha::Builder::Simple
 
   end
 
-  Iroha::STANDARD_RESOURCE_LIST.each do |resource|
-    require_relative "../../iroha/resources/#{resource}/builder/simple.rb"
+  Iroha::RESOURCE_PATH_LIST.each do |path|
+    require_relative "../../#{path}/builder/simple.rb"
   end
 
   RESOURSE_CLASSES = ObjectSpace.each_object(Class).select{|klass| klass.to_s =~ /Iroha::Builder::Simple::IResource::*/}

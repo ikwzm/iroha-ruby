@@ -11,10 +11,10 @@ module Iroha
   require_relative 'iroha/iroha/i_params'
   require_relative 'iroha/iroha/methods'
 
-  STANDARD_RESOURCE_LIST    = Dir::glob(File.expand_path(File.dirname(__FILE__)) + "/iroha/resources/*").map{|f| File.basename(f)}
-  STANDARD_RESOURCE_LIST.each do |resource|
-    require_relative "iroha/resources/#{resource}/resource"
+  RESOURCE_PATH_LIST = Dir::glob(File.expand_path(File.dirname(__FILE__)) + "/iroha/resources/*").map{|f| "iroha/resources/" + File.basename(f)}
+  RESOURCE_PATH_LIST.each do |path|
+    require_relative "#{path}/resource"
   end
-  STANDARD_RESOURSE_CLASSES = ObjectSpace.each_object(Class).select{|klass| klass.superclass == Iroha::IResource}
+  RESOURSE_CLASSES   = ObjectSpace.each_object(Class).select{|klass| klass.superclass == Iroha::IResource}
 end
   
