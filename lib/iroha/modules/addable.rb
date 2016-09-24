@@ -1,9 +1,9 @@
 module Iroha
-  module Utility
+  module Modules
   end
 end
 
-module Iroha::Utility::Addable
+module Iroha::Modules::Addable
 
   module IDesign
 

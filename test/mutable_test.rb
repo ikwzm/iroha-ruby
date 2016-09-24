@@ -1,41 +1,41 @@
 require 'treetop'
 require_relative '../lib/iroha.rb'
 require_relative '../lib/iroha/builder/exp_parser.rb'
-require_relative '../lib/iroha/utility/mutable.rb'
+require_relative '../lib/iroha/modules/mutable.rb'
 
 DEBUG=false
 
 module MutableTest
   Iroha.franchise_class(Iroha,self)
   class  IDesign
-    include Iroha::Utility::Mutable::IDesign
+    include Iroha::Modules::Mutable::IDesign
     def initialize
       super
       _add_new_initialize
     end
   end
   class  IModule
-    include Iroha::Utility::Mutable::IModule
+    include Iroha::Modules::Mutable::IModule
     def initialize(id, name, parent_id, params, table_list)
       super
       _add_new_initialize()
     end
   end
   class  ITable
-    include Iroha::Utility::Mutable::ITable
+    include Iroha::Modules::Mutable::ITable
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
       super
       _add_new_initialize()
     end
   end
   class  IRegister
-    include Iroha::Utility::Mutable::IRegister
+    include Iroha::Modules::Mutable::IRegister
   end
   class  IState
-    include Iroha::Utility::Mutable::IState
+    include Iroha::Modules::Mutable::IState
   end
   class  IInstruction
-    include Iroha::Utility::Mutable::IInstruction
+    include Iroha::Modules::Mutable::IInstruction
   end
   class IResource
     def self.convert_from(resource)

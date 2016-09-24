@@ -1,6 +1,6 @@
 require_relative './addable'
 
-module Iroha::Utility::Mutable
+module Iroha::Modules::Mutable
 
   def self._reallocate_id(table, new_id_table)
     new_id    = 1
@@ -24,7 +24,7 @@ module Iroha::Utility::Mutable
 
   module IDesign
 
-    include Iroha::Utility::Addable::IDesign
+    include Iroha::Modules::Addable::IDesign
 
     attr_writer   :_modules, :_channels
     attr_accessor :_immutable
@@ -40,12 +40,12 @@ module Iroha::Utility::Mutable
     end
     
     def _reallocate_modules_id
-      self._modules  = Iroha::Utility::Mutable._reallocate_id(self._modules , Hash.new)
+      self._modules  = Iroha::Modules::Mutable._reallocate_id(self._modules , Hash.new)
       _add_new_module_id_initialize
     end
 
     def _reallocate_channels_id
-      self._channels = Iroha::Utility::Mutable._reallocate_id(self._channels, Hash.new)
+      self._channels = Iroha::Modules::Mutable._reallocate_id(self._channels, Hash.new)
       _add_new_channel_id_initialize
     end
 
@@ -53,7 +53,7 @@ module Iroha::Utility::Mutable
 
   module IModule
 
-    include Iroha::Utility::Addable::IModule
+    include Iroha::Modules::Addable::IModule
 
     attr_writer   :_id, :_tables
     attr_accessor :_immutable
@@ -64,7 +64,7 @@ module Iroha::Utility::Mutable
     end
 
     def _reallocate_tables_id
-      self._tables = Iroha::Utility::Mutable._reallocate_id(self._tables, Hash.new)
+      self._tables = Iroha::Modules::Mutable._reallocate_id(self._tables, Hash.new)
       _add_new_table_id_initialize
     end
 
@@ -81,7 +81,7 @@ module Iroha::Utility::Mutable
   end
   
   module ITable
-    include Iroha::Utility::Addable::ITable
+    include Iroha::Modules::Addable::ITable
 
     attr_writer   :_id, :_registers, :_resources, :_states
     attr_accessor :_immutable
@@ -103,7 +103,7 @@ module Iroha::Utility::Mutable
 
     def _reallocate_resources_id
       new_id_table  = Hash.new
-      new_resources = Iroha::Utility::Mutable._reallocate_id(self._resources, new_id_table)
+      new_resources = Iroha::Modules::Mutable._reallocate_id(self._resources, new_id_table)
       self._states.values.each do |state|
         state._instructions.values.each do |insn|
           insn._res_id = new_id_table[insn._res_id]
@@ -115,7 +115,7 @@ module Iroha::Utility::Mutable
 
     def _reallocate_registers_id
       new_id_table  = Hash.new
-      new_registers = Iroha::Utility::Mutable._reallocate_id(self._registers, new_id_table)
+      new_registers = Iroha::Modules::Mutable._reallocate_id(self._registers, new_id_table)
       self._states.values.each do |state|
         state._instructions.values.each do |insn|
           insn._input_registers  = insn._input_registers .map{|id| new_id_table[id]}
@@ -127,7 +127,7 @@ module Iroha::Utility::Mutable
     end
 
     def _reallocate_states_id
-      new_states   = Iroha::Utility::Mutable._reallocate_id(self._states, Hash.new)
+      new_states   = Iroha::Modules::Mutable._reallocate_id(self._states, Hash.new)
       self._states = new_states
       _add_new_state_id_initialize
     end
@@ -150,7 +150,7 @@ module Iroha::Utility::Mutable
   
   module IState
 
-    include Iroha::Utility::Addable::IState
+    include Iroha::Modules::Addable::IState
 
     attr_writer   :_id, :_instructions
     attr_accessor :_immutable
