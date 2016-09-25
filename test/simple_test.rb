@@ -1,5 +1,5 @@
 require 'pp'
-require_relative '../lib/iroha.rb'
+require_relative '../lib/iroha'
 require_relative '../lib/iroha/builder/simple'
 
 DEBUG=false

@@ -1,5 +1,5 @@
-require_relative '../../iroha'
-require_relative '../../iroha/modules/addable'
+require_relative '../iroha'
+require_relative '../iroha/modules/addable'
 
 module Iroha
   module Builder
@@ -371,7 +371,7 @@ module Iroha::Builder::Simple
   end
 
   Iroha::RESOURCE_PATH_LIST.each do |path|
-    require_relative "../../#{path}/builder/simple.rb"
+    require_relative "../#{path}/builder/simple.rb"
   end
 
   RESOURSE_CLASSES = ObjectSpace.each_object(Class).select{|klass| klass.to_s =~ /Iroha::Builder::Simple::IResource::*/}

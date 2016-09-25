@@ -1,7 +1,7 @@
 require 'treetop'
 require_relative '../lib/iroha.rb'
 require_relative '../lib/iroha/builder/exp_parser.rb'
-require_relative '../lib/iroha/modules/mutable.rb'
+require_relative '../lib/iroha/iroha/modules/mutable.rb'
 
 DEBUG=false
 

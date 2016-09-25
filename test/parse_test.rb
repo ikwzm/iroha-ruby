@@ -1,7 +1,7 @@
 require 'treetop'
 require 'pp'
-require_relative '../lib/iroha.rb'
-require_relative '../lib/iroha/builder/exp_parser.rb'
+require_relative '../lib/iroha'
+require_relative '../lib/iroha/builder/exp_parser'
 
 DEBUG=false
 
