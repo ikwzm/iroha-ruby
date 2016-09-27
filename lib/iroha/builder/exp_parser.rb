@@ -819,6 +819,16 @@ module Exp
 
   module Table0
     def space
+      elements[0]
+    end
+
+    def table_name
+      elements[1]
+    end
+  end
+
+  module Table1
+    def space
       elements[4]
     end
 
@@ -826,17 +836,26 @@ module Exp
       elements[5]
     end
 
-    def contents
+    def table_name_entry
       elements[6]
+    end
+
+    def contents
+      elements[7]
     end
 
   end
 
-  module Table1
+  module Table2
     def get(design)
       resources     = Array.new
       registers     = Array.new
       states        = Array.new
+      if table_name_entry.empty? == false then
+        table_name  = table_name_entry.table_name.get(design)
+      else
+        table_name  = nil
+      end
       init_state_id = nil
       contents.elements.each{ |element|
         info = element.get(design)
@@ -858,7 +877,7 @@ module Exp
           next
         end
       }
-      Iroha::ITable.new(table_id.get(design), nil, resources, registers, states, init_state_id)
+      Iroha::ITable.new(table_id.get(design), table_name, resources, registers, states, init_state_id)
     end
   end
 
@@ -914,68 +933,90 @@ module Exp
               r8 = _nt_table_id
               s0 << r8
               if r8
-                s9, i9 = [], index
-                loop do
-                  i10 = index
-                  r11 = _nt_resources
-                  if r11
-                    r11 = SyntaxNode.new(input, (index-1)...index) if r11 == true
-                    r10 = r11
-                  else
-                    r12 = _nt_registers
-                    if r12
-                      r12 = SyntaxNode.new(input, (index-1)...index) if r12 == true
-                      r10 = r12
+                i10, s10 = index, []
+                r11 = _nt_space
+                s10 << r11
+                if r11
+                  r12 = _nt_table_name
+                  s10 << r12
+                end
+                if s10.last
+                  r10 = instantiate_node(SyntaxNode,input, i10...index, s10)
+                  r10.extend(Table0)
+                else
+                  @index = i10
+                  r10 = nil
+                end
+                if r10
+                  r9 = r10
+                else
+                  r9 = instantiate_node(SyntaxNode,input, index...index)
+                end
+                s0 << r9
+                if r9
+                  s13, i13 = [], index
+                  loop do
+                    i14 = index
+                    r15 = _nt_resources
+                    if r15
+                      r15 = SyntaxNode.new(input, (index-1)...index) if r15 == true
+                      r14 = r15
                     else
-                      r13 = _nt_initial_state
-                      if r13
-                        r13 = SyntaxNode.new(input, (index-1)...index) if r13 == true
-                        r10 = r13
+                      r16 = _nt_registers
+                      if r16
+                        r16 = SyntaxNode.new(input, (index-1)...index) if r16 == true
+                        r14 = r16
                       else
-                        r14 = _nt_state
-                        if r14
-                          r14 = SyntaxNode.new(input, (index-1)...index) if r14 == true
-                          r10 = r14
+                        r17 = _nt_initial_state
+                        if r17
+                          r17 = SyntaxNode.new(input, (index-1)...index) if r17 == true
+                          r14 = r17
                         else
-                          @index = i10
-                          r10 = nil
+                          r18 = _nt_state
+                          if r18
+                            r18 = SyntaxNode.new(input, (index-1)...index) if r18 == true
+                            r14 = r18
+                          else
+                            @index = i14
+                            r14 = nil
+                          end
                         end
                       end
                     end
-                  end
-                  if r10
-                    s9 << r10
-                  else
-                    break
-                  end
-                end
-                r9 = instantiate_node(SyntaxNode,input, i9...index, s9)
-                s0 << r9
-                if r9
-                  r16 = _nt_space
-                  if r16
-                    r15 = r16
-                  else
-                    r15 = instantiate_node(SyntaxNode,input, index...index)
-                  end
-                  s0 << r15
-                  if r15
-                    if (match_len = has_terminal?(')', false, index))
-                      r17 = true
-                      @index += match_len
+                    if r14
+                      s13 << r14
                     else
-                      terminal_parse_failure('\')\'')
-                      r17 = nil
+                      break
                     end
-                    s0 << r17
-                    if r17
-                      r19 = _nt_space
-                      if r19
-                        r18 = r19
+                  end
+                  r13 = instantiate_node(SyntaxNode,input, i13...index, s13)
+                  s0 << r13
+                  if r13
+                    r20 = _nt_space
+                    if r20
+                      r19 = r20
+                    else
+                      r19 = instantiate_node(SyntaxNode,input, index...index)
+                    end
+                    s0 << r19
+                    if r19
+                      if (match_len = has_terminal?(')', false, index))
+                        r21 = true
+                        @index += match_len
                       else
-                        r18 = instantiate_node(SyntaxNode,input, index...index)
+                        terminal_parse_failure('\')\'')
+                        r21 = nil
                       end
-                      s0 << r18
+                      s0 << r21
+                      if r21
+                        r23 = _nt_space
+                        if r23
+                          r22 = r23
+                        else
+                          r22 = instantiate_node(SyntaxNode,input, index...index)
+                        end
+                        s0 << r22
+                      end
                     end
                   end
                 end
@@ -987,8 +1028,8 @@ module Exp
     end
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(Table0)
       r0.extend(Table1)
+      r0.extend(Table2)
     else
       @index = i0
       r0 = nil
@@ -1033,6 +1074,91 @@ module Exp
     end
 
     node_cache[:table_id][start_index] = r0
+
+    r0
+  end
+
+  module TableNameEntry0
+    def table_name
+      elements[1]
+    end
+  end
+
+  module TableNameEntry1
+    def get(design) table_name.get(design); end
+  end
+
+  def _nt_table_name_entry
+    start_index = index
+    if node_cache[:table_name_entry].has_key?(index)
+      cached = node_cache[:table_name_entry][index]
+      if cached
+        node_cache[:table_name_entry][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    r2 = _nt_space
+    if r2
+      r1 = r2
+    else
+      r1 = instantiate_node(SyntaxNode,input, index...index)
+    end
+    s0 << r1
+    if r1
+      r3 = _nt_table_name
+      s0 << r3
+    end
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(TableNameEntry0)
+      r0.extend(TableNameEntry1)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:table_name_entry][start_index] = r0
+
+    r0
+  end
+
+  module TableName0
+    def key
+      elements[0]
+    end
+  end
+
+  module TableName1
+    def get(design) key.text_value; end
+  end
+
+  def _nt_table_name
+    start_index = index
+    if node_cache[:table_name].has_key?(index)
+      cached = node_cache[:table_name][index]
+      if cached
+        node_cache[:table_name][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    r1 = _nt_label
+    s0 << r1
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(TableName0)
+      r0.extend(TableName1)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:table_name][start_index] = r0
 
     r0
   end

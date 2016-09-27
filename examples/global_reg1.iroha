@@ -2,13 +2,13 @@
 
 (MODULE 1 mod_top
   (PARAMS)
-  (TABLE 1
+  (TABLE 1 shared
     (REGISTERS
       (REGISTER 1 reg_top REG (UINT 32) ())
     )
     (RESOURCES)
   )
-  (TABLE 2
+  (TABLE 2 tab_top
     (REGISTERS
       (REGISTER 1 reg2 REG (UINT 32) ())
     )
@@ -30,13 +30,13 @@
 (MODULE 2 mod_sub
   (PARAMS)
   (PARENT 1)
-  (TABLE 1
+  (TABLE 1 shared
     (REGISTERS
       (REGISTER 1 reg_sub REG (UINT 32) ())
     )
     (RESOURCES)
   )
-  (TABLE 2
+  (TABLE 2 tab_sub
     (REGISTERS
       (REGISTER 1 reg1 REG (UINT 32) ())
     )

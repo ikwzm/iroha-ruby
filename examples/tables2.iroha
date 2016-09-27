@@ -1,13 +1,13 @@
 (PARAMS)
 (MODULE 1 mod
  (PARAMS)
- (TABLE 1 shared
+ (TABLE 1
   (REGISTERS
     (REGISTER 1 shared_reg REG (UINT 32) ())
   )
   (RESOURCES)
  )
- (TABLE 2 tab1
+ (TABLE 2
   (REGISTERS
     (REGISTER 1 r11 REG (UINT 32) 123)
     (REGISTER 2 r12 REG (UINT 32) () )
@@ -24,7 +24,7 @@
    (INSN 2 foreign-reg 1 () () () (2))
   )
  )
- (TABLE 3 tab2
+ (TABLE 3
   (REGISTERS
     (REGISTER 1 r21 REG (UINT 32) 456)
     (REGISTER 2 r22 REG (UINT 32) 789)

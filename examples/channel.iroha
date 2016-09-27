@@ -2,7 +2,7 @@
 (CHANNEL 1 (UINT 32) (1 2 1) (1 1 1))
 (MODULE 1 mod
   (PARAMS)
-  (TABLE 1
+  (TABLE 1 tab_w
     (REGISTERS
       (REGISTER 1 val_w CONST (UINT 32) 123)
     )
@@ -19,7 +19,7 @@
       (INSN 3 tr 2 () (1) () ())
     )
   )
-  (TABLE 2
+  (TABLE 2 tab_r
     (REGISTERS
       (REGISTER 1 val_r REG (UINT 32) ())
     )

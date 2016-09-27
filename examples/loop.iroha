@@ -1,7 +1,7 @@
 (PARAMS)
 (MODULE 1 add
   (PARAMS)
-  (TABLE 1
+  (TABLE 1 table
     (REGISTERS
       (REGISTER 1 counter REG   (UINT 32) ())
       (REGISTER 2 ten     CONST (UINT 32) 10)

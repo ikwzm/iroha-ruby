@@ -1,7 +1,7 @@
 (PARAMS )
 (MODULE 1 mod
  (PARAMS )
- (TABLE 1
+ (TABLE 1 callee_tab
   (REGISTERS
     (REGISTER 1 r_arg REG (UINT 32) ())
   )
@@ -22,7 +22,7 @@
   (STATE 3
   )
  )
- (TABLE 2
+ (TABLE 2 caller_tab
   (REGISTERS
     (REGISTER 1 () CONST (UINT 32) 456)
   )

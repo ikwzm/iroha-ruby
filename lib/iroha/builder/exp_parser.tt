@@ -100,11 +100,16 @@ grammar Exp
   end
 
   rule table
-    space? '(' space? 'TABLE' space table_id contents:(resources / registers / initial_state / state)* space? ')' space? {
+    space? '(' space? 'TABLE' space table_id table_name_entry:(space table_name)? contents:(resources / registers / initial_state / state)* space? ')' space? {
       def get(design)
         resources     = Array.new
         registers     = Array.new
         states        = Array.new
+        if table_name_entry.empty? == false then
+          table_name  = table_name_entry.table_name.get(design)
+        else
+          table_name  = nil
+        end
         init_state_id = nil
         contents.elements.each{ |element|
           info = element.get(design)
@@ -126,13 +131,21 @@ grammar Exp
             next
           end
         }
-        Iroha::ITable.new(table_id.get(design), nil, resources, registers, states, init_state_id)
+        Iroha::ITable.new(table_id.get(design), table_name, resources, registers, states, init_state_id)
       end
     }
   end
 
   rule table_id
     id:number  {def get(design) id.text_value.to_i;end}
+  end
+
+  rule table_name_entry
+     space? table_name {def get(design) table_name.get(design); end}
+  end
+
+  rule table_name
+     key:label {def get(design) key.text_value; end}
   end
 
   rule resources

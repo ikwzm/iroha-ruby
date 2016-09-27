@@ -1,7 +1,7 @@
 (PARAMS  (RESET-POLARITY true))
 (MODULE 1 mod
   (PARAMS    (RESET-NAME reset)  )
-  (TABLE 1
+  (TABLE 1 tab
     (REGISTERS
       (REGISTER 1 r1 REG (INT 32) ())
       (REGISTER 2 r2 REG (INT 32) 123)

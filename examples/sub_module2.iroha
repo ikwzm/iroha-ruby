@@ -1,7 +1,7 @@
 (PARAMS )
 (MODULE 1 m_top
  (PARAMS )
- (TABLE 1
+ (TABLE 1 tab_top
   (REGISTERS
   )
   (RESOURCES
@@ -20,7 +20,7 @@
 (MODULE 2 m_sub
  (PARAMS )
  (PARENT 1)
- (TABLE 1
+ (TABLE 1 tab_sub
   (REGISTERS
   )
   (RESOURCES

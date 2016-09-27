@@ -2,7 +2,7 @@
 
 (MODULE 1 mod
   (PARAMS)
-  (TABLE 1
+  (TABLE 1 tab
     (REGISTERS
       (REGISTER 1 r1 REG (UINT 0) 1)
       (REGISTER 2 r123 REG (UINT 32) 123)

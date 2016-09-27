@@ -78,7 +78,7 @@ module Iroha
     end
 
     def _to_exp(indent)
-      return indent + "(TABLE #{@_id}\n" +
+      return indent + "(TABLE #{@_id}" + ((@_name != nil) ? " #{@_name}" : "") + "\n" +
              ((@_registers.size > 0)?
                 (indent + "  (REGISTERS\n" + @_registers.values.map{|reg| reg._to_exp(indent+"    ")}.join("\n") + "\n" + indent + "  )\n") :
                 (indent + "  (REGISTERS)\n")) +

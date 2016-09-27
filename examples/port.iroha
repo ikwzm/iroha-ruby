@@ -1,7 +1,7 @@
 (PARAMS)
 (MODULE 1 mod
   (PARAMS)
-  (TABLE 1
+  (TABLE 1 tab_1
     (REGISTERS
       (REGISTER 1 din  REG   (UINT 32) ())
       (REGISTER 2 dout CONST (UINT 32)  8)
@@ -22,7 +22,7 @@
     )
     (STATE 3)
   )
-  (TABLE 2
+  (TABLE 2 tab_2
     (REGISTERS
       (REGISTER 1 din  REG   (UINT 32) ())
       (REGISTER 2 dout CONST (UINT 32)  8)
@@ -43,7 +43,7 @@
     )
     (STATE 3)
   )
-  (TABLE 3
+  (TABLE 3 tab_3
     (REGISTERS
       (REGISTER 1 din  REG   (UINT 32) ())
       (REGISTER 2 dout CONST (UINT 32)  8)

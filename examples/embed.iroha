@@ -1,7 +1,7 @@
 (PARAMS )
 (MODULE 1 mod
  (PARAMS )
- (TABLE 1
+ (TABLE 1 tab
   (REGISTERS
     (REGISTER 1 () CONST (UINT 32) 123)
   )
