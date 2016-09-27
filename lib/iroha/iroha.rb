@@ -11,10 +11,13 @@ module Iroha
   require_relative 'iroha/i_params'
   require_relative 'iroha/methods'
 
+  module Resource
+  end
+
   RESOURCE_PATH_LIST = Dir::glob(File.expand_path(File.dirname(__FILE__)) + "/resources/*").map{|f| "resources/" + File.basename(f)}
   RESOURCE_PATH_LIST.each do |path|
     require_relative "#{path}/resource"
   end
-  RESOURSE_CLASSES   = ObjectSpace.each_object(Class).select{|klass| klass.superclass == Iroha::IResource}
+  RESOURSE_CLASSES   = Iroha::Resource.constants.map{|c| Iroha::Resource.const_get(c)}
 end
   

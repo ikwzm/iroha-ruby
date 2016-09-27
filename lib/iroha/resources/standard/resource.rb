@@ -1,4 +1,4 @@
-class Iroha::IResource
+module Iroha::Resource
 
   class Transition < Iroha::IResource
     CLASS_NAME   = "tr"

@@ -1,8 +1,9 @@
-class Iroha::IResource
+module Iroha::Resource
 
   class Array < Iroha::IResource
     CLASS_NAME   = "array"
     IS_EXCLUSIVE = true
+
     def initialize(id, input_types, output_types, params, option)
       if option.key?(:ARRAY) and
          (option[:ARRAY][0].kind_of?(Integer          )) and
@@ -18,14 +19,19 @@ class Iroha::IResource
         super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
       end
     end
+
     def _option_clone
-      return {:ARRAY => {:ADDR_WIDTH => @_addr_width, :VALUE_TYPE => @_value_type, :EXTERNAL => @_is_external, :RAM => @_is_ram}}
+      external = (@_is_external == true) ? :EXTERNAL : :INTERNAL
+      ram      = (@_is_ram      == true) ? :RAM      : :ROM
+      return {:ARRAY => [@_addr_width, @_value_type, external, ram]}
     end
+
     def _option_to_exp
-      external = (@_is_external == true) ? "EXTERNAL" : "INTERNAL"
-      ram      = (@_is_ram      == true) ? "RAM"      : "ROM"
+      external = (@_is_external == true) ? :EXTERNAL : :INTERNAL
+      ram      = (@_is_ram      == true) ? :RAM      : :ROM
       return "(ARRAY #{@_addr_width} #{@_value_type._to_exp} #{external} #{ram})"
     end
+
   end
 
 end

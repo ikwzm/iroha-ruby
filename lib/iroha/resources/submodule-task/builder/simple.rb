@@ -1,4 +1,4 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class SubModuleTask
     RESOURCE_PROC = Proc.new { |name| __add_resource(__method__, name, [], [], {}, {}) }
@@ -28,6 +28,7 @@ class Iroha::Builder::Simple::IResource
         fail "Error: invalid task"
       end
     end
+
     def _resolve_reference
       if @_ref_task.class == Iroha::Builder::Simple::Reference then
         task  = @_ref_task.resolve
@@ -35,13 +36,15 @@ class Iroha::Builder::Simple::IResource
         callee(task)
       end
     end
+
     def callee(task)
       if task.class == SubModuleTask then
-        @_callee_table_id = {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}
+        _set_callee_table(task._owner_table)
       else
         fail "Error: invalid task"
       end
     end
+
     def call
       state = @_owner_table._on_state
       fail "Error: not on state" if state.nil?

@@ -1,4 +1,4 @@
-class Iroha::IResource
+module Iroha::Resource
 
   class ExtInput  < Iroha::IResource
     CLASS_NAME   = "ext-input"

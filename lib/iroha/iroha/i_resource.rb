@@ -38,7 +38,7 @@ module Iroha
         option_exp = ""
       end
       return indent + "(RESOURCE #{@_id} #{@_class_name} " +
-             "(" + @_input_types.map{ |t|t._to_exp}.join(" ") + ") " +
+             "(" + @_input_types .map{|t|t._to_exp}.join(" ") + ") " +
              "(" + @_output_types.map{|t|t._to_exp}.join(" ") + ") " +
              @_params._to_exp("") + option_exp + ")"
     end
@@ -49,7 +49,7 @@ module Iroha
 
     def self.convert_from(resource)
       class_name   = resource.class.to_s.split(/::/).last
-      parent_class = Iroha.parent_class(Iroha.parent_class(self))
+      parent_class = Iroha.parent_class(self)
       params_class = parent_class.const_get(:IParams)
       type_class   = parent_class.const_get(:IValueType)
       id           = resource._id
@@ -57,7 +57,7 @@ module Iroha
       output_types = resource._output_types.map{|value_type| type_class.convert_from(value_type)}
       params       = params_class.convert_from(resource._params)
       option       = resource._option_clone
-      parent_class.const_get(:IResource).const_get(class_name).new(id, input_types, output_types, params, option)
+      parent_class.const_get(:Resource).const_get(class_name).new(id, input_types, output_types, params, option)
     end
 
     def _id_to_str

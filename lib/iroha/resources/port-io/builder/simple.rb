@@ -1,13 +1,15 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class PortInput
     attr_accessor :_ref_resources
+
     RESOURCE_PROC = Proc.new do |name, type, *resources|
       params = {:INPUT => name, :WIDTH => type._width}
       resource = __add_resource(__method__, name, [], [type], params, {:"PORT-INPUT" => nil})
       resource._ref_resources = resources
       return resource
     end
+
     def _resolve_reference
       @_ref_resources.each do |ref|
         if ref.class == Iroha::Builder::Simple::Reference then
@@ -21,6 +23,7 @@ class Iroha::Builder::Simple::IResource
         _add_connection(resource._owner_module._id, resource._owner_table._id, resource._id)
       end
     end
+
     define_method('=>') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?
@@ -28,6 +31,7 @@ class Iroha::Builder::Simple::IResource
       state.__add_instruction(self, [], [], [], [regs])
       return self
     end
+
     define_method('<=') do |regs|
       fail "Error: can not connect PortOut(#{_id_to_str}) to #{regs._id_to_str}" if regs.class != PortOutput
       self._add_connection(regs._owner_module._id, regs._owner_table._id, regs._id)
@@ -38,12 +42,14 @@ class Iroha::Builder::Simple::IResource
 
   class PortOutput
     attr_accessor :_ref_resources
+
     RESOURCE_PROC = Proc.new do |name, type, *resources| 
       params = {:OUTPUT => name, :WIDTH => type._width}
       resource = __add_resource(__method__, name, [type], [], params, nil)
       resource._ref_resources = resources
       return resource
     end
+
     def _resolve_reference
       @_ref_resources.each do |ref|
         if ref.class == Iroha::Builder::Simple::Reference then
@@ -57,6 +63,7 @@ class Iroha::Builder::Simple::IResource
         _add_connection(resource._owner_module._id, resource._owner_table._id, resource._id)
       end
     end
+
     define_method('<=') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?

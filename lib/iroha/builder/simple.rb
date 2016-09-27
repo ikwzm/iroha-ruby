@@ -202,7 +202,7 @@ module Iroha::Builder::Simple
     def __add_resource(class_name, name, input_types, output_types, params, option)
       res_params = IParams.new
       res_params.update(params)
-      resource_class = IResource.const_get(class_name)
+      resource_class = Resource.const_get(class_name)
       if resource_class.const_defined?(:SINGLETON) and @_singleton_classes.key?(class_name) then
         resource = @_singleton_classes[class_name]
       else
@@ -361,20 +361,11 @@ module Iroha::Builder::Simple
     
   end
 
-  class IResource
-
-    def self.convert_from(resource)
-      res_class = resource.class.to_s.split(/::/).last
-      Iroha::Builder::Simple::IResource.const_get(res_class).convert_from(resource)
-    end
-
-  end
-
   Iroha::RESOURCE_PATH_LIST.each do |path|
     require_relative "../#{path}/builder/simple.rb"
   end
 
-  RESOURSE_CLASSES = ObjectSpace.each_object(Class).select{|klass| klass.to_s =~ /Iroha::Builder::Simple::IResource::*/}
+  RESOURSE_CLASSES = Iroha::Builder::Simple::Resource.constants.map{|c| Iroha::Builder::Simple::Resource.const_get(c)}
 
   RESOURSE_CLASSES.each do |klass|
     resource_class_name = klass.to_s.split(/::/).last.to_sym

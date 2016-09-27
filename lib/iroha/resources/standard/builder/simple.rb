@@ -1,4 +1,4 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class Add
     BINARY_OPERATOR   = '+'

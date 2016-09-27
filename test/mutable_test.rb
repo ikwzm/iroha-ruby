@@ -37,30 +37,21 @@ module MutableTest
   class  IInstruction
     include Iroha::Modules::Mutable::IInstruction
   end
-  class IResource
-    def self.convert_from(resource)
-      res_class = resource.class.to_s.split(/::/).last
-      IResource.const_get(res_class).convert_from(resource)
-    end
+  module Resource
     class Set
-      attr_writer   :_id
-      attr_accessor :_immutable
+      include Iroha::Modules::Mutable::IResource
     end
     class Add
-      attr_writer   :_id
-      attr_accessor :_immutable
+      include Iroha::Modules::Mutable::IResource
     end
     class Sub
-      attr_writer   :_id
-      attr_accessor :_immutable
+      include Iroha::Modules::Mutable::IResource
     end
     class ChannelRead
-      attr_writer   :_id
-      attr_accessor :_immutable
+      include Iroha::Modules::Mutable::IResource
     end
     class ChannelWrite
-      attr_writer   :_id
-      attr_accessor :_immutable
+      include Iroha::Modules::Mutable::IResource
     end
   end
 end
@@ -212,9 +203,9 @@ error += test("Test 3.9", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
 )
 (RESOURCES)))")
 
-tab._add_new_resource(MutableTest::IResource::Set, [int32], [int32], MutableTest::IParams.new, {})
-tab._add_new_resource(MutableTest::IResource::Set, [int32], [int32], MutableTest::IParams.new, {})
-tab._add_new_resource(MutableTest::IResource::ChannelWrite, [], [int32], MutableTest::IParams.new, {})
+tab._add_new_resource(MutableTest::Resource::Set, [int32], [int32], MutableTest::IParams.new, {})
+tab._add_new_resource(MutableTest::Resource::Set, [int32], [int32], MutableTest::IParams.new, {})
+tab._add_new_resource(MutableTest::Resource::ChannelWrite, [], [int32], MutableTest::IParams.new, {})
 tab._find_resource(3)._immutable = true
 error += test("Test 4.1", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
 (REGISTERS 
@@ -227,7 +218,7 @@ error += test("Test 4.1", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
   (RESOURCE 2 set ((INT 32)) ((INT 32)) (PARAMS))
   (RESOURCE 3 channel-write () ((INT 32)) (PARAMS))
 )))")
-tab._add_new_resource(MutableTest::IResource::ChannelRead , [int32], [], MutableTest::IParams.new, {})
+tab._add_new_resource(MutableTest::Resource::ChannelRead , [int32], [], MutableTest::IParams.new, {})
 tab._find_resource(4)._immutable = true
 error += test("Test 4.2", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
 (REGISTERS 
@@ -253,7 +244,7 @@ error += test("Test 4.3", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
   (RESOURCE 3 channel-write () ((INT 32)) (PARAMS))
   (RESOURCE 4 channel-read  ((INT 32)) () (PARAMS))
 )))")
-tab._add_new_resource(MutableTest::IResource::Add, [int32,int32], [int32], MutableTest::IParams.new, {})
+tab._add_new_resource(MutableTest::Resource::Add, [int32,int32], [int32], MutableTest::IParams.new, {})
 error += test("Test 4.4", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
 (REGISTERS 
   (REGISTER 1 reg_1 REG (INT 32) ())
@@ -267,7 +258,7 @@ error += test("Test 4.4", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
   (RESOURCE 5 add  ((INT 32)(INT 32)) ((INT 32)) (PARAMS))
 )))")
 tab._delete_resource(tab._find_resource(2))
-tab._add_new_resource(MutableTest::IResource::Sub, [int32,int32], [int32], MutableTest::IParams.new, {})
+tab._add_new_resource(MutableTest::Resource::Sub, [int32,int32], [int32], MutableTest::IParams.new, {})
 error += test("Test 4.5", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
 (REGISTERS 
   (REGISTER 1 reg_1 REG (INT 32) ())
@@ -296,7 +287,7 @@ error += test("Test 4.6", design, "(PARAMS)(MODULE 1 mod_3 (PARAMS)(TABLE 1
 
 tab._add_new_register(MutableTest::IRegister, :reg_4, :REG  , int32, nil)
 tab._add_new_register(MutableTest::IRegister, :reg_5, :REG  , int32, nil)
-tab._add_new_resource(MutableTest::IResource::Set, [int32], [int32], MutableTest::IParams.new, {})
+tab._add_new_resource(MutableTest::Resource::Set, [int32], [int32], MutableTest::IParams.new, {})
 tab._add_new_state(MutableTest::IState, :state_1, [])
 tab._add_new_state(MutableTest::IState, :state_2, [])
 tab._add_new_state(MutableTest::IState, :state_3, [])

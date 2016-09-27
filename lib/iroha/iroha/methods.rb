@@ -19,12 +19,13 @@ module Iroha
     franchisee.const_set(:IInstruction, Class.new(franchisor.const_get(:IInstruction)))
     franchisee.const_set(:IValueType  , Class.new(franchisor.const_get(:IValueType  )))
     franchisee.const_set(:IParams     , Class.new(franchisor.const_get(:IParams     )))
+    franchisee.const_set(:Resource    , Module.new)
     franchisor_resource_class = franchisor.const_get(:IResource)
     ObjectSpace.each_object(Class).select{|klass| klass.superclass == franchisor_resource_class}.each do |res_class|
       class_name = res_class.to_s.split(/::/).last.to_sym
-      if class_name != :IResource then
-        franchisee.const_get(:IResource).const_set(class_name, Class.new(res_class))
-        ## p "== #{class_name} == #{franchisee.const_get(:IResource).const_get(class_name)}"
+      if class_name != :Resource then
+        franchisee.const_get(:Resource).const_set(class_name, Class.new(res_class))
+        # p "== #{class_name} == #{franchisee.const_get(:Resource).const_get(class_name)}"
       end
     end
   end

@@ -1,4 +1,4 @@
-class Iroha::IResource
+module Iroha::Resource
 
   class ChannelRead  < Iroha::IResource
     CLASS_NAME   = "channel-read"

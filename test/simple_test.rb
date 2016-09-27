@@ -28,6 +28,7 @@ Dir::glob("../examples/*.rb").each do |target_file_name|
   original_file_name = target_file_name.gsub(/\.rb$/, ".iroha")
   error += test(target_file_name, original_file_name)
 end
+
 if error > 0 then
     puts "!!!! NG !!!! DONE"
 else

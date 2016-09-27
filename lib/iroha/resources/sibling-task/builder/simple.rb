@@ -1,4 +1,4 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class SiblingTask
     RESOURCE_PROC = Proc.new { |name,type| __add_resource(__method__, name, [type], [], {}, {}) }
@@ -30,26 +30,30 @@ class Iroha::Builder::Simple::IResource
         fail "Error: invalid task"
       end
     end
+
     def _resolve_reference
       if @_ref_task.class == Iroha::Builder::Simple::Reference then
-        task  = @ref_task.resolve
-        fail "Error: can not found task Reference(#{@ref_task.args})" if task.nil?
+        task  = @_ref_task.resolve
+        fail "Error: can not found task Reference(#{@_ref_task.args})" if task.nil?
         callee(task)
       end
     end
+
     def callee(task)
       if task.class == SiblingTask then
-        @_callee_table_id = {:MODULE => task._owner_module._id, :TABLE => task._owner_table._id}
+        _set_callee_table(task._owner_table)
       else
         fail "Error: invalid task"
       end
     end
+
     def call(regs)
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?
       fail "Error: source is not register" if regs.class != Iroha::Builder::Simple::IRegister
       state.__add_instruction(self, [], [], [regs], [])
     end
+
     def wait
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?

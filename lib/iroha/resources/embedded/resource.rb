@@ -1,4 +1,4 @@
-class Iroha::IResource
+module Iroha::Resource
 
   class Embedded < Iroha::IResource
     CLASS_NAME   = "embedded"

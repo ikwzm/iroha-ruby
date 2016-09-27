@@ -1,4 +1,4 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class ChannelRead
     RESOURCE_PROC = Proc.new { |name, type| __add_resource(__method__, name, [type], [type], {}, {}) }

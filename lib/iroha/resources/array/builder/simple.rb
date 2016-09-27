@@ -1,4 +1,4 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class Array    
     RESOURCE_PROC     = Proc.new{|name, addr_width, value_type, ownership, mem_type|

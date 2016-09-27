@@ -1,4 +1,4 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class ExtInput
     RESOURCE_PROC = Proc.new{|name, width| __add_resource(__method__, name, [], [], {INPUT:  name, WIDTH: width}, {})}

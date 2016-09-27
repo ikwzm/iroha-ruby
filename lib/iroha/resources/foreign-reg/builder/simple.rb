@@ -1,7 +1,8 @@
-class Iroha::Builder::Simple::IResource
+module Iroha::Builder::Simple::Resource
 
   class ForeignReg
     attr_accessor :_ref_regs
+
     RESOURCE_PROC = Proc.new do |name, regs|
       if    regs.class == IRegister then
         resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => [regs._owner_module._id, regs._owner_table._id, regs._id]})
@@ -19,13 +20,15 @@ class Iroha::Builder::Simple::IResource
         fail "Error: invalid register"
       end
     end
+
     def _resolve_reference
       if @_ref_regs.class == Reference then
-        regs = @_ref_regs.resolve
-        fail "Error: can not found register Reference(#{@_ref_regs.args})" if regs.class != Iroha::Builder::Simple::IRegister
-        @_foreign_register_id = {:MODULE => regs._owner_module._id, :TABLE => regs._owner_table._id, :REGISTER => regs._id}
+        register = @_ref_regs.resolve
+        fail "Error: can not found register Reference(#{@_ref_regs.args})" if register.class != Iroha::Builder::Simple::IRegister
+        _set_foreign_register(register)
       end
     end
+
     define_method('<=') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?
@@ -33,6 +36,7 @@ class Iroha::Builder::Simple::IResource
       state.__add_instruction(self, [], [], [regs], [])
       return self
     end
+
     define_method('=>') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?
