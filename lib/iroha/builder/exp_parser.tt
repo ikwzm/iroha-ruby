@@ -202,15 +202,19 @@ grammar Exp
   end
 
   rule value_type
-    space? '(' space? type:label space width:number space? ')' space? {
+    space? '(' space? 'UINT'  space width:number space? ')' space? {
       def get(design)
-        if    (type.text_value == "UINT") then
-          Iroha::Type::Numeric.new(false, width.text_value.to_i)
-        elsif (type.text_value == "INT" ) then
-          Iroha::Type::Numeric.new(true , width.text_value.to_i)
-        else
-          abort "Invalid value type #{type.text_value}."
-        end
+        Iroha::Type::Numeric.new(false, width.text_value.to_i)
+      end
+    } /
+    space? '(' space? 'INT'   space width:number space? ')' space? {
+      def get(design)
+        Iroha::Type::Numeric.new(true , width.text_value.to_i)
+      end
+    } /
+    space? '(' space? 'STATE' space module_id space table_id space? ')' space? {
+      def get(design)
+        Iroha::Type::State.new(module_id.get(design), table_id.get(design))
       end
     }
   end

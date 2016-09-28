@@ -4,7 +4,11 @@ module Iroha::Builder::Simple::Resource
     attr_accessor :_ref_resources
 
     RESOURCE_PROC = Proc.new do |name, type, *resources|
-      params = {:INPUT => name, :WIDTH => type._width}
+      if type._width.nil? then
+        params = {:INPUT => name}
+      else
+        params = {:INPUT => name, :WIDTH => type._width}
+      end
       resource = __add_resource(__method__, name, [], [type], params, {:"PORT-INPUT" => nil})
       resource._ref_resources = resources
       return resource
@@ -33,7 +37,7 @@ module Iroha::Builder::Simple::Resource
     end
 
     define_method('<=') do |regs|
-      fail "Error: can not connect PortOut(#{_id_to_str}) to #{regs._id_to_str}" if regs.class != PortOutput
+      fail "Error: can not connect PortOut(#{_id_to_str}) to #{regs._id_to_str}" if regs.class != PortOutput and regs.class != CurrentState
       self._add_connection(regs._owner_module._id, regs._owner_table._id, regs._id)
       regs._add_connection(self._owner_module._id, self._owner_table._id, self._id)
       return self
@@ -44,7 +48,11 @@ module Iroha::Builder::Simple::Resource
     attr_accessor :_ref_resources
 
     RESOURCE_PROC = Proc.new do |name, type, *resources| 
-      params = {:OUTPUT => name, :WIDTH => type._width}
+      if type._width.nil? then
+        params = {:OUTPUT => name}
+      else
+        params = {:OUTPUT => name, :WIDTH => type._width}
+      end
       resource = __add_resource(__method__, name, [type], [], params, nil)
       resource._ref_resources = resources
       return resource

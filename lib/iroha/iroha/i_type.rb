@@ -33,9 +33,11 @@ module Iroha
 
     class State < Iroha::IType
       attr_reader :_module_id, :_table_id
+      attr_reader :_width
       def initialize(module_id, table_id)
         @_module_id = module_id
         @_table_id  = table_id
+        @_width     = nil
       end
 
       def _to_exp

@@ -1,0 +1,26 @@
+(PARAMS)
+(MODULE 1 mod
+  (PARAMS)
+  (TABLE 1 tab_1
+    (REGISTERS
+    )
+    (RESOURCES
+      (RESOURCE 1 current-state () ((STATE 1 1)) (PARAMS (OUTPUT curr_state)))
+    )
+    (INITIAL 1)
+    (STATE 1
+    )
+  )
+  (TABLE 2 tab_2
+    (REGISTERS
+      (REGISTER 1 curr_state_i WIRE (STATE 1 1) ())
+    )
+    (RESOURCES
+      (RESOURCE 1 port-input  () ((STATE 1 1)) (PARAMS (INPUT  curr_state)) (PORT-INPUT 1 1 1))
+    )
+    (INITIAL 1)
+    (STATE 1
+      (INSN 1 port-input 1 () () () (1))
+    )
+  )
+)

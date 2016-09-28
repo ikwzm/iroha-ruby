@@ -165,6 +165,12 @@ module Iroha::Builder::Simple
       return type
     end
 
+    def StateType(table)
+      type = Type::State.new(table._owner_module._id, table._id)
+      type._assign_value = nil
+      return type
+    end
+
     def Ref(*args)
       return Reference.new(@_owner_design, args)
     end
