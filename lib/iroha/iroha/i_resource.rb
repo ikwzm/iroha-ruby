@@ -9,8 +9,8 @@ module Iroha
       @_class_name   = class_name      ## TYPE: string
       @_is_exclusive = is_exclusive    ## TYPE: boolean
       @_id           = id              ## TYPE: id
-      @_input_types  = input_types     ## TYPE: Array[Iroha::IValueType]
-      @_output_types = output_types    ## TYPE: Array[Iroha::IValueType]
+      @_input_types  = input_types     ## TYPE: Array[Iroha::IType]
+      @_output_types = output_types    ## TYPE: Array[Iroha::IType]
       @_params       = params          ## TYPE: Iroha::IParams
       @_option       = Hash.new;       ## Type: Hash {name:string, value:string or number}
       @_owner_design = nil
@@ -51,7 +51,7 @@ module Iroha
       class_name   = resource.class.to_s.split(/::/).last
       parent_class = Iroha.parent_class(self)
       params_class = parent_class.const_get(:IParams)
-      type_class   = parent_class.const_get(:IValueType)
+      type_class   = parent_class.const_get(:IType)
       id           = resource._id
       input_types  = resource._input_types.map{ |value_type| type_class.convert_from(value_type)}
       output_types = resource._output_types.map{|value_type| type_class.convert_from(value_type)}

@@ -85,10 +85,10 @@ end
 error = 0
 
 design = MutableTest::IDesign.new
-int32  = MutableTest::IValueType.new(true, 32)
-int24  = MutableTest::IValueType.new(true, 24)
-int16  = MutableTest::IValueType.new(true, 16)
-int08  = MutableTest::IValueType.new(true,  8)
+int32  = MutableTest::Type::Numeric.new(true, 32)
+int24  = MutableTest::Type::Numeric.new(true, 24)
+int16  = MutableTest::Type::Numeric.new(true, 16)
+int08  = MutableTest::Type::Numeric.new(true,  8)
 
 error += test("Test 1.1", design, "(PARAMS)")
 design._add_new_module(MutableTest::IModule, :mod_1, nil, MutableTest::IParams.new, [])

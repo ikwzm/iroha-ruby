@@ -6,8 +6,8 @@ module Iroha::Resource
 
     def initialize(id, input_types, output_types, params, option)
       if option.key?(:ARRAY) and
-         (option[:ARRAY][0].kind_of?(Integer          )) and
-         (option[:ARRAY][1].kind_of?(Iroha::IValueType)) and
+         (option[:ARRAY][0].kind_of?(Integer     )) and
+         (option[:ARRAY][1].kind_of?(Iroha::IType)) and
          (option[:ARRAY][2] == :EXTERNAL or option[:ARRAY][2] == :INTERNAL) and
          (option[:ARRAY][3] == :RAM      or option[:ARRAY][3] == :ROM     ) then
         super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, nil)

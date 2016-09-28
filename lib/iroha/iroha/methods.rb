@@ -17,7 +17,7 @@ module Iroha
     franchisee.const_set(:IResource   , Class.new(franchisor.const_get(:IResource   )))
     franchisee.const_set(:IState      , Class.new(franchisor.const_get(:IState      )))
     franchisee.const_set(:IInstruction, Class.new(franchisor.const_get(:IInstruction)))
-    franchisee.const_set(:IValueType  , Class.new(franchisor.const_get(:IValueType  )))
+    franchisee.const_set(:IType       , Class.new(franchisor.const_get(:IType       )))
     franchisee.const_set(:IParams     , Class.new(franchisor.const_get(:IParams     )))
     franchisee.const_set(:Resource    , Module.new)
     franchisor_resource_class = franchisor.const_get(:IResource)
@@ -27,6 +27,12 @@ module Iroha
         franchisee.const_get(:Resource).const_set(class_name, Class.new(res_class))
         # p "== #{class_name} == #{franchisee.const_get(:Resource).const_get(class_name)}"
       end
+    end
+    franchisee.const_set(:Type, Module.new)
+    franchisor_type_class = franchisor.const_get(:IType)
+    ObjectSpace.each_object(Class).select{|klass| klass.superclass == franchisor_type_class}.each do |type_class|
+      class_name = type_class.to_s.split(/::/).last.to_sym
+      franchisee.const_get(:Type).const_set(class_name, Class.new(type_class))
     end
   end
 

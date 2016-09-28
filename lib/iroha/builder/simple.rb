@@ -154,11 +154,15 @@ module Iroha::Builder::Simple
     end
 
     def Unsigned(width)
-      return IValueType.new(false, width)
+      type = Type::Numeric.new(false, width)
+      type._assign_value = nil
+      return type
     end
 
     def Signed(width)
-      return IValueType.new(true , width)
+      type = Type::Numeric.new(true , width)
+      type._assign_value = nil
+      return type
     end
 
     def Ref(*args)
@@ -190,7 +194,7 @@ module Iroha::Builder::Simple
     end
 
     def __add_register(name, klass, type)
-      fail "Error: illegal type(#{type.class})" if type.class != IValueType
+      fail "Error: illegal type(#{type.class})" if type.kind_of?(Iroha::IType) == false
       register = _add_new_register(IRegister, name, klass, type, type._assign_value)
       if name.class == Symbol then
         self.class.send(   :define_method, name, Proc.new do register; end)
@@ -334,31 +338,31 @@ module Iroha::Builder::Simple
     end
 
     def To_Unsigned(value, width)
-      type = IValueType.new(false, width)
+      type = Type::Numeric.new(false, width)
       type._assign_value = value
       return @_owner_table.__add_register(nil, :CONST, type)
     end
 
     def To_Signed(value, width)
-      type = IValueType.new(true , width)
+      type = Type::Numeric.new(true , width)
       type._assign_value = value
       return @_owner_table.__add_register(nil, :CONST, type)
     end
 
   end
 
-  class IValueType
+  module ITypeModule
     attr_accessor :_assign_value
-    def initialize(is_signed, width)
-      super
-      @_assign_value = nil
-    end
-
     define_method('<=') do |value|
       @_assign_value = value
       return self
     end
-    
+  end
+
+  TYPE_CLASSES = Iroha::Builder::Simple::Type.constants.map{|c| Iroha::Builder::Simple::Type.const_get(c)}
+
+  TYPE_CLASSES.each do |type_class|
+    type_class.include(Iroha::Builder::Simple::ITypeModule)
   end
 
   Iroha::RESOURCE_PATH_LIST.each do |path|

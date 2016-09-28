@@ -1823,9 +1823,9 @@ module Exp
   module ValueType1
     def get(design)
       if    (type.text_value == "UINT") then
-        Iroha::IValueType.new(false, width.text_value.to_i)
+        Iroha::Type::Numeric.new(false, width.text_value.to_i)
       elsif (type.text_value == "INT" ) then
-        Iroha::IValueType.new(true , width.text_value.to_i)
+        Iroha::Type::Numeric.new(true , width.text_value.to_i)
       else
         abort "Invalid value type #{type.text_value}."
       end

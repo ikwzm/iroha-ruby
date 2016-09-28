@@ -8,7 +8,7 @@ module Iroha
       @_id           = id                          ## TYPE: number
       _set_name(name)                              ## TYPE: symbol or number or nil
       @_class        = klass                       ## TYPE: symbol
-      @_type         = type                        ## TYPE: Iroha::IValueType
+      @_type         = type                        ## TYPE: Iroha::IType
       @_value        = (value == "") ? nil : value ## TYPE: string or number
       @_owner_design = nil
       @_owner_module = nil
@@ -59,7 +59,7 @@ module Iroha
 
     def self.convert_from(register)
       parent_class = Iroha.parent_class(self)
-      type_class   = parent_class.const_get(:IValueType)
+      type_class   = parent_class.const_get(:IType)
       id           = register._id
       name         = register._name
       klass        = register._class

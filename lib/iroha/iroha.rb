@@ -7,7 +7,7 @@ module Iroha
   require_relative 'iroha/i_register'
   require_relative 'iroha/i_state'
   require_relative 'iroha/i_instruction'
-  require_relative 'iroha/i_value_type'
+  require_relative 'iroha/i_type'
   require_relative 'iroha/i_params'
   require_relative 'iroha/methods'
 
