@@ -18,7 +18,7 @@ module Iroha::Modules::UseInstructions
 
   module IModule
     def _update_use_instructions
-      @_tables.each do |table|
+      @_tables.values.each do |table|
         table._update_use_instructions
       end
     end
@@ -26,21 +26,21 @@ module Iroha::Modules::UseInstructions
 
   module ITable
     def _update_use_instructions
-      @_registers.each{|register| register._get_instructions = [];
-                                  register._set_instructions = []}
-      @_resources.each{|resource| resource._use_instructions = []}
-      @_states.each do |state|
+      @_registers.values.each{|register| register._get_instructions = [];
+                                         register._set_instructions = []}
+      @_resources.values.each{|resource| resource._use_instructions = []}
+      @_states.values.each do |state|
         state._set_use_instructions
       end
-      @_registers.each{|register| register._get_instructions.uniq!;
-                                  register._set_instructions.uniq!}
-      @_resources.each{|resource| resource._use_instructions.uniq!}
+      @_registers.values.each{|register| register._get_instructions.uniq!;
+                                         register._set_instructions.uniq!}
+      @_resources.values.each{|resource| resource._use_instructions.uniq!}
     end
   end
 
   module IState
     def _set_use_instructions
-      @_instructions.each do |insn|
+      @_instructions.values.each do |insn|
         insn._set_register_use_instructions
         insn._set_resource_use_instructions
       end
