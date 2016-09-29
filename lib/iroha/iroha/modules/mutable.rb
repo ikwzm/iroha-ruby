@@ -2,8 +2,6 @@ require_relative './addable'
 
 module Iroha
   module Modules
-    module Mutable
-    end
   end
 end
 

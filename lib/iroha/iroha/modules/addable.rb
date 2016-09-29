@@ -2,8 +2,6 @@
 
 module Iroha
   module Modules
-    module Addable
-    end
   end
 end
 
