@@ -6,7 +6,8 @@ require_relative '../lib/iroha/iroha/modules/mutable.rb'
 DEBUG=false
 
 module MutableTest
-  Iroha.franchise_class(Iroha,self)
+  Iroha.franchise_class(self, Iroha)
+  Iroha.include_module( self, Iroha::Modules::Mutable)
   class  IDesign
     include Iroha::Modules::Mutable::IDesign
     def initialize
@@ -26,32 +27,6 @@ module MutableTest
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
       super
       _add_new_initialize()
-    end
-  end
-  class  IRegister
-    include Iroha::Modules::Mutable::IRegister
-  end
-  class  IState
-    include Iroha::Modules::Mutable::IState
-  end
-  class  IInstruction
-    include Iroha::Modules::Mutable::IInstruction
-  end
-  module Resource
-    class Set
-      include Iroha::Modules::Mutable::IResource
-    end
-    class Add
-      include Iroha::Modules::Mutable::IResource
-    end
-    class Sub
-      include Iroha::Modules::Mutable::IResource
-    end
-    class ChannelRead
-      include Iroha::Modules::Mutable::IResource
-    end
-    class ChannelWrite
-      include Iroha::Modules::Mutable::IResource
     end
   end
 end

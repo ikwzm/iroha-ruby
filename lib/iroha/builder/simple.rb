@@ -4,7 +4,8 @@ require_relative '../iroha/modules/addable'
 module Iroha
   module Builder
     module Simple
-      Iroha.franchise_class(Iroha,self)
+      Iroha.franchise_class(self, Iroha)
+      Iroha.include_module( self, Iroha::Modules::Addable)
     end
   end
 end
@@ -20,8 +21,6 @@ module Iroha::Builder::Simple
   end
 
   class IDesign
-
-    include Iroha::Modules::Addable::IDesign
 
     def initialize(&block)
       super
@@ -68,8 +67,6 @@ module Iroha::Builder::Simple
 
   class IModule
 
-    include Iroha::Modules::Addable::IModule
-
     def initialize(id, name, parent_id, params, table_list)
       super
       _add_new_initialize()
@@ -111,8 +108,6 @@ module Iroha::Builder::Simple
   end
 
   class ITable
-
-    include Iroha::Modules::Addable::ITable
 
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
       super(id, name, resource_list, register_list, state_list, init_state_id)
@@ -292,8 +287,6 @@ module Iroha::Builder::Simple
   end
 
   class IState
-
-    include Iroha::Modules::Addable::IState
 
     def __add_instruction(resource, op_resources, next_states, input_registers, output_registers)
       ## p "add_instruction(#{resource}, op_resources, next_states, #{input_registers.map{|r|r._id}}, #{output_registers.map{|r|r._id}})"

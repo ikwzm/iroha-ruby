@@ -1,5 +1,9 @@
+
+
 module Iroha
   module Modules
+    module Addable
+    end
   end
 end
 
@@ -164,6 +168,24 @@ module Iroha::Modules::Addable
       )
       return self._add_instruction(instruction)
     end
+  end
+
+  module IChannel
+  end
+  
+  module IRegister
+  end
+  
+  module IResource
+  end
+  
+  module IInstruction
+  end
+
+  module IType
+  end
+
+  module IParams
   end
 
 end

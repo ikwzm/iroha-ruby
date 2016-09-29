@@ -1,5 +1,12 @@
 require_relative './addable'
 
+module Iroha
+  module Modules
+    module Mutable
+    end
+  end
+end
+
 module Iroha::Modules::Mutable
 
   def self._reallocate_id(table, new_id_table)
@@ -71,11 +78,13 @@ module Iroha::Modules::Mutable
   end
 
   module IResource
+    include Iroha::Modules::Addable::IResource
     attr_writer   :_id
     attr_accessor :_immutable
   end
   
   module IRegister
+    include Iroha::Modules::Addable::IRegister
     attr_writer   :_id
     attr_accessor :_immutable
   end
@@ -163,7 +172,20 @@ module Iroha::Modules::Mutable
   end
 
   module IInstruction
+    include Iroha::Modules::Addable::IInstruction
     attr_writer :_id, :_res_id, :_next_states, :_input_registers, :_output_registers
   end
   
+  module IChannel
+    include Iroha::Modules::Addable::IChannel
+  end
+
+  module IType
+    include Iroha::Modules::Addable::IType
+  end
+
+  module IParams
+    include Iroha::Modules::Addable::IParams
+  end
+
 end
