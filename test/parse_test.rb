@@ -1,12 +1,10 @@
-require 'treetop'
 require 'pp'
-require_relative '../lib/iroha'
-require_relative '../lib/iroha/builder/exp_parser'
+require_relative '../lib/iroha/builder/exp'
 
 DEBUG=false
 
 def test(target_file_name)
-  parser   = Iroha::ExpParser.new
+  parser   = Iroha::Builder::Exp::ExpParser.new
   original = `cat  #{target_file_name}`
   result   = parser.parse(original)
   if !result then

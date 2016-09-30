@@ -1,4 +1,4 @@
-module Iroha
+module Iroha::Builder::Exp
 
 grammar Exp
 

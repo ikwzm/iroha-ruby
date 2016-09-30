@@ -1,7 +1,6 @@
-require 'treetop'
-require_relative '../lib/iroha.rb'
-require_relative '../lib/iroha/builder/exp_parser.rb'
-require_relative '../lib/iroha/iroha/modules/mutable.rb'
+require_relative '../lib/iroha'
+require_relative '../lib/iroha/builder/exp'
+require_relative '../lib/iroha/iroha/modules/mutable'
 
 DEBUG=false
 
@@ -32,14 +31,7 @@ module MutableTest
 end
 
 def test(title, design, expect)
-  parser = Iroha::ExpParser.new
-  result = parser.parse(expect)
-  if !result then
-    puts parser.failure_reason
-    puts "!!!! NG !!!! #{title}"
-    return 1
-  end
-  expect_exp = result.get.to_exp("")
+  expect_exp = Iroha::Builder::Exp.parse(expect).to_exp("")
   design_exp = design.to_exp("")
   o = design_exp.gsub(/\s+/, " ").gsub(/\s+\(/, " (").gsub(/\(\s*/, "(").gsub(/\s*\)/, ")").gsub(/\)\s*\(/, ") (").gsub(/\)\s*$/, ")")
   r = expect_exp.gsub(/\s+/, " ").gsub(/\s+\(/, " (").gsub(/\(\s*/, "(").gsub(/\s*\)/, ")").gsub(/\)\s*\(/, ") (").gsub(/\)\s*$/, ")")
