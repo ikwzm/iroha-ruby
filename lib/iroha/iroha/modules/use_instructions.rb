@@ -51,16 +51,16 @@ module Iroha::Modules::UseInstructions
     def _set_register_use_instructions
       @_input_registers.each  do |reg_id|
         register = @_owner_table._find_register(reg_id)
-        register._get_instructions.push(@_id)
+        register._get_instructions.push(self)
       end
       @_output_registers.each do |reg_id|
         register = @_owner_table._find_register(reg_id)
-        register._set_instructions.push(@_id)
+        register._set_instructions.push(self)
       end
     end
     def _set_resource_use_instructions
       resource = @_owner_table._find_resource(@_res_id)
-      resource._use_instructions.push(@_id)
+      resource._use_instructions.push(self)
     end
   end
 
