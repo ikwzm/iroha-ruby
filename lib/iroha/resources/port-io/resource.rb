@@ -48,7 +48,7 @@ module Iroha::Resource
       else
         conn     = @_connections[0]
         resource = @_owner_design._find_resource(conn[:MODULE], conn[:TABLE], conn[:RESOURCE])
-        if resource == nil then
+        if resource.nil? then
           fail "Not found #{CLASS_NAME} resource(#{conn}) in #{_id_to_str}"
         end
         return "(#{OPTION_NAME} #{resource._owner_module._id} #{resource._owner_table._id} #{resource._id})"
@@ -67,7 +67,10 @@ module Iroha::Resource
       if @_connections.size == 1 then
         connection  = @_connections[0]
         port_output = @_owner_design._find_resource(connection[:MODULE], connection[:TABLE], connection[:RESOURCE])
-        port_output._add_connection(@_owner_module._id, @_owner_table._id, @_id)
+        if port_output.nil? then
+          fail "Not found port-output resource(#{connection}) in #{_id_to_str}"
+        end
+        port_output._connect_to_port_input(self)
       end
     end
   end
@@ -80,6 +83,14 @@ module Iroha::Resource
     def initialize(id, input_types, output_types, params, option)
       super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
       @_connections = []
+    end
+
+    def _connect_to_port_input(port_input)
+      if port_input.kind_of?(PortInput) then
+        _add_connection(port_input._owner_module._id, port_input._owner_table._id, port_input._id)
+      else
+        fail "Non port-input(#{port_input.class}) connect to port-output(#{id_to_str})"
+      end
     end
 
     def _add_connection(module_id, table_id, resource_id)
