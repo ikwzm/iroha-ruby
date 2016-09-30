@@ -63,6 +63,13 @@ module Iroha::Resource
       end
     end
 
+    def _connect_to_port_output
+      if @_connections.size == 1 then
+        connection  = @_connections[0]
+        port_output = @_owner_design._find_resource(connection[:MODULE], connection[:TABLE], connection[:RESOURCE])
+        port_output._add_connection(@_owner_module._id, @_owner_table._id, @_id)
+      end
+    end
   end
 
   class PortOutput < Iroha::IResource
