@@ -34,14 +34,6 @@ module Iroha::Resource
       end
     end
 
-    def _add_connection(module_id, table_id, resource_id)
-      if @_connections.size == 0 then
-        @_connections.push({:MODULE => module_id, :TABLE => table_id, :RESOURCE => resource_id})
-      else
-        fail "Can not connect two of the resources to #{CLASS_NAME} #{_id_to_str}"
-      end
-    end
-
     def _option_clone
       if @_connections.size == 0 then
         return {OPTION_NAME => nil}
@@ -62,6 +54,15 @@ module Iroha::Resource
         return "(#{OPTION_NAME} #{resource._owner_module._id} #{resource._owner_table._id} #{resource._id})"
       end
     end
+
+    def _add_connection(module_id, table_id, resource_id)
+      if @_connections.size == 0 then
+        @_connections.push({:MODULE => module_id, :TABLE => table_id, :RESOURCE => resource_id})
+      else
+        fail "Can not connect two of the resources to #{CLASS_NAME} #{_id_to_str}"
+      end
+    end
+
   end
 
   class PortOutput < Iroha::IResource
@@ -76,8 +77,8 @@ module Iroha::Resource
 
     def _add_connection(module_id, table_id, resource_id)
       @_connections.push({:MODULE => module_id, :TABLE => table_id, :RESOURCE => resource_id})
+      @_connections.uniq!
     end
-
   end
 
 end
