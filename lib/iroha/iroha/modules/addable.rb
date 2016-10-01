@@ -7,40 +7,59 @@ end
 
 module Iroha::Modules::Addable
 
+  class  IdentfierGenerator
+
+    def  initialize(init_id, inc, values)
+      @init_id = init_id
+      @inc     = (inc == 0 or inc == nil) ? 1 : inc
+      @new_id  = @init_id
+      reset(values)
+    end
+
+    def  update
+      new_id  = @new_id
+      @new_id = @new_id + @inc
+      return new_id
+    end
+
+    def  reset(values)
+      @new_id = @init_id
+      if @inc > 0 then
+        values.each do |value|
+          if value._id >= @new_id then
+            @new_id = value._id + @inc
+          end
+        end
+      else
+        values.each do |value|
+          if value._id <= @new_id then
+            @new_id = value._id + @inc
+          end
+        end
+      end
+    end
+    
+  end
+
   module IDesign
 
-    def _add_new_initialize
-      _add_new_module_id_initialize
-      _add_new_channel_id_initialize
-    end
+    attr_reader :_module_id_generator
+    attr_reader :_channel_id_generator
 
-    def _add_new_module_id_initialize
-      @_add_new_module_id  = 1
-      self._modules.values.each do |mod|
-        if mod._id >= @_add_new_module_id then
-          @_add_new_module_id = mod._id + 1
-        end
-      end
-    end
-      
-    def _add_new_channel_id_initialize
-      @_add_new_channel_id  = 1
-      self._channels.values.each do |channel|
-        if channel._id >= @_add_new_channel_id then
-          @_add_new_channel_id = channel._id + 1
-        end
-      end
+    def _add_new_initialize
+      @_module_id_generator  = IdentfierGenerator.new(1,1, self._modules .values)
+      @_channel_id_generator = IdentfierGenerator.new(1,1, self._channels.values)
     end
 
     def _add_new_module(module_class, name, parent_id, params, table_list)
-      mod = module_class.new(@_add_new_module_id, name, parent_id, params, table_list)
-      @_add_new_module_id = @_add_new_module_id + 1
+      new_id = @_module_id_generator.update
+      mod    = module_class.new(new_id, name, parent_id, params, table_list)
       return self._add_module(mod)
     end
 
     def _add_new_channel(channel_class, type, r_module_id, r_table_id, r_resource_id, w_module_id, w_table_id, w_resource_id)
-      channel = channel_class.new(@_add_new_channel_id, type, r_module_id, r_table_id, r_resource_id, w_module_id, w_table_id, w_resource_id)
-      @_add_new_channel_id = @_add_new_channel_id + 1
+      new_id  = @_channel_id_generator.update
+      channel = channel_class.new(new_id, type, r_module_id, r_table_id, r_resource_id, w_module_id, w_table_id, w_resource_id)
       return self._add_channel(channel)
     end
       
@@ -48,22 +67,15 @@ module Iroha::Modules::Addable
 
   module IModule
 
+    attr_reader :_table_id_generator
+    
     def _add_new_initialize
-      _add_new_table_id_initialize
-    end
-
-    def _add_new_table_id_initialize
-      @_add_new_table_id = 1
-      self._tables.values.each do |table|
-        if table._id >= @_add_new_table_id then
-          @_add_new_table_id = table._id + 1
-        end
-      end
+      @_table_id_generator = IdentfierGenerator.new(1,1, self._tables.values)
     end
 
     def _add_new_table(table_class, name, resource_list, register_list, state_list, init_state_id)
-      table = table_class.new(@_add_new_table_id, name, resource_list, register_list, state_list, init_state_id)
-      @_add_new_table_id = @_add_new_table_id + 1
+      new_id = @_table_id_generator.update
+      table  = table_class.new(new_id, name, resource_list, register_list, state_list, init_state_id)
       return self._add_table(table)
     end
 
@@ -71,83 +83,35 @@ module Iroha::Modules::Addable
     
   module ITable
 
+    attr_reader :_register_id_generator
+    attr_reader :_resource_id_generator
+    attr_reader :_state_id_generator
+    attr_reader :_instruction_id_generator
     attr_writer :_init_state_id
 
     def _add_new_initialize
-      _add_new_register_id_initialize
-      _add_new_resource_id_initialize
-      _add_new_state_id_initialize
-      _add_new_instruction_id_initialize
+      @_register_id_generator    = IdentfierGenerator.new(1,1, self._registers.values)
+      @_resource_id_generator    = IdentfierGenerator.new(1,1, self._resources.values)
+      @_state_id_generator       = IdentfierGenerator.new(1,1, self._states.values)
+      @_instruction_id_generator = IdentfierGenerator.new(1,1, self._states.values.map{|state| state._instructions.values}.flatten)
     end
 
-    def _add_new_register_id_initialize
-      @_add_new_register_id = 1
-      self._registers.values.each do |register|
-        if register._id >= @_add_new_register_id then
-          @_add_new_register_id = register._id + 1
-        end
-      end
-    end
-
-    def _add_new_resource_id_initialize
-      @_add_new_resource_id = 1
-      self._resources.values.each do |resource|
-        if resource._id >= @_add_new_resource_id then
-          @_add_new_resource_id = resource._id + 1
-        end
-      end
-    end
-
-    def _add_new_state_id_initialize
-      @_add_new_state_id = 1
-      self._states.values.each do |state|
-        if state._id >= @_add_new_state_id then
-          @_add_new_state_id = state._id + 1
-        end
-      end
-    end
-
-    def _add_new_instruction_id_initialize
-      @_add_new_instruction_id = 1
-      self._states.values.each do |state|
-        state._instructions.values.each do |insn|
-          if insn._id >= @_add_new_instruction_id then
-            @_add_new_instruction_id = insn._id + 1
-          end
-        end
-      end
-    end
-      
     def _add_new_register(register_class, name, klass, type, value)
-      register = register_class.new(@_add_new_register_id, name, klass, type, value)
-      @_add_new_register_id = @_add_new_register_id + 1
+      new_id   = @_register_id_generator.update
+      register = register_class.new(new_id, name, klass, type, value)
       return self._add_register(register)
     end
 
     def _add_new_resource(resource_class, input_types, output_types, params, option)
-      resource = resource_class.new(@_add_new_resource_id, input_types, output_types, params, option)
-      @_add_new_resource_id = @_add_new_resource_id + 1
+      new_id   = @_resource_id_generator.update
+      resource = resource_class.new(new_id, input_types, output_types, params, option)
       return self._add_resource(resource)
     end
 
     def _add_new_state(state_class, name, instruction_list)
-      state    = state_class.new(@_add_new_state_id, name, instruction_list)
-      @_add_new_state_id = @_add_new_state_id + 1
+      new_id   = @_state_id_generator.update
+      state    = state_class.new(new_id, name, instruction_list)
       return self._add_state(state)
-    end
-
-    def _add_new_instruction(instruction_class, res_class, res_id, op_resources, next_states, input_registers, output_registers)
-      instruction = instruction_class.new(
-        @_add_new_instruction_id,
-        res_class               ,
-        res_id                  ,
-        op_resources            ,
-        next_states             ,
-        input_registers         ,
-        output_registers
-      )
-      @_add_new_instruction_id = @_add_new_instruction_id + 1
-      return instruction
     end
 
   end
@@ -155,15 +119,8 @@ module Iroha::Modules::Addable
   module IState
 
     def _add_new_instruction(instruction_class, res_class, res_id, op_resources, next_states, input_registers, output_registers)
-      instruction = self._owner_table._add_new_instruction(
-        instruction_class    ,
-        res_class            ,
-        res_id               ,
-        op_resources         ,
-        next_states          ,
-        input_registers      ,
-        output_registers
-      )
+      new_id      = self._owner_table._instruction_id_generator.update
+      instruction = instruction_class.new(new_id, res_class, res_id, op_resources, next_states, input_registers, output_registers)
       return self._add_instruction(instruction)
     end
   end

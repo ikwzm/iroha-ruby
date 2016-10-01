@@ -7,8 +7,8 @@ end
 
 module Iroha::Modules::Mutable
 
-  def self._reallocate_id(table, new_id_table)
-    new_id    = 1
+  def self._reallocate_id(id_gen, table, new_id_table)
+    id_gen.reset([])
     new_table = Hash.new
     immutable = Hash.new
     table.values.each do |item|
@@ -17,13 +17,16 @@ module Iroha::Modules::Mutable
     table.values.each do |item|
       old_id = item._id
       if immutable[item._id] != true then
-        while immutable[new_id] do new_id = new_id + 1; end
+        new_id = id_gen.update
+        while immutable[new_id] do
+          new_id = id_gen.update
+        end
         item._id = new_id
-        new_id   = new_id + 1
       end
       new_table[ item._id] = item
       new_id_table[old_id] = item._id
     end
+    id_gen.reset(new_table.values)
     return new_table
   end
 
@@ -45,13 +48,11 @@ module Iroha::Modules::Mutable
     end
     
     def _reallocate_modules_id
-      self._modules  = Iroha::Modules::Mutable._reallocate_id(self._modules , Hash.new)
-      _add_new_module_id_initialize
+      self._modules  = Iroha::Modules::Mutable._reallocate_id(self._module_id_generator , self._modules , Hash.new)
     end
 
     def _reallocate_channels_id
-      self._channels = Iroha::Modules::Mutable._reallocate_id(self._channels, Hash.new)
-      _add_new_channel_id_initialize
+      self._channels = Iroha::Modules::Mutable._reallocate_id(self._channel_id_generator, self._channels, Hash.new)
     end
 
   end
@@ -69,8 +70,7 @@ module Iroha::Modules::Mutable
     end
 
     def _reallocate_tables_id
-      self._tables = Iroha::Modules::Mutable._reallocate_id(self._tables, Hash.new)
-      _add_new_table_id_initialize
+      self._tables = Iroha::Modules::Mutable._reallocate_id(self._table_id_generator, self._tables, Hash.new)
     end
 
   end
@@ -110,19 +110,18 @@ module Iroha::Modules::Mutable
 
     def _reallocate_resources_id
       new_id_table  = Hash.new
-      new_resources = Iroha::Modules::Mutable._reallocate_id(self._resources, new_id_table)
+      new_resources = Iroha::Modules::Mutable._reallocate_id(self._resource_id_generator, self._resources, new_id_table)
       self._states.values.each do |state|
         state._instructions.values.each do |insn|
           insn._res_id = new_id_table[insn._res_id]
         end
       end
       self._resources = new_resources
-      _add_new_resource_id_initialize
     end
 
     def _reallocate_registers_id
       new_id_table  = Hash.new
-      new_registers = Iroha::Modules::Mutable._reallocate_id(self._registers, new_id_table)
+      new_registers = Iroha::Modules::Mutable._reallocate_id(self._register_id_generator, self._registers, new_id_table)
       self._states.values.each do |state|
         state._instructions.values.each do |insn|
           insn._input_registers  = insn._input_registers .map{|id| new_id_table[id]}
@@ -130,27 +129,22 @@ module Iroha::Modules::Mutable
         end
       end
       self._registers = new_registers
-      _add_new_register_id_initialize
     end
 
     def _reallocate_states_id
-      new_states   = Iroha::Modules::Mutable._reallocate_id(self._states, Hash.new)
-      self._states = new_states
-      _add_new_state_id_initialize
+      self._states  = Iroha::Modules::Mutable._reallocate_id(self._state_id_generator, self._states, Hash.new)
     end
     
     def _reallocate_instructions_id
-      new_id = 1
+      self._instruction_id_generator.reset([])
       self._states.values.each do |state|
         new_instructions = Hash.new
         state._instructions.values.each do |insn|
-          insn._id = new_id
-          new_id   = new_id + 1
+          insn._id = self._instruction_id_generator.update
           new_instructions[insn._id] = insn
         end
         state._instructions = new_instructions
       end
-      @_add_new_instruction_id = new_id
     end
 
   end
