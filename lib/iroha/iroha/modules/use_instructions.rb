@@ -17,21 +17,31 @@ module Iroha::Modules::UseInstructions
   end
 
   module IModule
+
     def _update_use_instructions
       @_tables.values.each do |table|
-        table._update_use_instructions
+        table._registers.values.each{|register| register._get_instructions = [] ;
+                                                register._set_instructions = [] }
+        table._resources.values.each{|resource| resource._use_instructions = [] }
+      end
+      @_tables.values.each do |table|
+        table._states.values.each   {|state   | state   ._set_use_instructions  }
+      end
+      @_tables.values.each do |table|
+        table._registers.values.each{|register| register._get_instructions.uniq!;
+                                                register._set_instructions.uniq!}
+        table._resources.values.each{|resource| resource._use_instructions.uniq!}
       end
     end
   end
 
   module ITable
+
     def _update_use_instructions
-      @_registers.values.each{|register| register._get_instructions = [];
-                                         register._set_instructions = []}
-      @_resources.values.each{|resource| resource._use_instructions = []}
-      @_states.values.each do |state|
-        state._set_use_instructions
-      end
+      @_registers.values.each{|register| register._get_instructions = [] ;
+                                         register._set_instructions = [] }
+      @_resources.values.each{|resource| resource._use_instructions = [] }
+      @_states.values.each   {|state   | state   ._set_use_instructions  }
       @_registers.values.each{|register| register._get_instructions.uniq!;
                                          register._set_instructions.uniq!}
       @_resources.values.each{|resource| resource._use_instructions.uniq!}
