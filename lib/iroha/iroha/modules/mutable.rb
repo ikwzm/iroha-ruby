@@ -113,7 +113,7 @@ module Iroha::Modules::Mutable
       new_resources = Iroha::Modules::Mutable._reallocate_id(self._resource_id_generator, self._resources, new_id_table)
       self._states.values.each do |state|
         state._instructions.values.each do |insn|
-          insn._res_id = new_id_table[insn._res_id]
+          insn._res_id = new_id_table.fetch(insn._res_id, insn._res_id)
         end
       end
       self._resources = new_resources
@@ -124,8 +124,8 @@ module Iroha::Modules::Mutable
       new_registers = Iroha::Modules::Mutable._reallocate_id(self._register_id_generator, self._registers, new_id_table)
       self._states.values.each do |state|
         state._instructions.values.each do |insn|
-          insn._input_registers  = insn._input_registers .map{|id| new_id_table[id]}
-          insn._output_registers = insn._output_registers.map{|id| new_id_table[id]}
+          insn._input_registers  = insn._input_registers .map{|id| new_id_table.fetch(id, id)}
+          insn._output_registers = insn._output_registers.map{|id| new_id_table.fetch(id, id)}
         end
       end
       self._registers = new_registers
