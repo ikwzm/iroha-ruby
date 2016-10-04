@@ -73,7 +73,17 @@ module Iroha::Builder::Simple
     end
 
     def ITable(name, &block)
-      table_class = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::ITable))
+      table_class = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::IStepTable))
+      table       = _add_new_table(table_class, name, [], [], [], nil)
+      self.class.send(:define_method, table._name, Proc.new do table; end)
+      if block_given? then
+        table.instance_eval(&block)
+      end
+      return table
+    end
+
+    def IFlow(name, &block)
+      table_class = self.class.const_set(name.capitalize, Class.new(Iroha::Builder::Simple::IFlowTable))
       table       = _add_new_table(table_class, name, [], [], [], nil)
       self.class.send(:define_method, table._name, Proc.new do table; end)
       if block_given? then
@@ -115,21 +125,6 @@ module Iroha::Builder::Simple
       @_singleton_classes = Hash.new
       @_state_class       = self.class.const_set(:State, Class.new(Iroha::Builder::Simple::IState))
       @_on_state          = nil
-    end
-
-    def IState(name, &block)
-      state = _add_new_state(@_state_class, name, [])
-      if @_init_state_id == nil
-        @_init_state_id = state._id
-      end
-      self   .class.send(:define_method, state._name, Proc.new do state; end)
-      @_state_class.send(:define_method, state._name, Proc.new do state; end)
-      if block_given? then
-        _state_entry(state)
-        state.instance_eval(&block)
-        _state_exit
-      end
-      return state
     end
 
     def Resource(class_name, name, input_types, output_types, params, option)
@@ -228,6 +223,60 @@ module Iroha::Builder::Simple
     end
 
   end
+
+  class IStepTable < ITable
+
+    def IState(name, &block)
+      state = _add_new_state(@_state_class, name, [])
+      if @_init_state_id == nil
+        @_init_state_id = state._id
+      end
+      self   .class.send(:define_method, state._name, Proc.new do state; end)
+      @_state_class.send(:define_method, state._name, Proc.new do state; end)
+      if block_given? then
+        _state_entry(state)
+        state.instance_eval(&block)
+        _state_exit
+      end
+      return state
+    end
+
+  end
+
+  class IFlowTable < ITable
+
+    def initialize(id, name, resource_list, register_list, state_list, init_state_id)
+      super(id, name, resource_list, register_list, state_list, init_state_id)
+      @dataflow_in_type     = Type::Numeric.new(false, 1)
+      @dataflow_in_register = nil
+      @dataflow_in_resource = _add_new_resource(Resource::DataFlowIn, [@dataflow_in_type], [], IParams.new, nil)
+    end
+
+    def IStage(*stage_names)
+      stage_list = stage_names.map do |stage_name|
+        _add_new_state(@_state_class, stage_name, [])
+      end
+      stage_list.each do |stage|
+        self   .class.send(:define_method, stage._name, Proc.new do stage; end)
+        @_state_class.send(:define_method, stage._name, Proc.new do stage; end)
+        if @_init_state_id == nil
+          @_init_state_id = stage._id
+        end
+        stage
+      end
+      stage_list.slice(0,stage_list.size-1).each_index do |i|
+        stage_list[i].Goto(stage_list[i+1])
+      end
+      if stage_list.size > 0 and @dataflow_in_register.nil? == false then
+        stage_list[0].__add_instruction(@dataflow_in_resource, [], [], [@dataflow_in_register], [])
+      end
+    end
+
+    def Start(name)
+      return @dataflow_in_register = __add_register(name, :WIRE , @dataflow_in_type)
+    end
+  end
+
 
   class Operator
     attr_reader :op, :operand
