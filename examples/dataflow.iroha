@@ -1,0 +1,29 @@
+(PARAMS )
+(MODULE 1 mod
+ (PARAMS )
+ (TABLE 1 tab
+  (REGISTERS
+    (REGISTER 1 req      WIRE  (UINT  1) ())
+    (REGISTER 2 counter  REG   (UINT 32) 0 )
+    (REGISTER 3 one      CONST (UINT 32) 1 )
+  )
+  (RESOURCES
+   (RESOURCE 1 ext-input   () () (PARAMS (INPUT data_in) (WIDTH 1)))
+   (RESOURCE 2 dataflow-in ((UINT 1)) () (PARAMS))
+   (RESOURCE 3 tr          () () (PARAMS))
+   (RESOURCE 4 add         ((UINT 32) (UINT 32)) ((UINT 32)) (PARAMS))
+  )
+  (INITIAL 1)
+  (STATE 1
+   (INSN 1 ext-input   1 () () () (1))
+   (INSN 2 dataflow-in 2 () () (1) ())
+   (INSN 3 tr          3 () (2) () ())
+  )
+  (STATE 2
+   (INSN 4 add 4 () () (2 3) (2))
+   (INSN 5 tr  3 () (3) () ())
+  )
+  (STATE 3
+  )
+ )
+)
