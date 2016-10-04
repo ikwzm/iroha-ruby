@@ -671,7 +671,7 @@ module Exp
   end
 
   module ModuleName1
-    def get(design) name.text_value   ;end
+    def get(design) name.text_value;end
   end
 
   def _nt_module_name
@@ -1078,61 +1078,21 @@ module Exp
     r0
   end
 
-  module TableNameEntry0
-    def table_name
-      elements[1]
-    end
-  end
-
-  module TableNameEntry1
-    def get(design) table_name.get(design); end
-  end
-
-  def _nt_table_name_entry
-    start_index = index
-    if node_cache[:table_name_entry].has_key?(index)
-      cached = node_cache[:table_name_entry][index]
-      if cached
-        node_cache[:table_name_entry][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    r2 = _nt_space
-    if r2
-      r1 = r2
-    else
-      r1 = instantiate_node(SyntaxNode,input, index...index)
-    end
-    s0 << r1
-    if r1
-      r3 = _nt_table_name
-      s0 << r3
-    end
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(TableNameEntry0)
-      r0.extend(TableNameEntry1)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:table_name_entry][start_index] = r0
-
-    r0
-  end
-
   module TableName0
-    def key
+  end
+
+  module TableName1
+    def get(design) ""             ; end
+  end
+
+  module TableName2
+    def name
       elements[0]
     end
   end
 
-  module TableName1
-    def get(design) key.text_value; end
+  module TableName3
+    def get(design) name.text_value; end
   end
 
   def _nt_table_name
@@ -1146,16 +1106,65 @@ module Exp
       return cached
     end
 
-    i0, s0 = index, []
-    r1 = _nt_label
-    s0 << r1
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(TableName0)
-      r0.extend(TableName1)
+    i0 = index
+    i1, s1 = index, []
+    if (match_len = has_terminal?('(', false, index))
+      r2 = true
+      @index += match_len
     else
-      @index = i0
-      r0 = nil
+      terminal_parse_failure('\'(\'')
+      r2 = nil
+    end
+    s1 << r2
+    if r2
+      r4 = _nt_space
+      if r4
+        r3 = r4
+      else
+        r3 = instantiate_node(SyntaxNode,input, index...index)
+      end
+      s1 << r3
+      if r3
+        if (match_len = has_terminal?(')', false, index))
+          r5 = true
+          @index += match_len
+        else
+          terminal_parse_failure('\')\'')
+          r5 = nil
+        end
+        s1 << r5
+      end
+    end
+    if s1.last
+      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+      r1.extend(TableName0)
+      r1.extend(TableName1)
+    else
+      @index = i1
+      r1 = nil
+    end
+    if r1
+      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+      r0 = r1
+    else
+      i6, s6 = index, []
+      r7 = _nt_label
+      s6 << r7
+      if s6.last
+        r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
+        r6.extend(TableName2)
+        r6.extend(TableName3)
+      else
+        @index = i6
+        r6 = nil
+      end
+      if r6
+        r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+        r0 = r6
+      else
+        @index = i0
+        r0 = nil
+      end
     end
 
     node_cache[:table_name][start_index] = r0
@@ -2595,6 +2604,23 @@ module Exp
     r0
   end
 
+  module RegisterName0
+  end
+
+  module RegisterName1
+    def get(design) ""             ;end
+  end
+
+  module RegisterName2
+    def name
+      elements[0]
+    end
+  end
+
+  module RegisterName3
+    def get(design) name.text_value;end
+  end
+
   def _nt_register_name
     start_index = index
     if node_cache[:register_name].has_key?(index)
@@ -2606,7 +2632,70 @@ module Exp
       return cached
     end
 
-    r0 = _nt_label_or_nil
+    i0 = index
+    i1, s1 = index, []
+    if (match_len = has_terminal?('(', false, index))
+      r2 = true
+      @index += match_len
+    else
+      terminal_parse_failure('\'(\'')
+      r2 = nil
+    end
+    s1 << r2
+    if r2
+      s3, i3 = [], index
+      loop do
+        r4 = _nt_space
+        if r4
+          s3 << r4
+        else
+          break
+        end
+      end
+      r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+      s1 << r3
+      if r3
+        if (match_len = has_terminal?(')', false, index))
+          r5 = true
+          @index += match_len
+        else
+          terminal_parse_failure('\')\'')
+          r5 = nil
+        end
+        s1 << r5
+      end
+    end
+    if s1.last
+      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+      r1.extend(RegisterName0)
+      r1.extend(RegisterName1)
+    else
+      @index = i1
+      r1 = nil
+    end
+    if r1
+      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
+      r0 = r1
+    else
+      i6, s6 = index, []
+      r7 = _nt_label
+      s6 << r7
+      if s6.last
+        r6 = instantiate_node(SyntaxNode,input, i6...index, s6)
+        r6.extend(RegisterName2)
+        r6.extend(RegisterName3)
+      else
+        @index = i6
+        r6 = nil
+      end
+      if r6
+        r6 = SyntaxNode.new(input, (index-1)...index) if r6 == true
+        r0 = r6
+      else
+        @index = i0
+        r0 = nil
+      end
+    end
 
     node_cache[:register_name][start_index] = r0
 
@@ -3971,104 +4060,6 @@ module Exp
     end
 
     node_cache[:label_list][start_index] = r0
-
-    r0
-  end
-
-  module LabelOrNil0
-    def key
-      elements[0]
-    end
-  end
-
-  module LabelOrNil1
-    def get(design) key.text_value;end
-  end
-
-  module LabelOrNil2
-  end
-
-  module LabelOrNil3
-    def get(design) ""            ;end
-  end
-
-  def _nt_label_or_nil
-    start_index = index
-    if node_cache[:label_or_nil].has_key?(index)
-      cached = node_cache[:label_or_nil][index]
-      if cached
-        node_cache[:label_or_nil][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0 = index
-    i1, s1 = index, []
-    r2 = _nt_label
-    s1 << r2
-    if s1.last
-      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
-      r1.extend(LabelOrNil0)
-      r1.extend(LabelOrNil1)
-    else
-      @index = i1
-      r1 = nil
-    end
-    if r1
-      r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
-      r0 = r1
-    else
-      i3, s3 = index, []
-      if (match_len = has_terminal?('(', false, index))
-        r4 = true
-        @index += match_len
-      else
-        terminal_parse_failure('\'(\'')
-        r4 = nil
-      end
-      s3 << r4
-      if r4
-        s5, i5 = [], index
-        loop do
-          r6 = _nt_space
-          if r6
-            s5 << r6
-          else
-            break
-          end
-        end
-        r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
-        s3 << r5
-        if r5
-          if (match_len = has_terminal?(')', false, index))
-            r7 = true
-            @index += match_len
-          else
-            terminal_parse_failure('\')\'')
-            r7 = nil
-          end
-          s3 << r7
-        end
-      end
-      if s3.last
-        r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-        r3.extend(LabelOrNil2)
-        r3.extend(LabelOrNil3)
-      else
-        @index = i3
-        r3 = nil
-      end
-      if r3
-        r3 = SyntaxNode.new(input, (index-1)...index) if r3 == true
-        r0 = r3
-      else
-        @index = i0
-        r0 = nil
-      end
-    end
-
-    node_cache[:label_or_nil][start_index] = r0
 
     r0
   end

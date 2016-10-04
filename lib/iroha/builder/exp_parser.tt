@@ -88,7 +88,7 @@ grammar Exp
   end
 
   rule module_name
-    name:label {def get(design) name.text_value   ;end}
+    name:label {def get(design) name.text_value;end}
   end
 
   rule parent_module
@@ -140,12 +140,9 @@ grammar Exp
     id:number  {def get(design) id.text_value.to_i;end}
   end
 
-  rule table_name_entry
-     space? table_name {def get(design) table_name.get(design); end}
-  end
-
   rule table_name
-     key:label {def get(design) key.text_value; end}
+     '(' space? ')' {def get(design) ""             ; end} /
+     name:label     {def get(design) name.text_value; end}
   end
 
   rule resources
@@ -249,7 +246,8 @@ grammar Exp
   end
 
   rule register_name
-    label_or_nil
+    '(' space* ')' {def get(design) ""             ;end} /
+    name:label     {def get(design) name.text_value;end}
   end
 
   rule register_class
@@ -349,11 +347,6 @@ grammar Exp
         [first_label.text_value] + rest.elements.map{|element| element.label.text_value}
       end
     }
-  end
-
-  rule label_or_nil
-    key:label      {def get(design) key.text_value;end} /
-    '(' space* ')' {def get(design) ""            ;end}
   end
 
   rule value_or_nil
