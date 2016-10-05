@@ -1326,14 +1326,14 @@ module Exp
 
   module Resource1
     def get(design)
-    resource_class.get(design).new(
-      resource_id.get(design),
-      i_type.get(design),
-      o_type.get(design),
-      params.get(design),
+      resource_class.get(design).new(
+        resource_id.get(design),
+        i_type.get(design),
+        o_type.get(design),
+        params.get(design),
 	  (option.empty? == true)? {} : option.get(design)
 	)
-  end
+    end
   end
 
   def _nt_resource

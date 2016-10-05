@@ -156,7 +156,7 @@ grammar Exp
 
   rule resource
     space? '(' space? 'RESOURCE' space resource_id space resource_class i_type:value_types o_type:value_types params option:resource_option? space? ')' space? {
-        def get(design)
+      def get(design)
         resource_class.get(design).new(
           resource_id.get(design),
           i_type.get(design),
