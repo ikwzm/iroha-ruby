@@ -2,7 +2,11 @@ module Iroha::Builder::Simple::Resource
 
   class DataFlowIn
 
-    RESOURCE_PROC = Proc.new{|name, type| __add_resource(__method__, name, [type], [], {}, {})}
+    TABLE_PROC = Proc.new {
+      def DataFlowIn(name, type)
+        __add_resource(:DataFlowIn, name, [type], [], {}, {})
+      end
+    }
 
     define_method('<=') do |regs|
       state = @_owner_table._on_state

@@ -3,16 +3,18 @@ module Iroha::Builder::Simple::Resource
   class PortInput
     attr_accessor :_ref_resources
 
-    RESOURCE_PROC = Proc.new do |name, type, *resources|
-      if type._width.nil? then
-        params = {:INPUT => name}
-      else
-        params = {:INPUT => name, :WIDTH => type._width}
+    TABLE_PROC = Proc.new {
+      def PortInput(name, type, *resources)
+        if type._width.nil? then
+          params = {:INPUT => name}
+        else
+          params = {:INPUT => name, :WIDTH => type._width}
+        end
+        resource = __add_resource(:PortInput, name, [], [type], params, {:"PORT-INPUT" => nil})
+        resource._ref_resources = resources
+        return resource
       end
-      resource = __add_resource(__method__, name, [], [type], params, {:"PORT-INPUT" => nil})
-      resource._ref_resources = resources
-      return resource
-    end
+    }
 
     def _resolve_reference
       @_ref_resources.each do |ref|
@@ -47,16 +49,18 @@ module Iroha::Builder::Simple::Resource
   class PortOutput
     attr_accessor :_ref_resources
 
-    RESOURCE_PROC = Proc.new do |name, type, *resources| 
-      if type._width.nil? then
-        params = {:OUTPUT => name}
-      else
-        params = {:OUTPUT => name, :WIDTH => type._width}
+    TABLE_PROC = Proc.new {
+      def PortOutput(name, type, *resources)
+        if type._width.nil? then
+          params = {:OUTPUT => name}
+        else
+          params = {:OUTPUT => name, :WIDTH => type._width}
+        end
+        resource = __add_resource(:PortOutput, name, [type], [], params, nil)
+        resource._ref_resources = resources
+        return resource
       end
-      resource = __add_resource(__method__, name, [type], [], params, nil)
-      resource._ref_resources = resources
-      return resource
-    end
+    }
 
     def _resolve_reference
       @_ref_resources.each do |ref|

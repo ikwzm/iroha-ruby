@@ -402,11 +402,11 @@ module Iroha::Builder::Simple
                        return Operator.new(resource_class_name, [opr1_regs, opr2_regs])
                      })
     end
-    if klass.const_defined?(:RESOURCE_PROC) then
-      ITable.send(:define_method, resource_class_name, klass.const_get(:RESOURCE_PROC))
+    if klass.const_defined?(:TABLE_PROC) then
+      ITable.class_eval(&klass.const_get(:TABLE_PROC))
     end
-    if klass.const_defined?(:STATE_PROC   ) then
-      IState.send(:define_method, resource_class_name, klass.const_get(:STATE_PROC   ))
+    if klass.const_defined?(:STATE_PROC) then
+      IState.class_eval(&klass.const_get(:STATE_PROC))
     end
   end
 end

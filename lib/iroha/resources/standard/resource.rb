@@ -32,22 +32,6 @@ module Iroha::Resource
     end
   end
 
-  class Print      < Iroha::IResource
-    CLASS_NAME   = "print"
-    IS_EXCLUSIVE = false
-    def initialize(id, input_types, output_types, params, option)
-      super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
-    end
-  end
-
-  class Assert     < Iroha::IResource
-    CLASS_NAME   = "assert"
-    IS_EXCLUSIVE = false
-    def initialize(id, input_types, output_types, params, option)
-      super(CLASS_NAME, IS_EXCLUSIVE, id, input_types, output_types, params, option)
-    end
-  end
-
   class Mapped     < Iroha::IResource
     CLASS_NAME   = "mapped"
     IS_EXCLUSIVE = true

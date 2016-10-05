@@ -1,11 +1,15 @@
 module Iroha::Builder::Simple::Resource
 
-  class Array    
-    RESOURCE_PROC     = Proc.new{|name, addr_width, value_type, ownership, mem_type|
-      fail "Error Illegal ownership #{ownership} of Array" if (ownership != :EXTERNAL and ownership != :INTERNAL)
-      fail "Error Illegal mem type  #{mem_type}  of Array" if (mem_type  != :RAM      and mem_type  != :ROM     )
-      __add_resource(__method__, name, [], [], {}, {ARRAY: [addr_width, value_type, ownership, mem_type]})
+  class Array
+
+    TABLE_PROC = Proc.new{
+      def Array(name, addr_width, value_type, ownership, mem_type)
+        fail "Error Illegal ownership #{ownership} of Array" if (ownership != :EXTERNAL and ownership != :INTERNAL)
+        fail "Error Illegal mem type  #{mem_type}  of Array" if (mem_type  != :RAM      and mem_type  != :ROM     )
+        __add_resource(:Array, name, [], [], {}, {ARRAY: [addr_width, value_type, ownership, mem_type]})
+      end
     }
+
     class Data
       attr_reader :array, :addr
       def initialize(array, addr)
@@ -26,6 +30,7 @@ module Iroha::Builder::Simple::Resource
         return self
       end
     end
+
     define_method('[]') do |addr|
       fail "Error: address is not register"  if addr.class != Iroha::Builder::Simple::IRegister
       return Data.new(self, addr)

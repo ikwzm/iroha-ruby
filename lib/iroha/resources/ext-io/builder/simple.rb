@@ -1,7 +1,13 @@
 module Iroha::Builder::Simple::Resource
 
   class ExtInput
-    RESOURCE_PROC = Proc.new{|name, width| __add_resource(__method__, name, [], [], {INPUT:  name, WIDTH: width}, {})}
+
+    TABLE_PROC = Proc.new{
+      def ExtInput(name, width)
+        __add_resource(:ExtInput, name, [], [], {INPUT:  name, WIDTH: width}, {})
+      end
+    }
+    
     define_method('=>') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?
@@ -12,7 +18,13 @@ module Iroha::Builder::Simple::Resource
   end
 
   class ExtOutput
-    RESOURCE_PROC = Proc.new{|name, width| __add_resource(__method__, name, [], [], {OUTPUT: name, WIDTH: width}, {})}
+
+    TABLE_PROC = Proc.new{
+      def ExtOutput(name, width)
+        __add_resource(:ExtOutput, name, [], [], {OUTPUT: name, WIDTH: width}, {})
+      end
+    }
+    
     define_method('<=') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?

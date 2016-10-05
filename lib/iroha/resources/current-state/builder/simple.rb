@@ -1,14 +1,19 @@
 module Iroha::Builder::Simple::Resource
 
   class CurrentState
+
     attr_accessor :_ref_resources
-    RESOURCE_PROC = Proc.new do |name| 
-      params = {:OUTPUT => name}
-      type   = Type::State.new(@_owner_module._id, @_id)
-      resource = __add_resource(__method__, name, [], [type], params, nil)
-      resource._ref_resources = []
-      return resource
-    end
+
+    TABLE_PROC = Proc.new {
+      def CurrentState(name)
+        params = {:OUTPUT => name}
+        type   = Type::State.new(@_owner_module._id, @_id)
+        resource = __add_resource(:CurrentState, name, [], [type], params, nil)
+        resource._ref_resources = []
+        return resource
+      end
+    }
+
     def _resolve_reference
       @_ref_resources.each do |ref|
         if ref.class == Iroha::Builder::Simple::Reference then

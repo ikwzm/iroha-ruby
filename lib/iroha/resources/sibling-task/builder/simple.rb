@@ -1,7 +1,13 @@
 module Iroha::Builder::Simple::Resource
 
   class SiblingTask
-    RESOURCE_PROC = Proc.new { |name,type| __add_resource(__method__, name, [type], [], {}, {}) }
+
+    TABLE_PROC = Proc.new {
+      def SiblingTask(name,type)
+        __add_resource(:SiblingTask, name, [type], [], {}, {})
+      end
+    }
+
     def entry(regs)
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?
@@ -13,23 +19,26 @@ module Iroha::Builder::Simple::Resource
     
   class SiblingTaskCall
     attr_accessor :_ref_task
-    RESOURCE_PROC = Proc.new do  |name, type, task|
-      if    task.class == SiblingTask then
-        resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
-        resource._ref_task = nil
-        return resource
-      elsif task.class == Iroha::Builder::Simple::Reference then
-        resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
-        resource._ref_task = task
-        return resource
-      elsif task.nil? then
-        resource = __add_resource(__method__, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
-        resource._ref_task = nil
-        return resource
-      else
-        fail "Error: invalid task"
+
+    TABLE_PROC = Proc.new {
+      def SiblingTaskCall(name, type, task)
+        if    task.class == SiblingTask then
+          resource = __add_resource(:SiblingTaskCall, name, [type], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
+          resource._ref_task = nil
+          return resource
+        elsif task.class == Iroha::Builder::Simple::Reference then
+          resource = __add_resource(:SiblingTaskCall, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = task
+          return resource
+        elsif task.nil? then
+          resource = __add_resource(:SiblingTaskCall, name, [type], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = nil
+          return resource
+        else
+          fail "Error: invalid task"
+        end
       end
-    end
+    }
 
     def _resolve_reference
       if @_ref_task.class == Iroha::Builder::Simple::Reference then

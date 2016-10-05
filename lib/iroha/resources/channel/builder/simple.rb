@@ -1,11 +1,18 @@
 module Iroha::Builder::Simple::Resource
 
   class ChannelRead
-    RESOURCE_PROC = Proc.new { |name, type| __add_resource(__method__, name, [type], [type], {}, {}) }
+
+    TABLE_PROC = Proc.new {
+      def ChannelRead(name, type)
+        __add_resource(:ChannelRead, name, [type], [type], {}, {})
+      end
+    }
+
     define_method('<=') do |channel_read|
       @_owner_design.__add_channel(self, channel_read)
       return self
     end
+
     define_method('=>') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?
@@ -16,7 +23,13 @@ module Iroha::Builder::Simple::Resource
   end
 
   class ChannelWrite
-    RESOURCE_PROC = Proc.new { |name, type| __add_resource(__method__, name, [type], [type], {}, {}) }
+
+    TABLE_PROC = Proc.new {
+      def ChannelWrite(name, type)
+        __add_resource(:ChannelWrite, name, [type], [type], {}, {})
+      end
+    }
+
     define_method('<=') do |regs|
       state = @_owner_table._on_state
       fail "Error: not on state"           if state.nil?

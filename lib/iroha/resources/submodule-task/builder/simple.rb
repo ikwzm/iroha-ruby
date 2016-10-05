@@ -1,7 +1,13 @@
 module Iroha::Builder::Simple::Resource
 
   class SubModuleTask
-    RESOURCE_PROC = Proc.new { |name| __add_resource(__method__, name, [], [], {}, {}) }
+
+    TABLE_PROC = Proc.new {
+      def SubModuleTask(name)
+        __add_resource(:SubModuleTask, name, [], [], {}, {})
+      end
+    }
+
     def entry
       state = @_owner_table._on_state
       fail "Error: not on state" if state.nil?
@@ -11,23 +17,26 @@ module Iroha::Builder::Simple::Resource
 
   class SubModuleTaskCall
     attr_accessor :_ref_task
-    RESOURCE_PROC = Proc.new do  |name, task|
-      if    task.class == SubModuleTask then
-        resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
-        resource._ref_task = nil
-        return resource
-      elsif task.class == Iroha::Builder::Simple::Reference then
-        resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
-        resource._ref_task = task
-        return resource
-      elsif task.nil? then
-        resource = __add_resource(__method__, name, [], [], {}, {:'CALLEE-TABLE' => nil})
-        resource._ref_task = nil
-        return resource
-      else
-        fail "Error: invalid task"
+
+    TABLE_PROC = Proc.new {
+      def SubModuleTaskCall(name, task)
+        if    task.class == SubModuleTask then
+          resource = __add_resource(:SubModuleTaskCall, name, [], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
+          resource._ref_task = nil
+          return resource
+        elsif task.class == Iroha::Builder::Simple::Reference then
+          resource = __add_resource(:SubModuleTaskCall, name, [], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = task
+          return resource
+        elsif task.nil? then
+          resource = __add_resource(:SubModuleTaskCall, name, [], [], {}, {:'CALLEE-TABLE' => nil})
+          resource._ref_task = nil
+          return resource
+        else
+          fail "Error: invalid task"
+        end
       end
-    end
+    }
 
     def _resolve_reference
       if @_ref_task.class == Iroha::Builder::Simple::Reference then

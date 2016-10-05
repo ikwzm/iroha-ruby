@@ -3,23 +3,25 @@ module Iroha::Builder::Simple::Resource
   class ForeignReg
     attr_accessor :_ref_regs
 
-    RESOURCE_PROC = Proc.new do |name, regs|
-      if    regs.class == IRegister then
-        resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => [regs._owner_module._id, regs._owner_table._id, regs._id]})
-        resource._ref_regs = nil
-        return resource
-      elsif regs.class == Iroha::Builder::Simple::Reference then
-        resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
-        resource._ref_regs = regs
-        return resource
-      elsif regs.nil?
-        resource = __add_resource(__method__, name, [], [], {}, {:"FOREIGN-REG" => nil})
-        resource._ref_regs = nil
-        return resource
-      else
-        fail "Error: invalid register"
+    TABLE_PROC = Proc.new {
+      def ForeignReg(name, regs)
+        if    regs.class == IRegister then
+          resource = __add_resource(:ForeignReg, name, [], [], {}, {:"FOREIGN-REG" => [regs._owner_module._id, regs._owner_table._id, regs._id]})
+          resource._ref_regs = nil
+          return resource
+        elsif regs.class == Iroha::Builder::Simple::Reference then
+          resource = __add_resource(:ForeignReg, name, [], [], {}, {:"FOREIGN-REG" => nil})
+          resource._ref_regs = regs
+          return resource
+        elsif regs.nil?
+          resource = __add_resource(:ForeignReg, name, [], [], {}, {:"FOREIGN-REG" => nil})
+          resource._ref_regs = nil
+          return resource
+        else
+          fail "Error: invalid register"
+        end
       end
-    end
+    }
 
     def _resolve_reference
       if @_ref_regs.class == Reference then
