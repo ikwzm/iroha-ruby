@@ -143,24 +143,6 @@ module Iroha::Builder::Simple
       return __add_register(name, :WIRE , type)
     end
 
-    def Unsigned(width)
-      type = Type::Numeric.new(false, width)
-      type._assign_value = nil
-      return type
-    end
-
-    def Signed(width)
-      type = Type::Numeric.new(true , width)
-      type._assign_value = nil
-      return type
-    end
-
-    def StateType(table)
-      type = Type::State.new(table._owner_module._id, table._id)
-      type._assign_value = nil
-      return type
-    end
-
     def Ref(*args)
       return Reference.new(@_owner_design, args)
     end
@@ -247,7 +229,7 @@ module Iroha::Builder::Simple
 
     def initialize(id, name, resource_list, register_list, state_list, init_state_id)
       super(id, name, resource_list, register_list, state_list, init_state_id)
-      @dataflow_in_type     = Type::Numeric.new(false, 1)
+      @dataflow_in_type     = Type::Unsigned.new(1)
       @dataflow_in_register = nil
       @dataflow_in_resource = _add_new_resource(Resource::DataFlowIn, [@dataflow_in_type], [], IParams.new, nil)
     end
@@ -385,32 +367,21 @@ module Iroha::Builder::Simple
       __add_instruction(resource, [], [next_state   ], [         ], [])
     end
 
-    def To_Unsigned(value, width)
-      type = Type::Numeric.new(false, width)
-      type._assign_value = value
-      return @_owner_table.__add_register(nil, :CONST, type)
-    end
-
-    def To_Signed(value, width)
-      type = Type::Numeric.new(true , width)
-      type._assign_value = value
-      return @_owner_table.__add_register(nil, :CONST, type)
-    end
-
   end
 
-  module ITypeModule
-    attr_accessor :_assign_value
-    define_method('<=') do |value|
-      @_assign_value = value
-      return self
-    end
+  Iroha::TYPE_PATH_LIST.each do |path|
+    require_relative "../#{path}/builder/simple.rb"
   end
 
   TYPE_CLASSES = Iroha::Builder::Simple::Type.constants.map{|c| Iroha::Builder::Simple::Type.const_get(c)}
 
-  TYPE_CLASSES.each do |type_class|
-    type_class.include(Iroha::Builder::Simple::ITypeModule)
+  TYPE_CLASSES.each do |klass|
+    if klass.const_defined?(:TABLE_PROC) then
+      ITable.class_eval(&klass.const_get(:TABLE_PROC))
+    end
+    if klass.const_defined?(:STATE_PROC) then
+      IState.class_eval(&klass.const_get(:STATE_PROC))
+    end
   end
 
   Iroha::RESOURCE_PATH_LIST.each do |path|

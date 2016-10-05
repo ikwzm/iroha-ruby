@@ -67,6 +67,14 @@ module Iroha
       end
     end
 
+    if module_object.const_defined?(:IType) then
+      type_module = class_object.const_get(:Type)
+      type_list   = type_module.constants.map{|c| type_module.const_get(c)}
+      type_list.each do |type_class|
+        type_class.include(module_object.const_get(:IType))
+      end
+    end
+
   end
 
 end

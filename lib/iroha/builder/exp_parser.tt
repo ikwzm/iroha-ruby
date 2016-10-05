@@ -198,20 +198,28 @@ grammar Exp
     space? val:value_type space? {def get(design) val.get(design)      ;end}
   end
 
+  rule type_class
+    name:label {
+      def get(design)
+        class_name = name.text_value
+        if design._type_classes.key?(class_name) == false then
+          abort "Unknown type class #{class_name}"
+	end
+	design._type_classes[class_name]
+      end
+    }
+  end
+
+  rule value_type_options
+    space? key:label  space? {def get(design); key.text_value     ; end} /
+    space? num:number space? {def get(design); num.text_value.to_i; end}
+  end
+
   rule value_type
-    space? '(' space? 'UINT'  space width:number space? ')' space? {
+    space? '(' space? type_class:type_class options:value_type_options* space? ')' space? {
       def get(design)
-        Iroha::Type::Numeric.new(false, width.text_value.to_i)
-      end
-    } /
-    space? '(' space? 'INT'   space width:number space? ')' space? {
-      def get(design)
-        Iroha::Type::Numeric.new(true , width.text_value.to_i)
-      end
-    } /
-    space? '(' space? 'STATE' space module_id space table_id space? ')' space? {
-      def get(design)
-        Iroha::Type::State.new(module_id.get(design), table_id.get(design))
+        option = options.elements.map{|element| element.get(design)}
+        type_class.get(design).new(*option)
       end
     }
   end

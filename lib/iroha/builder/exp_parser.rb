@@ -1814,71 +1814,78 @@ module Exp
     r0
   end
 
-  module ValueType0
-    def space
-      elements[4]
+  module TypeClass0
+    def name
+      elements[0]
     end
-
-    def width
-      elements[5]
-    end
-
   end
 
-  module ValueType1
+  module TypeClass1
     def get(design)
-      Iroha::Type::Numeric.new(false, width.text_value.to_i)
+      class_name = name.text_value
+      if design._type_classes.key?(class_name) == false then
+        abort "Unknown type class #{class_name}"
+	end
+	design._type_classes[class_name]
     end
   end
 
-  module ValueType2
-    def space
-      elements[4]
-    end
-
-    def width
-      elements[5]
-    end
-
-  end
-
-  module ValueType3
-    def get(design)
-      Iroha::Type::Numeric.new(true , width.text_value.to_i)
-    end
-  end
-
-  module ValueType4
-    def space1
-      elements[4]
-    end
-
-    def module_id
-      elements[5]
-    end
-
-    def space2
-      elements[6]
-    end
-
-    def table_id
-      elements[7]
-    end
-
-  end
-
-  module ValueType5
-    def get(design)
-      Iroha::Type::State.new(module_id.get(design), table_id.get(design))
-    end
-  end
-
-  def _nt_value_type
+  def _nt_type_class
     start_index = index
-    if node_cache[:value_type].has_key?(index)
-      cached = node_cache[:value_type][index]
+    if node_cache[:type_class].has_key?(index)
+      cached = node_cache[:type_class][index]
       if cached
-        node_cache[:value_type][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        node_cache[:type_class][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    r1 = _nt_label
+    s0 << r1
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(TypeClass0)
+      r0.extend(TypeClass1)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:type_class][start_index] = r0
+
+    r0
+  end
+
+  module ValueTypeOptions0
+    def key
+      elements[1]
+    end
+
+  end
+
+  module ValueTypeOptions1
+    def get(design); key.text_value     ; end
+  end
+
+  module ValueTypeOptions2
+    def num
+      elements[1]
+    end
+
+  end
+
+  module ValueTypeOptions3
+    def get(design); num.text_value.to_i; end
+  end
+
+  def _nt_value_type_options
+    start_index = index
+    if node_cache[:value_type_options].has_key?(index)
+      cached = node_cache[:value_type_options][index]
+      if cached
+        node_cache[:value_type_options][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
       end
       return cached
@@ -1894,13 +1901,7 @@ module Exp
     end
     s1 << r2
     if r2
-      if (match_len = has_terminal?('(', false, index))
-        r4 = true
-        @index += match_len
-      else
-        terminal_parse_failure('\'(\'')
-        r4 = nil
-      end
+      r4 = _nt_label
       s1 << r4
       if r4
         r6 = _nt_space
@@ -1910,58 +1911,12 @@ module Exp
           r5 = instantiate_node(SyntaxNode,input, index...index)
         end
         s1 << r5
-        if r5
-          if (match_len = has_terminal?('UINT', false, index))
-            r7 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-            @index += match_len
-          else
-            terminal_parse_failure('\'UINT\'')
-            r7 = nil
-          end
-          s1 << r7
-          if r7
-            r8 = _nt_space
-            s1 << r8
-            if r8
-              r9 = _nt_number
-              s1 << r9
-              if r9
-                r11 = _nt_space
-                if r11
-                  r10 = r11
-                else
-                  r10 = instantiate_node(SyntaxNode,input, index...index)
-                end
-                s1 << r10
-                if r10
-                  if (match_len = has_terminal?(')', false, index))
-                    r12 = true
-                    @index += match_len
-                  else
-                    terminal_parse_failure('\')\'')
-                    r12 = nil
-                  end
-                  s1 << r12
-                  if r12
-                    r14 = _nt_space
-                    if r14
-                      r13 = r14
-                    else
-                      r13 = instantiate_node(SyntaxNode,input, index...index)
-                    end
-                    s1 << r13
-                  end
-                end
-              end
-            end
-          end
-        end
       end
     end
     if s1.last
       r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
-      r1.extend(ValueType0)
-      r1.extend(ValueType1)
+      r1.extend(ValueTypeOptions0)
+      r1.extend(ValueTypeOptions1)
     else
       @index = i1
       r1 = nil
@@ -1970,188 +1925,157 @@ module Exp
       r1 = SyntaxNode.new(input, (index-1)...index) if r1 == true
       r0 = r1
     else
-      i15, s15 = index, []
-      r17 = _nt_space
-      if r17
-        r16 = r17
+      i7, s7 = index, []
+      r9 = _nt_space
+      if r9
+        r8 = r9
       else
-        r16 = instantiate_node(SyntaxNode,input, index...index)
+        r8 = instantiate_node(SyntaxNode,input, index...index)
       end
-      s15 << r16
-      if r16
-        if (match_len = has_terminal?('(', false, index))
-          r18 = true
-          @index += match_len
-        else
-          terminal_parse_failure('\'(\'')
-          r18 = nil
-        end
-        s15 << r18
-        if r18
-          r20 = _nt_space
-          if r20
-            r19 = r20
+      s7 << r8
+      if r8
+        r10 = _nt_number
+        s7 << r10
+        if r10
+          r12 = _nt_space
+          if r12
+            r11 = r12
           else
-            r19 = instantiate_node(SyntaxNode,input, index...index)
+            r11 = instantiate_node(SyntaxNode,input, index...index)
           end
-          s15 << r19
-          if r19
-            if (match_len = has_terminal?('INT', false, index))
-              r21 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-              @index += match_len
-            else
-              terminal_parse_failure('\'INT\'')
-              r21 = nil
-            end
-            s15 << r21
-            if r21
-              r22 = _nt_space
-              s15 << r22
-              if r22
-                r23 = _nt_number
-                s15 << r23
-                if r23
-                  r25 = _nt_space
-                  if r25
-                    r24 = r25
-                  else
-                    r24 = instantiate_node(SyntaxNode,input, index...index)
-                  end
-                  s15 << r24
-                  if r24
-                    if (match_len = has_terminal?(')', false, index))
-                      r26 = true
-                      @index += match_len
-                    else
-                      terminal_parse_failure('\')\'')
-                      r26 = nil
-                    end
-                    s15 << r26
-                    if r26
-                      r28 = _nt_space
-                      if r28
-                        r27 = r28
-                      else
-                        r27 = instantiate_node(SyntaxNode,input, index...index)
-                      end
-                      s15 << r27
-                    end
-                  end
-                end
-              end
-            end
-          end
+          s7 << r11
         end
       end
-      if s15.last
-        r15 = instantiate_node(SyntaxNode,input, i15...index, s15)
-        r15.extend(ValueType2)
-        r15.extend(ValueType3)
+      if s7.last
+        r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+        r7.extend(ValueTypeOptions2)
+        r7.extend(ValueTypeOptions3)
       else
-        @index = i15
-        r15 = nil
+        @index = i7
+        r7 = nil
       end
-      if r15
-        r15 = SyntaxNode.new(input, (index-1)...index) if r15 == true
-        r0 = r15
+      if r7
+        r7 = SyntaxNode.new(input, (index-1)...index) if r7 == true
+        r0 = r7
       else
-        i29, s29 = index, []
-        r31 = _nt_space
-        if r31
-          r30 = r31
+        @index = i0
+        r0 = nil
+      end
+    end
+
+    node_cache[:value_type_options][start_index] = r0
+
+    r0
+  end
+
+  module ValueType0
+    def type_class
+      elements[3]
+    end
+
+    def options
+      elements[4]
+    end
+
+  end
+
+  module ValueType1
+    def get(design)
+      option = options.elements.map{|element| element.get(design)}
+      type_class.get(design).new(*option)
+    end
+  end
+
+  def _nt_value_type
+    start_index = index
+    if node_cache[:value_type].has_key?(index)
+      cached = node_cache[:value_type][index]
+      if cached
+        node_cache[:value_type][index] = cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    r2 = _nt_space
+    if r2
+      r1 = r2
+    else
+      r1 = instantiate_node(SyntaxNode,input, index...index)
+    end
+    s0 << r1
+    if r1
+      if (match_len = has_terminal?('(', false, index))
+        r3 = true
+        @index += match_len
+      else
+        terminal_parse_failure('\'(\'')
+        r3 = nil
+      end
+      s0 << r3
+      if r3
+        r5 = _nt_space
+        if r5
+          r4 = r5
         else
-          r30 = instantiate_node(SyntaxNode,input, index...index)
+          r4 = instantiate_node(SyntaxNode,input, index...index)
         end
-        s29 << r30
-        if r30
-          if (match_len = has_terminal?('(', false, index))
-            r32 = true
-            @index += match_len
-          else
-            terminal_parse_failure('\'(\'')
-            r32 = nil
-          end
-          s29 << r32
-          if r32
-            r34 = _nt_space
-            if r34
-              r33 = r34
-            else
-              r33 = instantiate_node(SyntaxNode,input, index...index)
-            end
-            s29 << r33
-            if r33
-              if (match_len = has_terminal?('STATE', false, index))
-                r35 = instantiate_node(SyntaxNode,input, index...(index + match_len))
-                @index += match_len
+        s0 << r4
+        if r4
+          r6 = _nt_type_class
+          s0 << r6
+          if r6
+            s7, i7 = [], index
+            loop do
+              r8 = _nt_value_type_options
+              if r8
+                s7 << r8
               else
-                terminal_parse_failure('\'STATE\'')
-                r35 = nil
+                break
               end
-              s29 << r35
-              if r35
-                r36 = _nt_space
-                s29 << r36
-                if r36
-                  r37 = _nt_module_id
-                  s29 << r37
-                  if r37
-                    r38 = _nt_space
-                    s29 << r38
-                    if r38
-                      r39 = _nt_table_id
-                      s29 << r39
-                      if r39
-                        r41 = _nt_space
-                        if r41
-                          r40 = r41
-                        else
-                          r40 = instantiate_node(SyntaxNode,input, index...index)
-                        end
-                        s29 << r40
-                        if r40
-                          if (match_len = has_terminal?(')', false, index))
-                            r42 = true
-                            @index += match_len
-                          else
-                            terminal_parse_failure('\')\'')
-                            r42 = nil
-                          end
-                          s29 << r42
-                          if r42
-                            r44 = _nt_space
-                            if r44
-                              r43 = r44
-                            else
-                              r43 = instantiate_node(SyntaxNode,input, index...index)
-                            end
-                            s29 << r43
-                          end
-                        end
-                      end
-                    end
+            end
+            r7 = instantiate_node(SyntaxNode,input, i7...index, s7)
+            s0 << r7
+            if r7
+              r10 = _nt_space
+              if r10
+                r9 = r10
+              else
+                r9 = instantiate_node(SyntaxNode,input, index...index)
+              end
+              s0 << r9
+              if r9
+                if (match_len = has_terminal?(')', false, index))
+                  r11 = true
+                  @index += match_len
+                else
+                  terminal_parse_failure('\')\'')
+                  r11 = nil
+                end
+                s0 << r11
+                if r11
+                  r13 = _nt_space
+                  if r13
+                    r12 = r13
+                  else
+                    r12 = instantiate_node(SyntaxNode,input, index...index)
                   end
+                  s0 << r12
                 end
               end
             end
           end
         end
-        if s29.last
-          r29 = instantiate_node(SyntaxNode,input, i29...index, s29)
-          r29.extend(ValueType4)
-          r29.extend(ValueType5)
-        else
-          @index = i29
-          r29 = nil
-        end
-        if r29
-          r29 = SyntaxNode.new(input, (index-1)...index) if r29 == true
-          r0 = r29
-        else
-          @index = i0
-          r0 = nil
-        end
       end
+    end
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(ValueType0)
+      r0.extend(ValueType1)
+    else
+      @index = i0
+      r0 = nil
     end
 
     node_cache[:value_type][start_index] = r0
