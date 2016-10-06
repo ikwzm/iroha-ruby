@@ -34,8 +34,8 @@ design = IDesign :design do
       Wire      :ms        , Array.new(z_width, Unsigned(1))
       Wire      :mx        , Array.new(z_width, Unsigned(d_width))
 
-      Constant  :zl_high   , Unsigned(32) <= z_width-1
-      Constant  :zl_low    , Unsigned(32) <= 1
+      Constant  :zl_high   , Unsigned(32) <= z_width-2
+      Constant  :zl_low    , Unsigned(32) <= 0
       Wire      :zl        , Array.new(z_width, Unsigned(z_width-1))
       Wire      :zb        , Array.new(z_width, Unsigned(1))
       Wire      :zo        , Array.new(z_width, Unsigned(z_width+d_width))
@@ -68,7 +68,7 @@ design = IDesign :design do
             m1[i] <= BitSel(pr[i], mx_high, mx_low)
             m0[i] <= BitSel(sb[i], mx_high, mx_low)
             ms[i] <= BitSel(sb[i], ms_pos , ms_pos)
-            mx[i] <= Select(ms[i], m1[i], m0[i])
+            mx[i] <= Select(ms[i], m0[i], m1[i])
             zl[i] <= BitSel(zi[i], zl_high, zl_low)
             zb[i] <= BitInv(ms[i])
             zo[i] <= BitConcat(mx[i], zl[i], zb[i])
