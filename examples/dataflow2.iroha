@@ -15,12 +15,12 @@
   )
   (INITIAL 1)
   (STATE 1
-   (INSN 1 tr          3 () (2) () ())
-   (INSN 3 dataflow-in 1 () () (1) ())
+   (INSN 1 dataflow-in 1 () () (1) ())
+   (INSN 2 tr          3 () (2) () ())
    (INSN 4 ext-input   2 () () () (1))
   )
   (STATE 2
-   (INSN 2 tr  3 () (3) () ())
+   (INSN 3 tr  3 () (3) () ())
    (INSN 5 add 4 () () (2 3) (2))
   )
   (STATE 3

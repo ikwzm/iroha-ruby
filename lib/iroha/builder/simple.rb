@@ -172,13 +172,29 @@ module Iroha::Builder::Simple
     end
 
     def __add_register(name, klass, type)
-      fail "Error: illegal type(#{type.class})" if type.kind_of?(Iroha::IType) == false
-      register = _add_new_register(IRegister, name, klass, type, type._assign_value)
-      if name.class == Symbol then
-        self.class.send(   :define_method, name, Proc.new do register; end)
-        @_state_class.send(:define_method, name, Proc.new do register; end)
+      if type.class == Array then
+        name_index_width = Math::log10(type.size).ceil
+        name_format      = (name_index_width > 0) ? "%s_%0#{name_index_width}d" : "%s"
+        registers = Array.new
+        type.each_with_index do |type, index|
+          fail "Error: illegal type(#{type.class})" if type.kind_of?(Iroha::IType) == false
+          register_name = sprintf(name_format, name, index).to_sym
+          registers[index] = _add_new_register(IRegister, register_name, klass, type, type._assign_value)
+        end
+        if name.class == Symbol then
+          self.class.send(   :define_method, name, Proc.new do registers; end)
+          @_state_class.send(:define_method, name, Proc.new do registers; end)
+        end
+        return registers
+      else
+        fail "Error: illegal type(#{type.class})" if type.kind_of?(Iroha::IType) == false
+        register = _add_new_register(IRegister, name, klass, type, type._assign_value)
+        if name.class == Symbol then
+          self.class.send(   :define_method, name, Proc.new do register; end)
+          @_state_class.send(:define_method, name, Proc.new do register; end)
+        end
+        return register
       end
-      return register
     end
 
     def __add_resource(class_name, name, input_types, output_types, params, option)
@@ -243,15 +259,16 @@ module Iroha::Builder::Simple
         @_state_class.send(:define_method, stage._name, Proc.new do stage; end)
         if @_init_state_id == nil
           @_init_state_id = stage._id
+          if @dataflow_in_register.nil? == false then
+            stage.__add_instruction(@dataflow_in_resource, [], [], [@dataflow_in_register], [])
+          end
         end
         stage
       end
       stage_list.slice(0,stage_list.size-1).each_index do |i|
         stage_list[i].Goto(stage_list[i+1])
       end
-      if stage_list.size > 0 and @dataflow_in_register.nil? == false then
-        stage_list[0].__add_instruction(@dataflow_in_resource, [], [], [@dataflow_in_register], [])
-      end
+      return stage_list
     end
 
     def Start(name)
