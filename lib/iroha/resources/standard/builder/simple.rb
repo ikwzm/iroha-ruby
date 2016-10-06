@@ -101,6 +101,13 @@ module Iroha::Builder::Simple::Resource
     STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(OPERATOR_NAME, regs) end}
   end
     
+  class Select
+    INSTANCE_OPERATOR = true
+    OPERATOR_NAME     = :Select
+    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
+    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(OPERATOR_NAME, regs) end}
+  end
+
   class Transition
     SINGLETON = true
   end
