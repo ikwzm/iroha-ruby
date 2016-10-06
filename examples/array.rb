@@ -7,10 +7,10 @@ design = IDesign :design do
     ITable :tab_w do
       addr_width = 10
       data_width = 32
-      IState     :st1
-      IState     :st2
-      Register   :rdata , Unsigned(data_width)
-      Array      :mem   , addr_width, Unsigned(data_width), :INTERNAL, :RAM
+      IState       :st1
+      IState       :st2
+      Register     :rdata , Unsigned(data_width)
+      IrohaArray   :mem   , addr_width, Unsigned(data_width), :INTERNAL, :RAM
       st1.on {
         mem[To_Unsigned(0,addr_width)] <= To_Unsigned(123,data_width)
         Goto  st2

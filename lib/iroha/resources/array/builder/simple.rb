@@ -3,7 +3,7 @@ module Iroha::Builder::Simple::Resource
   class Array
 
     TABLE_PROC = Proc.new{
-      def Array(name, addr_width, value_type, ownership, mem_type)
+      def IrohaArray(name, addr_width, value_type, ownership, mem_type)
         fail "Error Illegal ownership #{ownership} of Array" if (ownership != :EXTERNAL and ownership != :INTERNAL)
         fail "Error Illegal mem type  #{mem_type}  of Array" if (mem_type  != :RAM      and mem_type  != :ROM     )
         __add_resource(:Array, name, [], [], {}, {ARRAY: [addr_width, value_type, ownership, mem_type]})
