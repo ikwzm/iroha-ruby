@@ -17,6 +17,11 @@ module Iroha::Builder::Simple::Type
     }
 
     STATE_PROC = Proc.new{
+      def Signed(width)
+        type = Type::Signed.new(width)
+        type._assign_value = nil
+        return type
+      end
       def To_Signed(value, width)
         type = Type::Signed.new(width)
         type._assign_value = value
@@ -42,6 +47,11 @@ module Iroha::Builder::Simple::Type
     }
 
     STATE_PROC = Proc.new{
+      def Unsigned(width)
+        type = Type::Unsigned.new(width)
+        type._assign_value = nil
+        return type
+      end
       def To_Unsigned(value, width)
         type = Type::Unsigned.new(width)
         type._assign_value = value

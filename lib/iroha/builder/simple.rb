@@ -132,15 +132,15 @@ module Iroha::Builder::Simple
     end
 
     def Register(name, type)
-      return __add_register(name, :REG  , type)
+      return __add_table_register(name, :REG  , type)
     end
         
     def Constant(name, type)
-      return __add_register(name, :CONST, type)
+      return __add_table_register(name, :CONST, type)
     end
 
     def Wire(name, type)
-      return __add_register(name, :WIRE , type)
+      return __add_table_register(name, :WIRE , type)
     end
 
     def Ref(*args)
@@ -156,7 +156,7 @@ module Iroha::Builder::Simple
     end
 
     def _on_state
-      if @_on_state.class == @_state_class then
+      if @_on_state.kind_of?(@_state_class) then
         return @_on_state
       else
         return nil
@@ -171,6 +171,15 @@ module Iroha::Builder::Simple
       end
     end
 
+    def __add_table_register(name, klass, type)
+      register = __add_register(name, klass , type)
+      if name.class == Symbol then
+        self   .class.send(:define_method, name, Proc.new do register; end)
+        @_state_class.send(:define_method, name, Proc.new do register; end)
+      end
+      return register
+    end
+
     def __add_register(name, klass, type)
       if type.class == Array then
         name_index_width = Math::log10(type.size).ceil
@@ -181,19 +190,10 @@ module Iroha::Builder::Simple
           register_name = sprintf(name_format, name, index).to_sym
           registers[index] = _add_new_register(IRegister, register_name, klass, type, type._assign_value)
         end
-        if name.class == Symbol then
-          self.class.send(   :define_method, name, Proc.new do registers; end)
-          @_state_class.send(:define_method, name, Proc.new do registers; end)
-        end
         return registers
       else
         fail "Error: illegal type(#{type.class})" if type.kind_of?(Iroha::IType) == false
-        register = _add_new_register(IRegister, name, klass, type, type._assign_value)
-        if name.class == Symbol then
-          self.class.send(   :define_method, name, Proc.new do register; end)
-          @_state_class.send(:define_method, name, Proc.new do register; end)
-        end
-        return register
+        return _add_new_register(IRegister, name, klass, type, type._assign_value)
       end
     end
 
@@ -225,7 +225,7 @@ module Iroha::Builder::Simple
   class IStepTable < ITable
 
     def IState(name, &block)
-      state = _add_new_state(@_state_class, name, [])
+      state = _add_new_state(Class.new(@_state_class), name, [])
       if @_init_state_id == nil
         @_init_state_id = state._id
       end
@@ -252,7 +252,7 @@ module Iroha::Builder::Simple
 
     def IStage(*stage_names)
       stage_list = stage_names.map do |stage_name|
-        _add_new_state(@_state_class, stage_name, [])
+        _add_new_state(Class.new(@_state_class), stage_name, [])
       end
       stage_list.each do |stage|
         self   .class.send(:define_method, stage._name, Proc.new do stage; end)
@@ -272,7 +272,8 @@ module Iroha::Builder::Simple
     end
 
     def Start(name)
-      return @dataflow_in_register = __add_register(name, :WIRE , @dataflow_in_type)
+      @dataflow_in_register = __add_table_register(name, :WIRE , @dataflow_in_type)
+      return @dataflow_in_register
     end
   end
 
@@ -359,6 +360,27 @@ module Iroha::Builder::Simple
         self.instance_eval(&block)
         @_owner_table._state_exit
       end
+    end
+
+    def __add_local_register(name, klass, type)
+      register_name = (@_name.nil?) ? "state_{#@_id}_#{name}" : "#{@_name}_#{name}"
+      register = @_owner_table.__add_register(register_name, klass, type)
+      if name.class == Symbol then
+        self.class.send(:define_method, name, Proc.new do register; end)
+      end
+      return register
+    end
+
+    def Register(name, type)
+      return __add_local_register(name, :REG  , type)
+    end
+        
+    def Constant(name, type)
+      return __add_local_register(name, :CONST, type)
+    end
+
+    def Wire(name, type)
+      return __add_local_register(name, :WIRE , type)
     end
 
     def Case(cond_regs, &block)
