@@ -1,16 +1,16 @@
 module Iroha::Builder::Simple::Resource
 
-  class PortInput
+  class SharedRegisterReader
     attr_accessor :_ref_resources
 
     TABLE_PROC = Proc.new {
-      def PortInput(name, type, *resources)
+      def SharedRegisterReader(name, type, *resources)
         if type._width.nil? then
           params = {:INPUT => name}
         else
           params = {:INPUT => name, :WIDTH => type._width}
         end
-        resource = __add_resource(:PortInput, name, [], [type], params, {:"PORT-INPUT" => nil})
+        resource = __add_resource(:SharedRegisterReader, name, [], [type], params, {:"SHARED-REG" => nil})
         resource._ref_resources = resources
         return resource
       end
@@ -39,24 +39,24 @@ module Iroha::Builder::Simple::Resource
     end
 
     define_method('<=') do |regs|
-      fail "Error: can not connect PortOut(#{_id_to_str}) to #{regs._id_to_str}" if regs.class != PortOutput and regs.class != CurrentState
+      fail "Error: can not connect SharedRegister(#{_id_to_str}) to #{regs._id_to_str}" if regs.class != SharedRegister and regs.class != CurrentState
       self._add_connection(regs._owner_module._id, regs._owner_table._id, regs._id)
       regs._add_connection(self._owner_module._id, self._owner_table._id, self._id)
       return self
     end
   end
 
-  class PortOutput
+  class SharedRegister
     attr_accessor :_ref_resources
 
     TABLE_PROC = Proc.new {
-      def PortOutput(name, type, *resources)
+      def SharedRegister(name, type, *resources)
         if type._width.nil? then
           params = {:OUTPUT => name}
         else
           params = {:OUTPUT => name, :WIDTH => type._width}
         end
-        resource = __add_resource(:PortOutput, name, [type], [], params, nil)
+        resource = __add_resource(:SharedRegister, name, [type], [], params, nil)
         resource._ref_resources = resources
         return resource
       end

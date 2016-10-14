@@ -1,9 +1,9 @@
 module Iroha::Resource
 
-  class PortInput  < Iroha::IResource
+  class SharedRegisterReader < Iroha::IResource
     attr_accessor :_connections
-    CLASS_NAME   = "port-input"
-    OPTION_NAME  = "PORT-INPUT".to_sym
+    CLASS_NAME   = "shared-reg-reader"
+    OPTION_NAME  = "SHARED-REG".to_sym
     IS_EXCLUSIVE = true
 
     def initialize(id, input_types, output_types, params, option)
@@ -63,21 +63,21 @@ module Iroha::Resource
       end
     end
 
-    def _connect_to_port_output
+    def _connect_to_shared_register
       if @_connections.size == 1 then
-        connection  = @_connections[0]
-        port_output = @_owner_design._find_resource(connection[:MODULE], connection[:TABLE], connection[:RESOURCE])
-        if port_output.nil? then
-          fail "Not found port-output resource(#{connection}) in #{_id_to_str}"
+        connection = @_connections[0]
+        register   = @_owner_design._find_resource(connection[:MODULE], connection[:TABLE], connection[:RESOURCE])
+        if register.nil? then
+          fail "Not found shared-reg resource(#{connection}) in #{_id_to_str}"
         end
-        port_output._connect_to_port_input(self)
+        register._connect_to_shared_register_reader(self)
       end
     end
   end
 
-  class PortOutput < Iroha::IResource
+  class SharedRegister < Iroha::IResource
     attr_accessor :_connections
-    CLASS_NAME   = "port-output"
+    CLASS_NAME   = "shared-reg"
     IS_EXCLUSIVE = true
 
     def initialize(id, input_types, output_types, params, option)
@@ -85,11 +85,11 @@ module Iroha::Resource
       @_connections = []
     end
 
-    def _connect_to_port_input(port_input)
-      if port_input.kind_of?(PortInput) then
-        _add_connection(port_input._owner_module._id, port_input._owner_table._id, port_input._id)
+    def _connect_to_shared_register_reader(reader)
+      if reader.kind_of?(SharedRegisterReader) then
+        _add_connection(reader._owner_module._id, reader._owner_table._id, reader._id)
       else
-        fail "Non port-input(#{port_input.class}) connect to port-output(#{id_to_str})"
+        fail "Non shared-reg-reader(#{reader.class}) connect to #{CLASS_NAME}(#{id_to_str})"
       end
     end
 

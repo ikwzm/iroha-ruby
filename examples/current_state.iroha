@@ -16,11 +16,11 @@
       (REGISTER 1 curr_state_i WIRE (STATE 1 1) ())
     )
     (RESOURCES
-      (RESOURCE 1 port-input  () ((STATE 1 1)) (PARAMS (INPUT  curr_state)) (PORT-INPUT 1 1 1))
+      (RESOURCE 1 shared-reg-reader () ((STATE 1 1)) (PARAMS (INPUT curr_state)) (SHARED-REG 1 1 1))
     )
     (INITIAL 1)
     (STATE 1
-      (INSN 1 port-input 1 () () () (1))
+      (INSN 1 shared-reg-reader 1 () () () (1))
     )
   )
 )

@@ -10,11 +10,11 @@ module Iroha::Resource
       @_connections = []
     end
 
-    def _connect_to_port_input(port_input)
-      if port_input.kind_of?(PortInput) then
-        _add_connection(port_input._owner_module._id, port_input._owner_table._id, port_input._id)
+    def _connect_to_shared_register_reader(reader)
+      if reader.kind_of?(SharedRegisterReader) then
+        _add_connection(reader._owner_module._id, reader._owner_table._id, reader._id)
       else
-        fail "Non port-input(#{port_input.class}) connect to port-output(#{id_to_str})"
+        fail "Non shared-reg-reader(#{reader.class}) connect to #{CLASS_NAME}(#{id_to_str})"
       end
     end
 
