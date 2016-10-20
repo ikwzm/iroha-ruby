@@ -28,7 +28,7 @@ design = IDesign :design do
       Constant  :a_fraction_all_0    , Unsigned(a_fraction_width) <= 0
       ExtInput  :a_in                , a_width
 
-      Constant  :b_exponent_offset   , Unsigned(b_exponent_width) <= 2**(a_exponent_width-1)-1
+      Constant  :b_exponent_offset   , Unsigned(b_exponent_width) <= 2**(b_exponent_width-1)-1
       Constant  :b_exponent_all_0    , Unsigned(b_exponent_width) <= 0
       Constant  :b_exponent_all_1    , Unsigned(b_exponent_width) <= (0..b_exponent_width-1).to_a.inject(0){|d,n| d = d + 2**n}
       Constant  :b_fraction_all_0    , Unsigned(b_fraction_width) <= 0
