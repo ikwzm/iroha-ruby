@@ -19,6 +19,13 @@ module Iroha::Type
       end
     end
 
+    define_method('==') do |type|
+      return false if type.kind_of?(State) == false
+      return false if type._module_id != @_module_id
+      return false if type._table_id  != @_table_id
+      return true
+    end
+
     def _to_exp
       return "(#{CLASS_NAME} #{@_module_id} #{@_table_id})"
     end

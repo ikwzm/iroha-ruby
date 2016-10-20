@@ -19,8 +19,32 @@ module Iroha::Type
       return "(#{CLASS_NAME} #{@_width})"
     end
 
+    def _min
+      return 0-(2**(@_width-1))
+    end
+
+    def _max
+      return (2**(@_width-1)-1)
+    end
+
+    define_method('==') do |type|
+      return false if type.kind_of?(Signed) == false
+      return false if type._width != @_width
+      return true
+    end
+
     def self.convert_from(type)
       self.new(type._width)
+    end
+
+    def self.calc_width(*values)
+      min   = values.min
+      max   = values.max
+      width = 1
+      while ((2**(width-1)-1 < max) or (0-2**(width-1) > min)) do
+        width += 1
+      end
+      return width
     end
 
   end
@@ -40,8 +64,32 @@ module Iroha::Type
       end
     end
 
+    define_method('==') do |type|
+      return false if type.kind_of?(Unsigned) == false
+      return false if type._width != @_width
+      return true
+    end
+
     def _to_exp
       return "(#{CLASS_NAME} #{@_width})"
+    end
+
+    def _min
+      return 0
+    end
+
+    def _max
+      return 2**(@_width)-1
+    end
+
+    def self.calc_width(*values)
+      min   = values.min
+      max   = values.max
+      width = 1
+      while(2**width-1 < max) do
+        width += 1
+      end
+      return width
     end
 
     def self.convert_from(type)

@@ -16,9 +16,12 @@ module Iroha
       @_owner_design = nil
       @_owner_module = nil
       @_owner_table  = nil
+      if _check_types() != true then
+        fail "(RESOURCE #{@_id} #{@_class_name} #{@_input_types} #{@_output_types} ...) is invalid types."
+      end
       return if option == nil
       return if option.class == Hash and option.size == 0
-      fail "(RESOURCE #{class_name} #{id} ... #{option}) is invalid option."
+      fail "(RESOURCE #{@_id} #{@_class_name} ... #{option}) is invalid option."
     end
 
     def _set_owner(owner_design, owner_module, owner_table)
@@ -32,15 +35,37 @@ module Iroha
     end
 
     def _to_exp(indent)
-      if self.class.method_defined?(:_option_to_exp) then
-        option_exp = _option_to_exp()
-      else
-        option_exp = ""
-      end
       return indent + "(RESOURCE #{@_id} #{@_class_name} " +
              "(" + @_input_types .map{|t|t._to_exp}.join(" ") + ") " +
              "(" + @_output_types.map{|t|t._to_exp}.join(" ") + ") " +
-             @_params._to_exp("") + option_exp + ")"
+             @_params._to_exp("") + _option_to_exp + ")"
+    end
+
+    def _option_to_exp
+      return ""
+    end
+
+    def _check_types
+      return (@_input_types.class == Array and @_output_types.class == Array)
+    end
+
+    def _check_input_registers(input_registers)
+      return false if input_registers.class != Array
+      return false if input_registers.size  != @_input_types.size
+      return false if input_registers.reject{|regs| regs.kind_of?(IRegister)}.size > 0
+      return false if @_input_types.zip(input_registers).reject{|t| t[0] == t[1]._type}.size > 0
+      return true
+    end
+
+    def _complement_output_types(input_registers)
+      if @_output_types.size > 0 then
+        exp = _to_exp("")
+        fail "#{exp} output_types is already been complemented."
+      end
+      if _check_input_registers(input_registers) == false then
+        exp = _to_exp("")
+        fail "#{exp} can not to complement output_types because invalid input_registers."
+      end
     end
 
     def _option_clone

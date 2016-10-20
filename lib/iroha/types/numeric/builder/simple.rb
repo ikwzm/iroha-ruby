@@ -1,5 +1,15 @@
 module Iroha::Builder::Simple::Type
 
+  def   generate_numeric_type(*values)
+    if values.min >= 0 then
+      return Unsigned.new(Iroha::Type::Unsigned.calc_width(*values))
+    else
+      return Signed  .new(Iroha::Type::Signed  .calc_width(*values))
+    end
+  end
+
+  module_function :generate_numeric_type
+
   class Signed
     attr_accessor :_assign_value
 

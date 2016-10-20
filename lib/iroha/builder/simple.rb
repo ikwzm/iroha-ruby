@@ -210,9 +210,9 @@ module Iroha::Builder::Simple
         @_singleton_classes[class_name] = resource
       end
       if name.class == Symbol then
-        self.class.send(  :define_method, name, Proc.new do resource; end)
+        self.class.send(:define_method, name, Proc.new do resource; end)
         if resource.class.const_defined?(:INSTANCE_OPERATOR) and resource.class.const_get(:INSTANCE_OPERATOR) then
-          @_state_class.send(:define_method, name, Proc.new{|*regs| Operator.new(resource, regs)})
+          @_state_class.send(:define_method, name, Proc.new{|*regs| Operator.new(self._owner_table, resource, regs)})
         else
           @_state_class.send(:define_method, name, Proc.new do resource; end)
         end
@@ -279,11 +279,44 @@ module Iroha::Builder::Simple
 
 
   class Operator
-    attr_reader :op, :operand
-    def initialize(op, operand)
-      @op      = op
-      @operand = operand
+    attr_reader :_owner_table, :_resource, :_operand
+
+    def initialize(table, resource, operand)
+      @_owner_table = table
+      @_resource    = resource
+      @_operand     = operand
     end
+
+    def generate_register
+      state = @_owner_table._on_state
+      fail "Error: not on state" if state.nil?
+      input_registers = @_operand.map{|operand| operand.generate_register}
+      if @_resource.class == Symbol then
+        input_types = input_registers.map{|register| register._type}
+        @_resource  = @_owner_table.__add_resource(@_resource ,nil, input_types, [], {}, {})
+        @_resource._complement_output_types(input_registers)
+      end
+      output_types     = @_resource._output_types
+      output_registers = output_types.map{|type| @_owner_table.__add_register(nil, :WIRE, type)}
+      if output_registers.size != 1 then
+        fail "Error: illegal output_types in generate_register(#{@_resource._class_name},#{output_types})"
+      end
+      insn = state.__add_instruction(@_resource, [], [], input_registers, output_registers)
+      return output_registers[0]
+    end
+
+    define_method('=>') do |regs|
+      state = @_owner_table._on_state
+      fail "Error: not on state" if state.nil?
+      input_registers = @_operand.map{|operand| operand.generate_register}
+      if @_resource.class == Symbol then
+        input_types = input_registers.map{|register| register._type}
+        @_resource  = @_owner_table.__add_resource(@_resource ,nil, input_types, [regs._type], {}, {})
+      end
+      insn = state.__add_instruction(@_resource, [], [], input_registers, [regs])
+      return self
+    end
+
   end
 
   class IRegister
@@ -295,10 +328,14 @@ module Iroha::Builder::Simple
       end
     end
 
+    def generate_register
+      return IRegister.convert_from(self)
+    end
+
     define_method('=>') do |regs|
       state = @_owner_table._on_state
-      fail "Error: not on state"           if state.nil?
-      fail "Error: source is not register" if regs.class != IRegister
+      fail "Error: not on state"                if state.nil?
+      fail "Error: distination is not register" if regs.class != IRegister
       resource = @_owner_table.__add_resource(:Set, nil, [self._type] , [regs._type],{},{})
       insn     = state.__add_instruction(resource,[],[], [self      ] , [regs      ]      )
       return self
@@ -314,16 +351,6 @@ module Iroha::Builder::Simple
         if value.class.method_defined?(:'=>') then
           value.send(:'=>', dst)
           return dst
-        elsif value.class == Operator then
-          src       = value
-          src_types = src.operand.map{|regs| regs._type}
-          if src.op.class == Symbol then
-            resource= @_owner_table.__add_resource(src.op ,nil, src_types  , [dst._type],{},{})
-            insn    = state.__add_instruction(resource, [], [], src.operand, [dst      ]      )
-          else
-            resource= src.op
-            insn    = state.__add_instruction(resource, [], [], src.operand, [dst      ]      )
-          end
         else
           fail "Error: illegal source value #{value.class}"
         end
@@ -436,9 +463,25 @@ module Iroha::Builder::Simple
       IRegister.send(:define_method,
                      binary_operator,
                      Proc.new { |value|
-                       opr1_regs = IRegister.clone(self )
-                       opr2_regs = IRegister.clone(value)
-                       return Operator.new(resource_class_name, [opr1_regs, opr2_regs])
+                       return Operator.new(@_owner_table, resource_class_name, [self, value])
+                     })
+      Operator.send(:define_method,
+                     binary_operator,
+                     Proc.new { |value|
+                       return Operator.new(@_owner_table, resource_class_name, [self, value])
+                     })
+    end
+    if klass.const_defined?(:UNARY_OPERATOR) then
+      unary_operator = klass.const_get(:UNARY_OPERATOR)
+      IRegister.send(:define_method,
+                     unary_operator,
+                     Proc.new { 
+                       return Operator.new(@_owner_table, resource_class_name, [self])
+                     })
+      Operator.send(:define_method,
+                     unary_operator,
+                     Proc.new {
+                       return Operator.new(@_owner_table, resource_class_name, [self])
                      })
     end
     if klass.const_defined?(:TABLE_PROC) then
