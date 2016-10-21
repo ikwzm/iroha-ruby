@@ -17,9 +17,9 @@ void test(int i, float a, float b, float z)
       printf("- O  : [{XFER: {DATA: [0x--------]}}]\n");
   } else {
       if        (((*z_ptr & 0x7F800000) == 0x00000000)) {
-          z_out = 0x00000000;
+          z_out = (*z_ptr & 0x80000000);
       } else if (((*z_ptr & 0x7F800000) == 0x7F800000) && ((*z_ptr & 0x007FFFFF) == 0x00000000)) {
-          z_out = 0x7F800000;
+          z_out = (*z_ptr & 0x80000000) | 0x7F800000;
       } else if (((*z_ptr & 0x7F800000) == 0x7F800000) && ((*z_ptr & 0x007FFFFF) != 0x00000000)) {
           z_out = 0x7FA00000;
       } else {
@@ -35,7 +35,7 @@ int main(argc, argv)
 {
   int      i;
   float    a,b,z;
-  int      max_snr = 10000;
+  int      max_snr = 1000;
   uint32_t *a_ptr  = (uint32_t*)&a;
   uint32_t *b_ptr  = (uint32_t*)&b;
 
@@ -51,8 +51,8 @@ int main(argc, argv)
   test(i, a, b, z);
   i++;
   while (i <= max_snr) {
-    *a_ptr = (uint32_t)rand();
-    *b_ptr = (uint32_t)rand();
+    *a_ptr = (((uint32_t)rand() << 16) & 0xFFFF0000) | ((uint32_t)rand() & 0x0000FFFF);
+    *b_ptr = (((uint32_t)rand() << 16) & 0xFFFF0000) | ((uint32_t)rand() & 0x0000FFFF);
     z = a*b;
     test(i, a, b, z);
     i++;
