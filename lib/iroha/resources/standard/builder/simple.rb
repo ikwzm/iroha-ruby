@@ -1,11 +1,10 @@
 module Iroha::Builder::Simple::Resource
 
   class Add
-    BINARY_OPERATOR   = '+'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Add
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Add) { |name, i_types, o_types| __add_resource(:Add, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Add) { |*regs| Operator.new(@_owner_table, :Add, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('+')  { |value| Operator.new(@_owner_table, :Add, [self, value]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       input_0_min = @_input_types[0]._min
@@ -22,11 +21,10 @@ module Iroha::Builder::Simple::Resource
   end
     
   class Sub
-    BINARY_OPERATOR   = '-'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Sub
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Sub) { |name, i_types, o_types| __add_resource(:Sub, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Sub) { |*regs| Operator.new(@_owner_table, :Sub, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('-')  { |value| Operator.new(@_owner_table, :Sub, [self, value]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       input_0_min = @_input_types[0]._min
@@ -43,11 +41,10 @@ module Iroha::Builder::Simple::Resource
   end
     
   class Mul
-    BINARY_OPERATOR   = '*'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Mul
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Mul) { |name, i_types, o_types| __add_resource(:Mul, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Mul) { |*regs| Operator.new(@_owner_table, :Mul, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('*')  { |value| Operator.new(@_owner_table, :Mul, [self, value]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       input_0_min = @_input_types[0]._min
@@ -64,11 +61,11 @@ module Iroha::Builder::Simple::Resource
   end
       
   class Gt 
-    BINARY_OPERATOR   = '>'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Gt
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Gt) { |name, i_types, o_types| __add_resource(:Gt, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Gt) { |*regs| Operator.new(@_owner_table, :Gt, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('>') { |value| Operator.new(@_owner_table, :Gt, [self, value]) }
+                                 define_method('<') { |value| Operator.new(@_owner_table, :Gt, [value, self]) }}
     def _complement_output_types(input_registers)
       super(input_registers)
       @_output_types[0] = Iroha::Builder::Simple::Type::Unsigned.new(0)
@@ -76,11 +73,10 @@ module Iroha::Builder::Simple::Resource
   end
 
   class Gte
-    BINARY_OPERATOR   = '>='
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Gte
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Gte) { |name, i_types, o_types| __add_resource(:Gte, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Gte) { |*regs| Operator.new(@_owner_table, :Gte, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('>=') { |value| Operator.new(@_owner_table, :Gte, [self, value]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       @_output_types[0] = Iroha::Builder::Simple::Type::Unsigned.new(0)
@@ -88,11 +84,12 @@ module Iroha::Builder::Simple::Resource
   end
 
   class Eq 
-    BINARY_OPERATOR   = '=='
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Eq
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Eq ) { |name, i_types, o_types| __add_resource(:Eq, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Eq ) { |*regs| Operator.new(@_owner_table, :Eq, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('==') { |value| Operator.new(@_owner_table, :Eq, [self, value]) }
+                                 define_method('!=') { |value| Operator.new(@_owner_table, :BitInv, [
+                                                               Operator.new(@_owner_table, :Eq, [self, value])]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       @_output_types[0] = Iroha::Builder::Simple::Type::Unsigned.new(0)
@@ -100,11 +97,10 @@ module Iroha::Builder::Simple::Resource
   end
 
   class BitAnd
-    BINARY_OPERATOR   = '&'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :BitAnd
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:BitAnd) { |name, i_types, o_types| __add_resource(:BitAnd, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:BitAnd) { |*regs| Operator.new(@_owner_table, :BitAnd, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('&')     { |value| Operator.new(@_owner_table, :BitAnd, [self, value]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       width = [@_input_types[0]._width, @_input_types[1]._width].max
@@ -118,11 +114,10 @@ module Iroha::Builder::Simple::Resource
   end
     
   class BitOr 
-    BINARY_OPERATOR   = '|'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :BitOr
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:BitOr) { |name, i_types, o_types| __add_resource(:BitOr, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:BitOr) { |*regs| Operator.new(@_owner_table, :BitOr, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('|')    { |value| Operator.new(@_owner_table, :BitOr, [self, value]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       width = [@_input_types[0]._width, @_input_types[1]._width].max
@@ -136,11 +131,10 @@ module Iroha::Builder::Simple::Resource
   end
     
   class BitXor
-    BINARY_OPERATOR   = '^'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :BitXor
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:BitXor) { |name, i_types, o_types| __add_resource(:BitXor, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:BitXor) { |*regs| Operator.new(@_owner_table, :BitXor, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('^')     { |value| Operator.new(@_owner_table, :BitXor, [self, value]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       width = [@_input_types[0]._width, @_input_types[1]._width].max
@@ -154,11 +148,12 @@ module Iroha::Builder::Simple::Resource
   end
     
   class Shift 
-    BINARY_OPERATOR   = '<<'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Shift
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Shift) { |name, i_types, o_types| __add_resource(:Shift, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Shift) { |*regs| Operator.new(@_owner_table, :Shift, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('<<')   { |value| Operator.new(@_owner_table, :Shift, [self, value]) }
+                                 define_method('>>')   { |value| Operator.new(@_owner_table, :Shift, [self,
+                                                                 Operator.new(@_owner_table, :Sub  , [To_Unsigned(0,32), value])]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       if input_registers[1]._class == :CONST and
@@ -172,11 +167,11 @@ module Iroha::Builder::Simple::Resource
   end
       
   class BitInv
-    UNARY_OPERATOR    = '~'
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :BitInv
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:BitInv) { |name, i_types, o_types| __add_resource(:BitInv, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:BitInv) { |*regs| Operator.new(@_owner_table, :BitInv, regs) } }
+    OPERATOR_PROC     = Proc.new{define_method('~')     {         Operator.new(@_owner_table, :BitInv, [self]) }
+                                 define_method('!')     {         Operator.new(@_owner_table, :BitInv, [self]) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       @_output_types[0] = @_input_types[0].clone
@@ -185,9 +180,8 @@ module Iroha::Builder::Simple::Resource
 
   class BitSel 
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :BitSel
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:BitSel) { |name, i_types, o_types| __add_resource(:BitSel, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:BitSel) { |*regs| Operator.new(@_owner_table, :BitSel, regs) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       if input_registers[1]._class == :CONST and
@@ -204,9 +198,8 @@ module Iroha::Builder::Simple::Resource
 
   class BitConcat
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :BitConcat
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:BitConcat) { |name, i_types, o_types| __add_resource(:BitConcat, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:BitConcat) { |*regs| Operator.new(@_owner_table, :BitConcat, regs) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       width = @_input_types.inject(0){|total_width, input_type_width| total_width = total_width + input_type_width}
@@ -216,9 +209,8 @@ module Iroha::Builder::Simple::Resource
     
   class Select
     INSTANCE_OPERATOR = true
-    OPERATOR_NAME     = :Select
-    TABLE_PROC = Proc.new{define_method(OPERATOR_NAME) do |name, i_types, o_types| __add_resource(OPERATOR_NAME, name, i_types, o_types, {}, {}) end}
-    STATE_PROC = Proc.new{define_method(OPERATOR_NAME) do |*regs| Operator.new(@_owner_table, OPERATOR_NAME, regs) end}
+    TABLE_PROC        = Proc.new{define_method(:Select) { |name, i_types, o_types| __add_resource(:Select, name, i_types, o_types, {}, {}) } }
+    STATE_PROC        = Proc.new{define_method(:Select) { |*regs| Operator.new(@_owner_table, :Select, regs) } }
     def _complement_output_types(input_registers)
       super(input_registers)
       @_output_types[0] = @_input_types[1].clone

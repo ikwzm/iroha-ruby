@@ -457,32 +457,9 @@ module Iroha::Builder::Simple
   RESOURSE_CLASSES = Iroha::Builder::Simple::Resource.constants.map{|c| Iroha::Builder::Simple::Resource.const_get(c)}
 
   RESOURSE_CLASSES.each do |klass|
-    resource_class_name = klass.to_s.split(/::/).last.to_sym
-    if klass.const_defined?(:BINARY_OPERATOR) then
-      binary_operator = klass.const_get(:BINARY_OPERATOR)
-      IRegister.send(:define_method,
-                     binary_operator,
-                     Proc.new { |value|
-                       return Operator.new(@_owner_table, resource_class_name, [self, value])
-                     })
-      Operator.send(:define_method,
-                     binary_operator,
-                     Proc.new { |value|
-                       return Operator.new(@_owner_table, resource_class_name, [self, value])
-                     })
-    end
-    if klass.const_defined?(:UNARY_OPERATOR) then
-      unary_operator = klass.const_get(:UNARY_OPERATOR)
-      IRegister.send(:define_method,
-                     unary_operator,
-                     Proc.new { 
-                       return Operator.new(@_owner_table, resource_class_name, [self])
-                     })
-      Operator.send(:define_method,
-                     unary_operator,
-                     Proc.new {
-                       return Operator.new(@_owner_table, resource_class_name, [self])
-                     })
+    if klass.const_defined?(:OPERATOR_PROC) then
+      IRegister.class_eval(&klass.const_get(:OPERATOR_PROC))
+      Operator .class_eval(&klass.const_get(:OPERATOR_PROC))
     end
     if klass.const_defined?(:TABLE_PROC) then
       ITable.class_eval(&klass.const_get(:TABLE_PROC))

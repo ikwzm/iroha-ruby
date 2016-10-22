@@ -29,20 +29,20 @@ design = IDesign :design do
       IState    :state4
       state1.on {
         data_u8 <= Select( (data_u0 == data_u1), (data_u2 & data_u3 & data_u4),  (data_u5 | data_u6 | data_u7))
-        data_s8 <= Select(~(data_s0 == data_s1), (data_s2 & data_s3 & data_s4),  (data_s5 | data_s6 | data_s7))
+        data_s8 <= Select( (data_s0 != data_s1), (data_s2 & data_s3 & data_s4),  (data_s5 | data_s6 | data_s7))
       }      
       state2.on {
         data_u8 <= Select( (data_u0 >  data_u1), (data_u2 ^ data_u3 ^ data_u4), ~(data_u5 ^ data_u6 ^ data_u7))
-        data_s8 <= Select(~(data_s0 >  data_s1), (data_s2 ^ data_s3 ^ data_s4), ~(data_s5 ^ data_s6 ^ data_s7))
+        data_s8 <= Select(!(data_s0 >  data_s1), (data_s2 ^ data_s3 ^ data_s4), ~(data_s5 ^ data_s6 ^ data_s7))
       }      
       state3.on {
         data_u0 <= Select( (data_u0 >= data_u1), ~data_u0, ~data_u1)
-        data_s0 <= Select(~(data_s0 >= data_s1), ~data_s0, ~data_s1)
+        data_s0 <= Select(!(data_s0 >= data_s1), ~data_s0, ~data_s1)
       }      
       state4.on {
         data_u0 <= Select((data_u0 > data_u1),
-                          Select((data_u2 > data_u3), data_u0, data_u1),
-                          Select((data_u1 > data_u2), data_u1, data_u0))
+                          Select((data_u2 < data_u3), data_u0, data_u1),
+                          Select((data_u1 < data_u2), data_u1, data_u0))
       }      
     end
   end
