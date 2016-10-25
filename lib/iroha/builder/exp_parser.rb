@@ -4219,6 +4219,9 @@ module Exp
     r0
   end
 
+  module Number0
+  end
+
   def _nt_number
     start_index = index
     if node_cache[:number].has_key?(index)
@@ -4230,26 +4233,54 @@ module Exp
       return cached
     end
 
-    s0, i0 = [], index
+    i0, s0 = index, []
+    s1, i1 = [], index
     loop do
-      if has_terminal?(@regexps[gr = '\A[0-9]'] ||= Regexp.new(gr), :regexp, index)
-        r1 = true
+      if has_terminal?(@regexps[gr = '\A[0-9-]'] ||= Regexp.new(gr), :regexp, index)
+        r2 = true
         @index += 1
       else
-        terminal_parse_failure('[0-9]')
-        r1 = nil
+        terminal_parse_failure('[0-9-]')
+        r2 = nil
       end
-      if r1
-        s0 << r1
+      if r2
+        s1 << r2
       else
         break
       end
     end
-    if s0.empty?
+    if s1.empty?
+      @index = i1
+      r1 = nil
+    else
+      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
+    end
+    s0 << r1
+    if r1
+      s3, i3 = [], index
+      loop do
+        if has_terminal?(@regexps[gr = '\A[0-9]'] ||= Regexp.new(gr), :regexp, index)
+          r4 = true
+          @index += 1
+        else
+          terminal_parse_failure('[0-9]')
+          r4 = nil
+        end
+        if r4
+          s3 << r4
+        else
+          break
+        end
+      end
+      r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+      s0 << r3
+    end
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(Number0)
+    else
       @index = i0
       r0 = nil
-    else
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
     end
 
     node_cache[:number][start_index] = r0

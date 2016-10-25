@@ -372,7 +372,7 @@ grammar Exp
   end
 
   rule number
-    [0-9]+
+    [0-9-]+ [0-9]*
   end
 
   rule graph
