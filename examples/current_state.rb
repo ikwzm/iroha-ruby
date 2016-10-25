@@ -10,7 +10,7 @@ design = IDesign :design do
     end
     ITable :tab_2 do
       Wire                 :curr_state_i => StateType(@_owner_design.mod.tab_1)
-      SharedRegisterReader :curr_state  ,   StateType(@_owner_design.mod.tab_1)
+      SharedRegisterReader :curr_state   => StateType(@_owner_design.mod.tab_1)
       IState               :st21
       st21.on {
         curr_state_i <= curr_state

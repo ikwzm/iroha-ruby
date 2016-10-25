@@ -3,8 +3,10 @@ module Iroha::Builder::Simple::Resource
   class DataFlowIn
 
     TABLE_PROC = Proc.new {
-      def DataFlowIn(name, type)
-        __add_resource(:DataFlowIn, name, [type], [], {}, {})
+      def DataFlowIn(**args)
+        return args.to_a.map do |arg|
+          __add_resource(:DataFlowIn, arg[0], [arg[1]], [], {}, {})
+        end
       end
     }
 
