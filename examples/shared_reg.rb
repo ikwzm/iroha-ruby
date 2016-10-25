@@ -5,10 +5,10 @@ include Iroha::Builder::Simple
 design = IDesign :design do
   IModule :mod do
     ITable :tab_1 do
-      Register             :din     , Unsigned(32)
-      Constant             :dout    , Unsigned(32) <= 8
-      SharedRegisterReader :data_in , Unsigned(32), Ref(:mod, :tab_2, :data_out)
-      SharedRegister       :data_out, Unsigned(32)
+      Register             :din      => Unsigned(32)
+      Constant             :dout     => Unsigned(32) <= 8
+      SharedRegisterReader :data_in  , Unsigned(32), Ref(:mod, :tab_2, :data_out)
+      SharedRegister       :data_out , Unsigned(32)
       IState               :st11
       IState               :st12
       IState               :st13
@@ -24,10 +24,10 @@ design = IDesign :design do
       }
     end
     ITable :tab_2 do
-      Register             :din     , Unsigned(32)
-      Constant             :dout    , Unsigned(32) <= 8
-      SharedRegisterReader :data_in , Unsigned(32)
-      SharedRegister       :data_out, Unsigned(32)
+      Register             :din      => Unsigned(32)
+      Constant             :dout     => Unsigned(32) <= 8
+      SharedRegisterReader :data_in  , Unsigned(32)
+      SharedRegister       :data_out , Unsigned(32)
       IState               :st21
       IState               :st22
       IState               :st23
@@ -43,10 +43,10 @@ design = IDesign :design do
       }
     end
     ITable :tab_3 do
-      Register             :din     , Unsigned(32)
-      Constant             :dout    , Unsigned(32) <= 8
-      SharedRegisterReader :data_in , Unsigned(32)
-      SharedRegister       :data_out, Unsigned(32)
+      Register             :din      => Unsigned(32)
+      Constant             :dout     => Unsigned(32) <= 8
+      SharedRegisterReader :data_in  , Unsigned(32)
+      SharedRegister       :data_out , Unsigned(32)
       IState               :st31
       st31.on {
         din <= data_in

@@ -7,8 +7,8 @@ design = IDesign :design do
     ITable :table do
       data_width = 32
       loop_size  = 10
-      Register  :counter  , Unsigned(data_width)
-      Register  :cond     , Unsigned( 0)
+      Register  :counter  => Unsigned(data_width)
+      Register  :cond     => Unsigned( 0)
 
       IState    :state1
       IState    :state2

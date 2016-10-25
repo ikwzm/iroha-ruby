@@ -131,16 +131,22 @@ module Iroha::Builder::Simple
       return __add_resource(class_name, name, input_types, output_types, params, option)
     end
 
-    def Register(name, type)
-      return __add_table_register(name, :REG  , type)
-    end
-        
-    def Constant(name, type)
-      return __add_table_register(name, :CONST, type)
+    def Register(**args)
+      return args.to_a.map do |arg|
+        __add_table_register(arg[0], :REG , arg[1])
+      end
     end
 
-    def Wire(name, type)
-      return __add_table_register(name, :WIRE , type)
+    def Constant(**args)
+      return args.to_a.map do |arg|
+        __add_table_register(arg[0], :CONST, arg[1])
+      end
+    end
+
+    def Wire(**args)
+      return args.to_a.map do |arg|
+        __add_table_register(arg[0], :WIRE , arg[1])
+      end
     end
 
     def Ref(*args)
@@ -398,16 +404,22 @@ module Iroha::Builder::Simple
       return register
     end
 
-    def Register(name, type)
-      return __add_local_register(name, :REG  , type)
-    end
-        
-    def Constant(name, type)
-      return __add_local_register(name, :CONST, type)
+    def Register(**args)
+      return args.to_a.map do |arg|
+        __add_local_register(arg[0], :REG , arg[1])
+      end
     end
 
-    def Wire(name, type)
-      return __add_local_register(name, :WIRE , type)
+    def Constant(**args)
+      return args.to_a.map do |arg|
+        __add_local_register(arg[0], :CONST, arg[1])
+      end
+    end
+
+    def Wire(**args)
+      return args.to_a.map do |arg|
+        __add_local_register(arg[0], :WIRE , arg[1])
+      end
     end
 
     def Case(cond_regs, &block)

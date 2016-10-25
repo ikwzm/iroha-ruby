@@ -6,20 +6,20 @@ design = IDesign :design do
 
   IModule :mod_top do
     ITable :shared  do
-      Register   :reg_top , Unsigned(32)
+      Register   :reg_top => Unsigned(32)
     end
   end
 
   mod_top.IModule :mod_sub do
     ITable :shared  do
-      Register   :reg_sub , Unsigned(32)
+      Register   :reg_sub => Unsigned(32)
     end
   end
 
   mod_top.instance_eval do
     ITable :tab_top do
-      ForeignReg :foreign_reg2, _owner_design.mod_sub.shared.reg_sub
-      Register   :reg2        , Unsigned(32)
+      ForeignReg :foreign_reg2 , _owner_design.mod_sub.shared.reg_sub
+      Register   :reg2         => Unsigned(32)
       IState     :state1
       IState     :state2
       state1.on {
@@ -35,8 +35,8 @@ design = IDesign :design do
 
   mod_sub.instance_eval do
     ITable :tab_sub do
-      ForeignReg :foreign_reg1, _owner_design.mod_top.shared.reg_top
-      Register   :reg1        , Unsigned(32)
+      ForeignReg :foreign_reg1 , _owner_design.mod_top.shared.reg_top
+      Register   :reg1         => Unsigned(32)
       IState     :state1
       IState     :state2
       state1.on {

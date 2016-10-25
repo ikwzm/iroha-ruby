@@ -5,8 +5,8 @@ include Iroha::Builder::Simple
 design = IDesign :design do
   IModule :mod do
     ITable :callee_tab do
-      Register        :r_arg, Unsigned(32)
-      SiblingTask     :task , Unsigned(32)
+      Register        :r_arg => Unsigned(32)
+      SiblingTask     :task  , Unsigned(32)
       IState          :st10
       IState          :st11
       IState          :st12

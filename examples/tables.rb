@@ -6,15 +6,15 @@ design = IDesign :design do
 
   IModule :mod do
     ITable :shared  do
-      Register   :shared_reg  , Unsigned(32)
+      Register   :shared_reg   => Unsigned(32)
     end
     ITable :tab1 do
       IState     :st1
       IState     :st12
       ForeignReg :foreign_reg1, _owner_design.mod.shared.shared_reg
       Resource   :Set, nil, [], [], {}, {}
-      Register   :r11         , Unsigned(32) <= 123
-      Register   :r12         , Unsigned(32)
+      Register   :r11          => Unsigned(32) <= 123
+      Register   :r12          => Unsigned(32)
       st1.on {
         foreign_reg1 <= r11
       }
@@ -26,8 +26,8 @@ design = IDesign :design do
       IState     :st2
       IState     :st22
       ForeignReg :foreign_reg2, _owner_design.mod.shared.shared_reg
-      Register   :r21         , Unsigned(32) <= 456
-      Register   :r22         , Unsigned(32) <= 789
+      Register   :r21          => Unsigned(32) <= 456
+      Register   :r22          => Unsigned(32) <= 789
       st2.on {
         foreign_reg2 <= r21
       }
