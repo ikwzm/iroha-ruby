@@ -8,9 +8,9 @@ design = IDesign :design do
       IState    :st1
       IState    :st2
       IState    :st3
-      ExtInput  :data_in , 32
-      Register  :r       => Unsigned(32)
-      ExtOutput :data_out, 32
+      ExtInput  :data_in  => 32
+      Register  :r        => Unsigned(32)
+      ExtOutput :data_out => 32
 
       st1.on {
         Goto st2

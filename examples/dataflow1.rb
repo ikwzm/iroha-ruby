@@ -8,7 +8,7 @@ design = IDesign :design do
       Wire       :req     => Unsigned( 1)
       Register   :counter => Unsigned(32) <= 0
       Constant   :one     => Unsigned(32) <= 1
-      ExtInput   :data_in , 1
+      ExtInput   :data_in => 1
       DataFlowIn :flow_in , Unsigned( 1)
 
       IState     :state1

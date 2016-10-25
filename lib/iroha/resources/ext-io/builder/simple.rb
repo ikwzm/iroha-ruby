@@ -3,8 +3,10 @@ module Iroha::Builder::Simple::Resource
   class ExtInput
 
     TABLE_PROC = Proc.new{
-      def ExtInput(name, width)
-        __add_resource(:ExtInput, name, [], [], {INPUT:  name, WIDTH: width}, {})
+      def ExtInput(**args)
+        return args.to_a.map do |arg|
+          __add_resource(:ExtInput, arg[0], [], [], {INPUT:  arg[0], WIDTH: arg[1]}, {})
+        end
       end
     }
     
@@ -20,8 +22,10 @@ module Iroha::Builder::Simple::Resource
   class ExtOutput
 
     TABLE_PROC = Proc.new{
-      def ExtOutput(name, width)
-        __add_resource(:ExtOutput, name, [], [], {OUTPUT: name, WIDTH: width}, {})
+      def ExtOutput(**args)
+        return args.to_a.map do |arg|
+          __add_resource(:ExtOutput, arg[0], [], [], {OUTPUT: arg[0], WIDTH: arg[1]}, {})
+        end
       end
     }
     

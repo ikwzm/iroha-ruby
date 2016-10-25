@@ -8,12 +8,12 @@ design = IDesign :design do
       z_width = 32
       d_width = 16
       Start     :start
-      ExtInput  :i_valid   , 0
-      ExtInput  :dividend  , z_width
-      ExtInput  :divisor   , d_width
-      ExtOutput :quotient  , z_width
-      ExtOutput :remainder , d_width
-      ExtOutput :o_valid   , 0
+      ExtInput  :i_valid   => 0
+      ExtInput  :dividend  => z_width
+      ExtInput  :divisor   => d_width
+      ExtOutput :quotient  => z_width
+      ExtOutput :remainder => d_width
+      ExtOutput :o_valid   => 0
 
       Register  :zi        => Array.new(z_width, Unsigned(z_width+d_width))
       Register  :di        => Array.new(z_width, Unsigned(        d_width))
