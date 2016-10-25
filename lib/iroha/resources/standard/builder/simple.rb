@@ -202,7 +202,7 @@ module Iroha::Builder::Simple::Resource
     STATE_PROC        = Proc.new{define_method(:BitConcat) { |*regs| Operator.new(@_owner_table, :BitConcat, regs) } }
     def _complement_output_types(input_registers)
       super(input_registers)
-      width = @_input_types.inject(0){|total_width, input_type_width| total_width = total_width + input_type_width}
+      width = @_input_types.inject(0){|total_width, input_type| total_width = total_width + input_type._width}
       @_output_types[0] = @_input_types[0].class.new(width)
     end
   end
