@@ -19,7 +19,9 @@ module Iroha::Builder::Simple::Resource
     attr_accessor :_ref_task
 
     TABLE_PROC = Proc.new {
-      def SubModuleTaskCall(name, task)
+      def SubModuleTaskCall(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, task = args.shift
         if    task.class == SubModuleTask then
           resource = __add_resource(:SubModuleTaskCall, name, [], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
           resource._ref_task = nil
