@@ -5,8 +5,8 @@ module Iroha::Builder::Simple::Resource
     TABLE_PROC = Proc.new{
       def ExtInput(**args)
         fail "Error: #{__method__} illegal argument size" if args.size != 1
-        name, width = args.shift
-        __add_resource(:ExtInput, name, [], [], {INPUT:  name, WIDTH: width}, {})
+        name, type = args.shift
+        __add_resource(:ExtInput, name, [], [], {INPUT:  name, WIDTH: type._width}, {})
       end
     }
     
@@ -24,8 +24,8 @@ module Iroha::Builder::Simple::Resource
     TABLE_PROC = Proc.new{
       def ExtOutput(**args)
         fail "Error: #{__method__} illegal argument size" if args.size != 1
-        name, width = args.shift
-        __add_resource(:ExtOutput, name, [], [], {OUTPUT: name, WIDTH: width}, {})
+        name, type = args.shift
+        __add_resource(:ExtOutput, name, [], [], {OUTPUT: name, WIDTH: type._width}, {})
       end
     }
     

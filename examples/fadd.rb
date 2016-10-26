@@ -18,17 +18,17 @@ design = IDesign :design do
       o_exponent_width =  8
 
       Start     :start
-      ExtInput  :i_valid             => 0
+      ExtInput  :i_valid             => Unsigned(0)
 
-      ExtOutput :z_out               => o_width
+      ExtOutput :z_out               => Unsigned(o_width)
 
       Constant  :a_exponent_offset   => Unsigned(a_exponent_width) <= 2**(a_exponent_width-1)-1
-      ExtInput  :a_in                => a_width
+      ExtInput  :a_in                => Unsigned(a_width)
       
       Constant  :b_exponent_offset   => Unsigned(b_exponent_width) <= 2**(b_exponent_width-1)-1
-      ExtInput  :b_in                => b_width
+      ExtInput  :b_in                => Unsigned(b_width)
 
-      ExtInput  :sub                 => 0
+      ExtInput  :sub                 => Unsigned(0)
 
       i_width          = [a_width         , b_width         ].max
       i_fraction_width = [a_fraction_width, b_fraction_width].max
