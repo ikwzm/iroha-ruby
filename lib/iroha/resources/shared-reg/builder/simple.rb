@@ -16,7 +16,7 @@ module Iroha::Builder::Simple::Resource
         if type._assign_value.nil?
           resource._ref_resources = []
         else
-          resource._ref_resources = type._assign_value
+          resource._ref_resources = [type._assign_value]
         end
         return resource
       end
@@ -67,8 +67,10 @@ module Iroha::Builder::Simple::Resource
         resource = __add_resource(:SharedRegister, name, [type], [], params, nil)
         if type._assign_value.nil?
           resource._ref_resources = []
-        else
+        elsif type._assign_value.class == ::Array then
           resource._ref_resources = type._assign_value
+        else
+          resource._ref_resources = [type._assign_value]
         end
         return resource
       end

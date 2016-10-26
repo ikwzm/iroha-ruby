@@ -7,7 +7,7 @@ design = IDesign :design do
     ITable :tab_1 do
       Register             :din      => Unsigned(32)
       Constant             :dout     => Unsigned(32) <= 8
-      SharedRegisterReader :data_in  => Unsigned(32) <= [Ref(:mod, :tab_2, :data_out)]
+      SharedRegisterReader :data_in  => Unsigned(32) <= Ref(:mod, :tab_2, :data_out)
       SharedRegister       :data_out => Unsigned(32)
       IState               :st11
       IState               :st12
