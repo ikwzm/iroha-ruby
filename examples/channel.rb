@@ -5,7 +5,7 @@ include Iroha::Builder::Simple
 design = IDesign :design do
   IModule :mod do
     ITable :tab_w do
-      ChannelWrite :cha_w  ,  Unsigned(32)
+      ChannelWrite :cha_w  => Unsigned(32)
       Constant     :val_w  => Unsigned(32) <= 123
       IState       :st10
       IState       :st11
@@ -18,7 +18,7 @@ design = IDesign :design do
       }
     end
     ITable :tab_r do
-      ChannelRead  :cha_r  , Unsigned(32)
+      ChannelRead  :cha_r => Unsigned(32)
       Register     :val_r => Unsigned(32)
       IState       :st20
       IState       :st21

@@ -3,7 +3,9 @@ module Iroha::Builder::Simple::Resource
   class ChannelRead
 
     TABLE_PROC = Proc.new {
-      def ChannelRead(name, type)
+      def ChannelRead(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
         __add_resource(:ChannelRead, name, [type], [type], {}, {})
       end
     }
@@ -25,7 +27,9 @@ module Iroha::Builder::Simple::Resource
   class ChannelWrite
 
     TABLE_PROC = Proc.new {
-      def ChannelWrite(name, type)
+      def ChannelWrite(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
         __add_resource(:ChannelWrite, name, [type], [type], {}, {})
       end
     }
