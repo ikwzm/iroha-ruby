@@ -63,7 +63,7 @@ module Iroha::Builder::Simple::Resource
         if type._width.nil? == false then
           params[:WIDTH] = type._width
         end
-        if type._assign_value.nil? == false then
+        if type._assign_value.kind_of?(Integer) then
           params[:"DEFAULT-VALUE"] = type._assign_value
         end
         resource = __add_resource(:SharedRegister, name, [type], [], params, nil)

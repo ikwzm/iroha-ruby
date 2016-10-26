@@ -25,7 +25,14 @@ module Iroha::Builder::Simple::Resource
       def ExtOutput(**args)
         fail "Error: #{__method__} illegal argument size" if args.size != 1
         name, type = args.shift
-        __add_resource(:ExtOutput, name, [], [], {OUTPUT: name, WIDTH: type._width}, {})
+        params = {:OUTPUT => name}
+        if type._width.nil? == false then
+          params[:WIDTH] = type._width
+        end
+        if type._assign_value.kind_of?(Integer) then
+          params[:"DEFAULT-VALUE"] = type._assign_value
+        end
+        __add_resource(:ExtOutput, name, [], [], params, {})
       end
     }
     
