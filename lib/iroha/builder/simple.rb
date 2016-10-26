@@ -132,21 +132,21 @@ module Iroha::Builder::Simple
     end
 
     def Register(**args)
-      return args.to_a.map do |arg|
-        __add_table_register(arg[0], :REG , arg[1])
-      end
+      fail "Error: #{__method__} illegal argument size" if args.size != 1
+      name, type = args.shift
+      __add_table_register(name, :REG  , type)
     end
 
     def Constant(**args)
-      return args.to_a.map do |arg|
-        __add_table_register(arg[0], :CONST, arg[1])
-      end
+      fail "Error: #{__method__} illegal argument size" if args.size != 1
+      name, type = args.shift
+      __add_table_register(name, :CONST, type)
     end
 
     def Wire(**args)
-      return args.to_a.map do |arg|
-        __add_table_register(arg[0], :WIRE , arg[1])
-      end
+      fail "Error: #{__method__} illegal argument size" if args.size != 1
+      name, type = args.shift
+      __add_table_register(name, :WIRE , type)
     end
 
     def Ref(*args)
@@ -405,21 +405,21 @@ module Iroha::Builder::Simple
     end
 
     def Register(**args)
-      return args.to_a.map do |arg|
-        __add_local_register(arg[0], :REG , arg[1])
-      end
+      fail "Error: #{__method__} illegal argument size" if args.size != 1
+      name, type = args.shift
+      __add_local_register(name, :REG  , type)
     end
 
     def Constant(**args)
-      return args.to_a.map do |arg|
-        __add_local_register(arg[0], :CONST, arg[1])
-      end
+      fail "Error: #{__method__} illegal argument size" if args.size != 1
+      name, type = args.shift
+      __add_local_register(name, :CONST, type)
     end
 
     def Wire(**args)
-      return args.to_a.map do |arg|
-        __add_local_register(arg[0], :WIRE , arg[1])
-      end
+      fail "Error: #{__method__} illegal argument size" if args.size != 1
+      name, type = args.shift
+      __add_local_register(name, :WIRE , type)
     end
 
     def Case(cond_regs, &block)

@@ -5,22 +5,20 @@ module Iroha::Builder::Simple::Resource
 
     TABLE_PROC = Proc.new {
       def SharedRegisterReader(**args)
-        return args.to_a.map do |arg|
-          name = arg[0]
-          type = arg[1]
-          if type._width.nil? then
-            params = {:INPUT => name}
-          else
-            params = {:INPUT => name, :WIDTH => type._width}
-          end
-          resource = __add_resource(:SharedRegisterReader, name, [], [type], params, {:"SHARED-REG" => nil})
-          if type._assign_value.nil?
-            resource._ref_resources = []
-          else
-            resource._ref_resources = type._assign_value
-          end
-          resource
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
+        if type._width.nil? then
+          params = {:INPUT => name}
+        else
+          params = {:INPUT => name, :WIDTH => type._width}
         end
+        resource = __add_resource(:SharedRegisterReader, name, [], [type], params, {:"SHARED-REG" => nil})
+        if type._assign_value.nil?
+          resource._ref_resources = []
+        else
+          resource._ref_resources = type._assign_value
+        end
+        return resource
       end
     }
 
@@ -59,22 +57,20 @@ module Iroha::Builder::Simple::Resource
 
     TABLE_PROC = Proc.new {
       def SharedRegister(**args)
-        return args.to_a.map do |arg|
-          name = arg[0]
-          type = arg[1]
-          if type._width.nil? then
-            params = {:OUTPUT => name}
-          else
-            params = {:OUTPUT => name, :WIDTH => type._width}
-          end
-          resource = __add_resource(:SharedRegister, name, [type], [], params, nil)
-          if type._assign_value.nil?
-            resource._ref_resources = []
-          else
-            resource._ref_resources = type._assign_value
-          end
-          resource
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
+        if type._width.nil? then
+          params = {:OUTPUT => name}
+        else
+          params = {:OUTPUT => name, :WIDTH => type._width}
         end
+        resource = __add_resource(:SharedRegister, name, [type], [], params, nil)
+        if type._assign_value.nil?
+          resource._ref_resources = []
+        else
+          resource._ref_resources = type._assign_value
+        end
+        return resource
       end
     }
 
