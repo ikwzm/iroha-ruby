@@ -59,19 +59,15 @@ module Iroha::Builder::Simple::Resource
       def SharedRegister(**args)
         fail "Error: #{__method__} illegal argument size" if args.size != 1
         name, type = args.shift
-        if type._width.nil? then
-          params = {:OUTPUT => name}
-        else
-          params = {:OUTPUT => name, :WIDTH => type._width}
+        params = {:OUTPUT => name}
+        if type._width.nil? == false then
+          params[:WIDTH] = type._width
+        end
+        if type._assign_value.nil? == false then
+          params[:"DEFAULT-VALUE"] = type._assign_value
         end
         resource = __add_resource(:SharedRegister, name, [type], [], params, nil)
-        if type._assign_value.nil?
-          resource._ref_resources = []
-        elsif type._assign_value.class == ::Array then
-          resource._ref_resources = type._assign_value
-        else
-          resource._ref_resources = [type._assign_value]
-        end
+        resource._ref_resources = []
         return resource
       end
     }
