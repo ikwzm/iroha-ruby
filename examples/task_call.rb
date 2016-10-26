@@ -6,7 +6,7 @@ design = IDesign :design do
   IModule :mod do
     ITable :callee_tab do
       Register        :r_arg => Unsigned(32)
-      SiblingTask     :task  , Unsigned(32)
+      SiblingTask     :task  => Unsigned(32)
       IState          :st10
       IState          :st11
       IState          :st12
@@ -20,7 +20,7 @@ design = IDesign :design do
       }
     end
     ITable :caller_tab do
-      SiblingTaskCall :task , Unsigned(32), _owner_design.mod.callee_tab.task
+      SiblingTaskCall :task => Unsigned(32) <= _owner_design.mod.callee_tab.task
       IState          :st20
       IState          :st21
       IState          :st22

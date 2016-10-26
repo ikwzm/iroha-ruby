@@ -3,7 +3,9 @@ module Iroha::Builder::Simple::Resource
   class SiblingTask
 
     TABLE_PROC = Proc.new {
-      def SiblingTask(name,type)
+      def SiblingTask(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
         __add_resource(:SiblingTask, name, [type], [], {}, {})
       end
     }
@@ -21,7 +23,10 @@ module Iroha::Builder::Simple::Resource
     attr_accessor :_ref_task
 
     TABLE_PROC = Proc.new {
-      def SiblingTaskCall(name, type, task)
+      def SiblingTaskCall(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
+        task = type._assign_value
         if    task.class == SiblingTask then
           resource = __add_resource(:SiblingTaskCall, name, [type], [], {}, {:'CALLEE-TABLE' => [task._owner_module._id, task._owner_table._id]})
           resource._ref_task = nil
