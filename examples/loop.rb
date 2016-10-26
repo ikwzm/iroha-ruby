@@ -5,12 +5,12 @@ include Iroha::Builder::Simple
 design = IDesign :design do
   IModule :add do
     ITable :table do
-      Register  :counter  , Unsigned(32)
-      Constant  :ten      , Unsigned(32) <= 10
+      Register  :counter  => Unsigned(32)
+      Constant  :ten      => Unsigned(32) <= 10
       Gt        :gt       , [Unsigned(32), Unsigned(32)], [Unsigned( 1)]
-      Register  :cond     , Unsigned( 0)
+      Register  :cond     => Unsigned( 0)
       Add       :adder    , [Unsigned(32), Unsigned(32)], [Unsigned(32)]
-      Constant  :one      , Unsigned(32) <= 1
+      Constant  :one      => Unsigned(32) <= 1
       IState    :state1
       IState    :state2
       IState    :state3

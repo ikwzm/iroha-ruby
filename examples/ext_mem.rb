@@ -10,7 +10,7 @@ design = IDesign :design do
       IState     :st1
       IState     :st2
       IState     :st3
-      Register   :rdata , Unsigned(data_width)
+      Register   :rdata => Unsigned(data_width)
       IrohaArray :mem   , addr_width, Unsigned(data_width), :EXTERNAL, :RAM
       st1.on {
         mem[To_Unsigned(0,addr_width)] <= To_Unsigned(123,data_width)

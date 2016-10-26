@@ -7,8 +7,8 @@ design = IDesign :design do
     ITable :tab do
       IState       :st1
       IState       :st2
-      Register     :r1   ,   Signed(32)
-      Register     :r2   ,   Signed(32) <= 123
+      Register     :r1   => Signed(32)
+      Register     :r2   => Signed(32) <= 123
       st1.on {
         Goto   st2
         r1 <= r2

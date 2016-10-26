@@ -181,7 +181,32 @@ module Iroha::Builder::Simple::Resource
   class BitSel 
     INSTANCE_OPERATOR = true
     TABLE_PROC        = Proc.new{define_method(:BitSel) { |name, i_types, o_types| __add_resource(:BitSel, name, i_types, o_types, {}, {}) } }
-    STATE_PROC        = Proc.new{define_method(:BitSel) { |*regs| Operator.new(@_owner_table, :BitSel, regs) } }
+    STATE_PROC        = Proc.new{define_method(:BitSel) { |*args|
+                                   regs    = []
+                                   regs[0] = args[0]
+                                   width   = 32
+                                   if    args.size == 2 then
+                                     if args[1].kind_of?(Integer) then
+                                       regs[1] = To_Unsigned(args[1], width)
+                                       regs[2] = regs[1]
+                                     else
+                                       regs[1] = args[1]
+                                       regs[2] = args[1]
+                                     end
+                                   elsif args.size >= 3 then
+                                     if args[1].kind_of?(Integer) then
+                                       regs[1] = To_Unsigned(args[1], width)
+                                     else
+                                       regs[1] = args[1]
+                                     end
+                                     if args[2].kind_of?(Integer) then
+                                       regs[2] = To_Unsigned(args[2], width)
+                                     else
+                                       regs[2] = args[2]
+                                     end
+                                   end
+                                   Operator.new(@_owner_table, :BitSel, regs)
+                                }}
     def _complement_output_types(input_registers)
       super(input_registers)
       if input_registers[1]._class == :CONST and

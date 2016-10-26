@@ -6,8 +6,8 @@ design = IDesign :design do
   IModule :mod do
     IFlow :tab do
       Start      :start
-      Register   :counter , Unsigned(32) <= 0
-      ExtInput   :request , 1
+      Register   :counter => Unsigned(32) <= 0
+      ExtInput   :request => Unsigned( 1)
 
       IStage     :stage1, :stage2, :stage3
 

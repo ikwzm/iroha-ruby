@@ -5,7 +5,7 @@ include Iroha::Builder::Simple
 design = IDesign :design do
   IModule :m_top do
     ITable :tab_top do
-      SubModuleTaskCall :task, Ref(:m_sub, :tab_sub, :task)
+      SubModuleTaskCall :task => Ref(:m_sub, :tab_sub, :task)
       IState            :st10
       st10.on {
         task.call

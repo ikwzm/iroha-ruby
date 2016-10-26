@@ -3,7 +3,9 @@ module Iroha::Builder::Simple::Resource
   class DataFlowIn
 
     TABLE_PROC = Proc.new {
-      def DataFlowIn(name, type)
+      def DataFlowIn(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
         __add_resource(:DataFlowIn, name, [type], [], {}, {})
       end
     }

@@ -4,14 +4,20 @@ module Iroha::Builder::Simple::Resource
     attr_accessor :_ref_resources
 
     TABLE_PROC = Proc.new {
-      def SharedRegisterReader(name, type, *resources)
+      def SharedRegisterReader(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
         if type._width.nil? then
           params = {:INPUT => name}
         else
           params = {:INPUT => name, :WIDTH => type._width}
         end
         resource = __add_resource(:SharedRegisterReader, name, [], [type], params, {:"SHARED-REG" => nil})
-        resource._ref_resources = resources
+        if type._assign_value.nil?
+          resource._ref_resources = []
+        else
+          resource._ref_resources = [type._assign_value]
+        end
         return resource
       end
     }
@@ -50,14 +56,18 @@ module Iroha::Builder::Simple::Resource
     attr_accessor :_ref_resources
 
     TABLE_PROC = Proc.new {
-      def SharedRegister(name, type, *resources)
-        if type._width.nil? then
-          params = {:OUTPUT => name}
-        else
-          params = {:OUTPUT => name, :WIDTH => type._width}
+      def SharedRegister(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, type = args.shift
+        params = {:OUTPUT => name}
+        if type._width.nil? == false then
+          params[:WIDTH] = type._width
+        end
+        if type._assign_value.nil? == false then
+          params[:"DEFAULT-VALUE"] = type._assign_value
         end
         resource = __add_resource(:SharedRegister, name, [type], [], params, nil)
-        resource._ref_resources = resources
+        resource._ref_resources = []
         return resource
       end
     }

@@ -4,7 +4,9 @@ module Iroha::Builder::Simple::Resource
     attr_accessor :_ref_regs
 
     TABLE_PROC = Proc.new {
-      def ForeignReg(name, regs)
+      def ForeignReg(**args)
+        fail "Error: #{__method__} illegal argument size" if args.size != 1
+        name, regs = args.shift
         if    regs.class == IRegister then
           resource = __add_resource(:ForeignReg, name, [], [], {}, {:"FOREIGN-REG" => [regs._owner_module._id, regs._owner_table._id, regs._id]})
           resource._ref_regs = nil
