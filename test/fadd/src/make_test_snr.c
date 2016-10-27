@@ -9,7 +9,7 @@ void test(char* tag, int i, int op, float a, float b, float z)
   uint32_t  z_out;
   char*    op_str  = (op) ? "-" : "+";
 
-  printf("---\n");
+  // printf("---\n");
   if       ((((*a_ptr & 0x7F800000) == 0x00000000) && ((*a_ptr & 0x007FFFFF) != 0x00000000)) ||
             (((*b_ptr & 0x7F800000) == 0x00000000) && ((*b_ptr & 0x007FFFFF) != 0x00000000)))
   {

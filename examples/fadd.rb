@@ -23,6 +23,8 @@ design = IDesign :design do
       ExtInput       :b_in     => Unsigned(b_width)
       ExtInput       :sub      => Unsigned(0)
       ExtOutput      :z_out    => Unsigned(o_width)
+      ExtOutput      :z_valid  => Unsigned(0) <= 0
+      Constant       :done     => Unsigned(0) <= 1
 
       i_width          = [a_width         , b_width         ].max
       i_fraction_width = [a_fraction_width, b_fraction_width].max
@@ -40,9 +42,6 @@ design = IDesign :design do
       Constant  :i_exponent_all_0    => Unsigned(i_exponent_width) <= 0
       Constant  :i_exponent_all_1    => Unsigned(i_exponent_width) <= (0..i_exponent_width-1).to_a.inject(0){|d,n| d = d + 2**n}
       Constant  :i_fraction_all_0    => Unsigned(i_fraction_width) <= 0
-
-      Constant  :o_exponent_offset   => Unsigned(o_exponent_width) <= 2**(o_exponent_width-1)-1
-      Constant  :o_exponent_all_1    => Unsigned(o_exponent_width) <= (0..o_exponent_width-1).to_a.inject(0){|d,n| d = d + 2**n}
 
       IStage    :stage1, :stage2, :stage3, :stage4, :stage5, :stage6, :stage7, :stage8
 
@@ -138,17 +137,15 @@ design = IDesign :design do
         start      <= i_valid
         stage1_sub <= sub
 
-        Constant  :a_fraction_low_pos  => Unsigned(32) <= 0
-        Constant  :a_fraction_high_pos => Unsigned(32) <= a_fraction_width-1
-        Constant  :a_exponent_low_pos  => Unsigned(32) <= a_fraction_width
-        Constant  :a_exponent_high_pos => Unsigned(32) <= a_fraction_width + a_exponent_width-1
-        Constant  :a_sign_pos          => Unsigned(32) <= a_fraction_width + a_exponent_width
-        Wire      :a_data_in           => Unsigned(a_width)
-        Wire      :a_fraction_in       => Unsigned(a_fraction_width)
-        Wire      :a_exponent_in       => Unsigned(a_exponent_width)
-        a_data_in     <= a_in
-        a_fraction_in <= BitSel(a_data_in, a_fraction_high_pos, a_fraction_low_pos)
-        a_exponent_in <= BitSel(a_data_in, a_exponent_high_pos, a_exponent_low_pos)
+        Constant  :a_fraction_low_pos  => Unsigned(32)               <= 0
+        Constant  :a_fraction_high_pos => Unsigned(32)               <= a_fraction_width-1
+        Constant  :a_exponent_low_pos  => Unsigned(32)               <= a_fraction_width
+        Constant  :a_exponent_high_pos => Unsigned(32)               <= a_fraction_width + a_exponent_width-1
+        Constant  :a_sign_pos          => Unsigned(32)               <= a_fraction_width + a_exponent_width
+        Wire      :a_data_in           => Unsigned(a_width)          <= a_in
+        Wire      :a_fraction_in       => Unsigned(a_fraction_width) <= BitSel(a_data_in, a_fraction_high_pos, a_fraction_low_pos)
+        Wire      :a_exponent_in       => Unsigned(a_exponent_width) <= BitSel(a_data_in, a_exponent_high_pos, a_exponent_low_pos)
+
         stage1_a_sign <= BitSel(a_data_in, a_sign_pos)
         if (i_fraction_width > a_fraction_width) then
           Constant :a_fraction_low     => Unsigned(i_fraction_width - a_fraction_width) <= 0
@@ -163,17 +160,15 @@ design = IDesign :design do
           stage1_a_exponent <= a_exponent_in
         end
 
-        Constant  :b_fraction_low_pos  => Unsigned(32) <= 0
-        Constant  :b_fraction_high_pos => Unsigned(32) <= b_fraction_width-1
-        Constant  :b_exponent_low_pos  => Unsigned(32) <= b_fraction_width
-        Constant  :b_exponent_high_pos => Unsigned(32) <= b_fraction_width + b_exponent_width-1
-        Constant  :b_sign_pos          => Unsigned(32) <= b_fraction_width + b_exponent_width
-        Wire      :b_data_in           => Unsigned(b_width)
-        Wire      :b_fraction_in       => Unsigned(b_fraction_width)
-        Wire      :b_exponent_in       => Unsigned(b_exponent_width)
-        b_data_in     <= b_in
-        b_fraction_in <= BitSel(b_data_in, b_fraction_high_pos, b_fraction_low_pos)
-        b_exponent_in <= BitSel(b_data_in, b_exponent_high_pos, b_exponent_low_pos)
+        Constant  :b_fraction_low_pos  => Unsigned(32)               <= 0
+        Constant  :b_fraction_high_pos => Unsigned(32)               <= b_fraction_width-1
+        Constant  :b_exponent_low_pos  => Unsigned(32)               <= b_fraction_width
+        Constant  :b_exponent_high_pos => Unsigned(32)               <= b_fraction_width + b_exponent_width-1
+        Constant  :b_sign_pos          => Unsigned(32)               <= b_fraction_width + b_exponent_width
+        Wire      :b_data_in           => Unsigned(b_width)          <= b_in
+        Wire      :b_fraction_in       => Unsigned(b_fraction_width) <= BitSel(b_data_in, b_fraction_high_pos, b_fraction_low_pos)
+        Wire      :b_exponent_in       => Unsigned(b_exponent_width) <= BitSel(b_data_in, b_exponent_high_pos, b_exponent_low_pos)
+
         stage1_b_sign <= BitSel(b_data_in, b_sign_pos)
         if (i_fraction_width > b_fraction_width) then
           Constant :b_fraction_low     => Unsigned(i_fraction_width - b_fraction_width) <= 0
@@ -190,70 +185,50 @@ design = IDesign :design do
       }
 
       stage2.on {
-        Wire      :a_exponent_is_all_1 => Unsigned(0)
-        Wire      :a_exponent_is_all_0 => Unsigned(0)
-        Wire      :a_fraction_is_all_0 => Unsigned(0)
-        Wire      :a_fraction_is_not_0 => Unsigned(0)
-        Wire      :a_fraction_msb      => Unsigned(1)
-        Wire      :a_fraction_in       => Unsigned(i_fraction_width+1)
-        Wire      :a_exponent_in       => Unsigned(i_exponent_width  )
-        Wire      :a_sign_in           => Unsigned(1)
-        a_exponent_is_all_1 <= (stage1_a_exponent == i_exponent_all_1)
-        a_exponent_is_all_0 <= (stage1_a_exponent == i_exponent_all_0)
-        a_fraction_is_all_0 <= (stage1_a_fraction == i_fraction_all_0)
-        a_fraction_is_not_0 <= BitInv(a_fraction_is_all_0)
-        a_fraction_msb      <= BitInv(a_exponent_is_all_0)
-        a_fraction_in       <= BitConcat(a_fraction_msb, stage1_a_fraction)
-        a_exponent_in       <= stage1_a_exponent
-        a_sign_in           <= stage1_a_sign
-        stage2_a_is_zero    <= BitAnd(a_exponent_is_all_0, a_fraction_is_all_0)
-        stage2_a_is_inf     <= BitAnd(a_exponent_is_all_1, a_fraction_is_all_0)
-        stage2_a_is_nan     <= BitAnd(a_exponent_is_all_1, a_fraction_is_not_0)
+        Wire      :a_exponent_is_all_1 => Unsigned(0)                  <= (stage1_a_exponent == i_exponent_all_1)
+        Wire      :a_exponent_is_all_0 => Unsigned(0)                  <= (stage1_a_exponent == i_exponent_all_0)
+        Wire      :a_fraction_is_all_0 => Unsigned(0)                  <= (stage1_a_fraction == i_fraction_all_0)
+        Wire      :a_fraction_is_not_0 => Unsigned(0)                  <= !(a_fraction_is_all_0)
+        Wire      :a_fraction_msb      => Unsigned(1)                  <= !(a_exponent_is_all_0)
+        Wire      :a_fraction_in       => Unsigned(i_fraction_width+1) <= BitConcat(a_fraction_msb, stage1_a_fraction)
+        Wire      :a_exponent_in       => Unsigned(i_exponent_width  ) <= stage1_a_exponent
+        Wire      :a_sign_in           => Unsigned(1)                  <= stage1_a_sign
+        stage2_a_is_zero  <= a_exponent_is_all_0 & a_fraction_is_all_0
+        stage2_a_is_inf   <= a_exponent_is_all_1 & a_fraction_is_all_0
+        stage2_a_is_nan   <= a_exponent_is_all_1 & a_fraction_is_not_0
         
-        Wire      :b_exponent_is_all_1 => Unsigned(0)
-        Wire      :b_exponent_is_all_0 => Unsigned(0)
-        Wire      :b_fraction_is_all_0 => Unsigned(0)
-        Wire      :b_fraction_is_not_0 => Unsigned(0)
-        Wire      :b_fraction_msb      => Unsigned(1)
-        Wire      :b_fraction_in       => Unsigned(i_fraction_width+1)
-        Wire      :b_exponent_in       => Unsigned(i_exponent_width  )
-        Wire      :b_sign_in           => Unsigned(1)
-        b_exponent_is_all_1 <= (stage1_b_exponent == i_exponent_all_1)
-        b_exponent_is_all_0 <= (stage1_b_exponent == i_exponent_all_0)
-        b_fraction_is_all_0 <= (stage1_b_fraction == i_fraction_all_0)
-        b_fraction_is_not_0 <= BitInv(b_fraction_is_all_0)
-        b_fraction_msb      <= BitInv(b_exponent_is_all_0)
-        b_fraction_in       <= BitConcat(b_fraction_msb, stage1_b_fraction)
-        b_exponent_in       <= stage1_b_exponent
-        b_sign_in           <= stage1_b_sign
-        stage2_b_is_zero    <= BitAnd(b_exponent_is_all_0, b_fraction_is_all_0)
-        stage2_b_is_inf     <= BitAnd(b_exponent_is_all_1, b_fraction_is_all_0)
-        stage2_b_is_nan     <= BitAnd(b_exponent_is_all_1, b_fraction_is_not_0)
+        Wire      :b_exponent_is_all_1 => Unsigned(0)                  <= (stage1_b_exponent == i_exponent_all_1)
+        Wire      :b_exponent_is_all_0 => Unsigned(0)                  <= (stage1_b_exponent == i_exponent_all_0)
+        Wire      :b_fraction_is_all_0 => Unsigned(0)                  <= (stage1_b_fraction == i_fraction_all_0)
+        Wire      :b_fraction_is_not_0 => Unsigned(0)                  <= !(b_fraction_is_all_0)
+        Wire      :b_fraction_msb      => Unsigned(1)                  <= !(b_exponent_is_all_0)
+        Wire      :b_fraction_in       => Unsigned(i_fraction_width+1) <= BitConcat(b_fraction_msb, stage1_b_fraction)
+        Wire      :b_exponent_in       => Unsigned(i_exponent_width  ) <= stage1_b_exponent
+        Wire      :b_sign_in           => Unsigned(1)                  <= stage1_b_sign
+        stage2_b_is_zero  <= b_exponent_is_all_0 & b_fraction_is_all_0
+        stage2_b_is_inf   <= b_exponent_is_all_1 & b_fraction_is_all_0
+        stage2_b_is_nan   <= b_exponent_is_all_1 & b_fraction_is_not_0
 
-        Wire      :a_abs_data          => Unsigned(i_width-1)
-        Wire      :b_abs_data          => Unsigned(i_width-1)
-        Wire      :b_gt_a              => Unsigned(0)
-        a_abs_data          <= BitConcat(stage1_a_exponent, stage1_a_fraction)
-        b_abs_data          <= BitConcat(stage1_b_exponent, stage1_b_fraction)
-        b_gt_a              <= (b_abs_data > a_abs_data)
+        Wire      :a_abs_data          => Unsigned(i_width-1)          <= BitConcat(stage1_a_exponent, stage1_a_fraction)
+        Wire      :b_abs_data          => Unsigned(i_width-1)          <= BitConcat(stage1_b_exponent, stage1_b_fraction)
+        Wire      :b_gt_a              => Unsigned(0)                  <= (b_abs_data > a_abs_data)
 
-        stage2_l_fraction   <= Select(b_gt_a, a_fraction_in, b_fraction_in)
-        stage2_l_exponent   <= Select(b_gt_a, a_exponent_in, b_exponent_in)
-        stage2_l_sign       <= Select(b_gt_a, a_sign_in    , b_sign_in    )
+        stage2_l_fraction <= Select(b_gt_a, a_fraction_in, b_fraction_in)
+        stage2_l_exponent <= Select(b_gt_a, a_exponent_in, b_exponent_in)
+        stage2_l_sign     <= Select(b_gt_a, a_sign_in    , b_sign_in    )
 
-        stage2_s_fraction   <= Select(b_gt_a, b_fraction_in, a_fraction_in)
-        stage2_s_exponent   <= Select(b_gt_a, b_exponent_in, a_exponent_in)
-        stage2_s_sign       <= Select(b_gt_a, b_sign_in    , a_sign_in    )
+        stage2_s_fraction <= Select(b_gt_a, b_fraction_in, a_fraction_in)
+        stage2_s_exponent <= Select(b_gt_a, b_exponent_in, a_exponent_in)
+        stage2_s_sign     <= Select(b_gt_a, b_sign_in    , a_sign_in    )
 
-        stage2_b_gt_a       <= b_gt_a
-        stage2_sub          <= stage1_sub
+        stage2_b_gt_a     <= b_gt_a
+        stage2_sub        <= stage1_sub
       }
 
       stage3.on {
-        Wire      :sub_xor_l_sign   => Unsigned(0)
-        sub_xor_l_sign      <= BitXor(stage2_sub   , stage2_l_sign )
-        stage3_t_sign       <= Select(stage2_b_gt_a, stage2_l_sign, sub_xor_l_sign)
-        stage3_op_sub       <= BitXor(stage2_s_sign, sub_xor_l_sign)
+        Wire      :sub_xor_l_sign   => Unsigned(0) <= BitXor(stage2_sub, stage2_l_sign)
+        stage3_t_sign <= Select(stage2_b_gt_a, stage2_l_sign, sub_xor_l_sign)
+        stage3_op_sub <= BitXor(stage2_s_sign, sub_xor_l_sign)
         stage3_diff_exponent<= stage2_l_exponent - stage2_s_exponent
         if (t_exponent_width > i_exponent_width) then
           Constant :o_exponent_diff => Unsigned(t_exponent_width) <= (2**(t_exponent_width-1)-1) - (2**(i_exponent_width-1)-1)
@@ -328,12 +303,9 @@ design = IDesign :design do
       }
 
       stage5.on {
-        Wire      :add_s_fraction      => Unsigned(t_fraction_width)
-        Wire      :sub_s_fraction      => Unsigned(t_fraction_width)
-        Wire      :s_fraction          => Unsigned(t_fraction_width)
-        add_s_fraction      <= stage4_s_fraction
-        sub_s_fraction      <= BitInv(stage4_s_fraction) + To_Unsigned(1, t_fraction_width)
-        s_fraction          <= Select(stage4_op_sub, add_s_fraction, sub_s_fraction)
+        Wire      :add_s_fraction      => Unsigned(t_fraction_width) <= stage4_s_fraction
+        Wire      :sub_s_fraction      => Unsigned(t_fraction_width) <= BitInv(stage4_s_fraction) + To_Unsigned(1, t_fraction_width)
+        Wire      :s_fraction          => Unsigned(t_fraction_width) <= Select(stage4_op_sub, add_s_fraction, sub_s_fraction)
         stage5_t_fraction   <= stage4_l_fraction + s_fraction
         stage5_sub          <= stage4_sub
         stage5_b_gt_a       <= stage4_b_gt_a
@@ -391,21 +363,15 @@ design = IDesign :design do
           const_width += 1
         end
         Constant  :fraction_all_1      => Unsigned(o_fraction_width+1) <= (0..o_fraction_width).to_a.inject(0){|d,n| d = d + 2**n}
-        Wire      :fraction_data       => Unsigned(o_fraction_width+1)
-        Wire      :ulp                 => Unsigned(1)
-        Wire      :uulp1               => Unsigned(1)
-        Wire      :uulp2               => Unsigned(1)
-        Wire      :uulp3               => Unsigned(1)
-        Wire      :uulp4               => Unsigned(1)
-        Wire      :increment           => Unsigned(1)
-        fraction_data     <= BitSel(stage6_t_fraction, t_fraction_width-1,
-                                                       t_fraction_width-o_fraction_width-1)
-        ulp               <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-1)
-        uulp1             <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-2)
-        uulp2             <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-3)
-        uulp3             <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-4)
-        uulp4             <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-5)
-        increment         <= uulp1 & (ulp | uulp2 | uulp3 | uulp4)
+        Wire      :fraction_data       => Unsigned(o_fraction_width+1) <= BitSel(stage6_t_fraction, t_fraction_width-1,
+                                                                                                    t_fraction_width-o_fraction_width-1)
+        Wire      :ulp                 => Unsigned(1)                  <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-1)
+        Wire      :uulp1               => Unsigned(1)                  <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-2)
+        Wire      :uulp2               => Unsigned(1)                  <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-3)
+        Wire      :uulp3               => Unsigned(1)                  <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-4)
+        Wire      :uulp4               => Unsigned(1)                  <= BitSel(stage6_t_fraction, t_fraction_width-o_fraction_width-5)
+        Wire      :increment           => Unsigned(1)                  <= uulp1 & (ulp | uulp2 | uulp3 | uulp4)
+
         stage7_t_fraction <= fraction_data + increment
         stage7_t_exponent <= stage6_t_exponent + (increment & (fraction_data == fraction_all_1))
         stage7_t_sign     <= stage6_t_sign
@@ -428,67 +394,43 @@ design = IDesign :design do
         Constant :nan_exponent    => Unsigned(o_exponent_width) <= 2**o_exponent_width-1
         Constant :nan_fraction    => Unsigned(o_fraction_width) <= 2**(o_fraction_width-2)
 
-        Wire     :set_nan         => Unsigned(0)
-        Wire     :set_inf         => Unsigned(0)
-        Wire     :set_zero        => Unsigned(0)
+        Wire     :set_nan         => Unsigned(0) <= stage7_a_is_nan | stage7_b_is_nan | (stage7_a_is_inf & stage7_b_is_inf & stage7_sub)
+        Wire     :set_inf         => Unsigned(0) <= !(set_nan) & (stage7_a_is_inf | stage7_b_is_inf)
+        Wire     :set_zero        => Unsigned(0) <= stage7_a_is_zero & stage7_b_is_zero
 
-        set_nan  <= stage7_a_is_nan | stage7_b_is_nan | (stage7_a_is_inf & stage7_b_is_inf & stage7_sub)
-        set_inf  <= !(set_nan) & (stage7_a_is_inf | stage7_b_is_inf)
-        set_zero <= stage7_a_is_zero & stage7_b_is_zero
+        Wire     :fraction_msb    => Unsigned(1)                <= BitSel(stage7_t_fraction, o_fraction_width     )
+        Wire     :fraction_in     => Unsigned(o_fraction_width) <= BitSel(stage7_t_fraction, o_fraction_width-1, 0)
+        Wire     :exponent_in     => Unsigned(o_exponent_width) <= BitSel(stage7_t_exponent, o_exponent_width-1, 0)
+        Wire     :sign_in         => Unsigned(1)                <= stage7_t_sign
 
-        Wire     :fraction_msb    => Unsigned(1)
-        Wire     :fraction_in     => Unsigned(o_fraction_width)
-        Wire     :exponent_in     => Unsigned(o_exponent_width)
-        Wire     :sign_in         => Unsigned(1)
-        Wire     :exp_natural     => Unsigned(0)
-        Wire     :exp_underflow   => Unsigned(0)
-        Wire     :exp_overflow    => Unsigned(0)
-        fraction_msb  <= BitSel(stage7_t_fraction, o_fraction_width     )
-        fraction_in   <= BitSel(stage7_t_fraction, o_fraction_width-1, 0)
-        exponent_in   <= BitSel(stage7_t_exponent, o_exponent_width-1, 0)
-        exp_natural   <= (stage7_t_exponent >  To_Signed(0, o_exponent_width+1))
-        exp_underflow <= ~(exp_natural) | ~(fraction_msb)
-        exp_overflow  <= (stage7_t_exponent >= To_Signed(2**(o_exponent_width)-1, o_exponent_width+1)) & fraction_msb
-        sign_in       <= stage7_t_sign
+        Constant :o_exponent_min  => Signed(o_exponent_width+1) <= 0
+        Constant :o_exponent_max  => Signed(o_exponent_width+1) <= 2**(o_exponent_width)-1
+        Wire     :exp_under       => Unsigned(0)                <= ~(stage7_t_exponent >  o_exponent_min) | ~(fraction_msb)
+        Wire     :exp_over        => Unsigned(0)                <=  (stage7_t_exponent >= o_exponent_max) &   fraction_msb
 
-        Wire     :fraction_i1     => Unsigned(o_fraction_width)
-        Wire     :exponent_i1     => Unsigned(o_exponent_width)
-        Wire     :sign_i1         => Unsigned(1)
-        fraction_i1 <= Select(exp_overflow , fraction_in, inf_fraction )
-        exponent_i1 <= Select(exp_overflow , exponent_in, inf_exponent )
-        sign_i1     <= sign_in
+        Wire     :fraction_i1     => Unsigned(o_fraction_width) <= Select(exp_over , fraction_in , inf_fraction )
+        Wire     :exponent_i1     => Unsigned(o_exponent_width) <= Select(exp_over , exponent_in , inf_exponent )
+        Wire     :sign_i1         => Unsigned(1)                <= sign_in
 
-        Wire     :fraction_i2     => Unsigned(o_fraction_width)
-        Wire     :exponent_i2     => Unsigned(o_exponent_width)
-        Wire     :sign_i2         => Unsigned(1)
-        fraction_i2 <= Select(exp_underflow, fraction_i1, zero_fraction)
-        exponent_i2 <= Select(exp_underflow, exponent_i1, zero_exponent)
-        sign_i2     <= sign_i1
+        Wire     :fraction_i2     => Unsigned(o_fraction_width) <= Select(exp_under, fraction_i1 , zero_fraction)
+        Wire     :exponent_i2     => Unsigned(o_exponent_width) <= Select(exp_under, exponent_i1 , zero_exponent)
+        Wire     :sign_i2         => Unsigned(1)                <= sign_i1
 
-        Wire     :fraction_i3     => Unsigned(o_fraction_width)
-        Wire     :exponent_i3     => Unsigned(o_exponent_width)
-        Wire     :sign_i3         => Unsigned(1)
-        fraction_i3 <= Select(set_nan , fraction_i2  , nan_fraction)
-        exponent_i3 <= Select(set_nan , exponent_i2  , nan_exponent)
-        sign_i3     <= Select(set_nan , sign_i2      , nan_sign    )
+        Wire     :fraction_i3     => Unsigned(o_fraction_width) <= Select(set_nan  , fraction_i2 , nan_fraction )
+        Wire     :exponent_i3     => Unsigned(o_exponent_width) <= Select(set_nan  , exponent_i2 , nan_exponent )
+        Wire     :sign_i3         => Unsigned(1)                <= Select(set_nan  , sign_i2     , nan_sign     )
 
-        Wire     :fraction_i4     => Unsigned(o_fraction_width)
-        Wire     :exponent_i4     => Unsigned(o_exponent_width)
-        Wire     :sign_i4         => Unsigned(1)
-        fraction_i4 <= Select(set_inf , fraction_i3, inf_fraction )
-        exponent_i4 <= Select(set_inf , exponent_i3, inf_exponent )
-        sign_i4     <= sign_i3
+        Wire     :fraction_i4     => Unsigned(o_fraction_width) <= Select(set_inf  , fraction_i3 , inf_fraction )
+        Wire     :exponent_i4     => Unsigned(o_exponent_width) <= Select(set_inf  , exponent_i3 , inf_exponent )
+        Wire     :sign_i4         => Unsigned(1)                <= sign_i3
 
-        Wire     :fraction_o      => Unsigned(o_fraction_width)
-        Wire     :exponent_o      => Unsigned(o_exponent_width)
-        Wire     :sign_o          => Unsigned(1)
-        fraction_o  <= Select(set_zero, fraction_i4, zero_fraction)
-        exponent_o  <= Select(set_zero, exponent_i4, zero_exponent)
-        sign_o      <= sign_i4
+        Wire     :fraction_o      => Unsigned(o_fraction_width) <= Select(set_zero , fraction_i4 , zero_fraction)
+        Wire     :exponent_o      => Unsigned(o_exponent_width) <= Select(set_zero , exponent_i4 , zero_exponent)
+        Wire     :sign_o          => Unsigned(1)                <= sign_i4
 
-        Wire     :result          => Unsigned(o_width)
-        result  <= BitConcat(sign_o, exponent_o, fraction_o)
-        z_out   <= result
+        Wire     :result          => Unsigned(o_width)          <= BitConcat(sign_o, exponent_o, fraction_o)
+        z_out    <= result
+        z_valid  <= done
       }
     end
   end
