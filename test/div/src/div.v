@@ -1615,6 +1615,7 @@ module div(clk, rst_n, i_valid, dividend, divisor, quotient, remainder, o_valid)
       st_1_32 <= 0;
       st_1_33 <= 0;
     end else begin
+      o_valid <= ((st_1_33) ? 1'd1 : 0);
       if (start) begin
           zi_31 <= stage_32_zi_i;
           di_31 <= insn_o_1_6_0;

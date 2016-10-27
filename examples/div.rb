@@ -13,7 +13,7 @@ design = IDesign :design do
       ExtInput  :divisor   => Unsigned(d_width)
       ExtOutput :quotient  => Unsigned(z_width)
       ExtOutput :remainder => Unsigned(d_width)
-      ExtOutput :o_valid   => Unsigned(0)
+      ExtOutput :o_valid   => Unsigned(0) <= 0
 
       Register  :zi        => Array.new(z_width, Unsigned(z_width+d_width))
       Register  :di        => Array.new(z_width, Unsigned(        d_width))
@@ -32,6 +32,8 @@ design = IDesign :design do
       Constant  :zr_low    => Unsigned(32) <= z_width
       Constant  :zq_high   => Unsigned(32) <= z_width-1
       Constant  :zq_low    => Unsigned(32) <= 0
+
+      Constant  :done      => Unsigned( 0) <= 1
 
       stage = Array.new
       z_width.downto(0) do |i|
@@ -66,6 +68,7 @@ design = IDesign :design do
             else
               Wire   :zr   => Unsigned(d_width)         <= BitSel(zo, zr_high, zr_low)
               Wire   :zq   => Unsigned(z_width)         <= BitSel(zo, zq_high, zq_low)
+              o_valid   <= done
               quotient  <= zq
               remainder <= zr
             end
