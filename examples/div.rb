@@ -42,43 +42,30 @@ design = IDesign :design do
       z_width.downto(0) do |i|
         stage[i].on {
           if i == z_width then
-            Wire      :zi_l => Unsigned(z_width)
-            Constant  :zi_h => Unsigned(d_width) <= 0
-            Wire      :zi_i => Unsigned(z_width+d_width)
+            Constant :zi_h => Unsigned(d_width)         <= 0
+            Wire     :zi_l => Unsigned(z_width)         <= dividend
+            Wire     :zi_i => Unsigned(z_width+d_width) <= BitConcat(zi_h, zi_l)
             start   <= i_valid
-            zi_l    <= dividend
-            zi_i    <= BitConcat(zi_h, zi_l)
             zi[i-1] <= zi_i
             di[i-1] <= divisor
             Goto stage[i-1]
           else
-            Wire  :pr => Unsigned(d_width+1)
-            Wire  :sb => Unsigned(d_width+1)
-            Wire  :m0 => Unsigned(d_width)
-            Wire  :m1 => Unsigned(d_width)
-            Wire  :ms => Unsigned(1)
-            Wire  :mx => Unsigned(d_width)
-            Wire  :zl => Unsigned(z_width-1)
-            Wire  :zb => Unsigned(1)
-            Wire  :zo => Unsigned(z_width+d_width)
-            pr <= BitSel(zi[i], pr_high, pr_low)
-            sb <= Sub(pr, di[i])
-            m1 <= BitSel(pr, mx_high, mx_low)
-            m0 <= BitSel(sb, mx_high, mx_low)
-            ms <= BitSel(sb, ms_pos , ms_pos)
-            mx <= Select(ms, m0, m1)
-            zl <= BitSel(zi[i], zl_high, zl_low)
-            zb <= BitInv(ms)
-            zo <= BitConcat(mx, zl, zb)
+            Wire     :pr   => Unsigned(d_width+1)       <= BitSel(zi[i], pr_high, pr_low)
+            Wire     :sb   => Unsigned(d_width+1)       <= Sub(pr, di[i])
+            Wire     :m0   => Unsigned(d_width)         <= BitSel(sb, mx_high, mx_low)
+            Wire     :m1   => Unsigned(d_width)         <= BitSel(pr, mx_high, mx_low)
+            Wire     :ms   => Unsigned(1)               <= BitSel(sb, ms_pos , ms_pos)
+            Wire     :mx   => Unsigned(d_width)         <= Select(ms, m0, m1)
+            Wire     :zl   => Unsigned(z_width-1)       <= BitSel(zi[i], zl_high, zl_low)
+            Wire     :zb   => Unsigned(1)               <= BitInv(ms)
+            Wire     :zo   => Unsigned(z_width+d_width) <= BitConcat(mx, zl, zb)
             if i > 0 then
               zi[i-1] <= zo
               di[i-1] <= di[i]
               Goto stage[i-1]
             else
-              Wire :zr => Unsigned(d_width)
-              Wire :zq => Unsigned(z_width)
-              zq <= BitSel(zo, zq_high, zq_low)
-              zr <= BitSel(zo, zr_high, zr_low)
+              Wire   :zr   => Unsigned(d_width)         <= BitSel(zo, zr_high, zr_low)
+              Wire   :zq   => Unsigned(z_width)         <= BitSel(zo, zq_high, zq_low)
               quotient  <= zq
               remainder <= zr
             end
