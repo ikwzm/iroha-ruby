@@ -93,7 +93,8 @@ architecture stimulus of TEST_BENCH is
           i_valid   : in  std_logic;
           a_in      : in  std_logic_vector(31 downto 0);
           b_in      : in  std_logic_vector(31 downto 0);
-          z_out     : out std_logic_vector(31 downto 0)
+          z_out     : out std_logic_vector(31 downto 0);
+          z_valid   : out std_logic
         );
     end component;
     ----------------------------------------------------------------------------
@@ -103,8 +104,7 @@ architecture stimulus of TEST_BENCH is
     signal    a_in           : std_logic_vector(31 downto 0);
     signal    b_in           : std_logic_vector(31 downto 0);
     signal    z_out          : std_logic_vector(31 downto 0);
-    signal    o_valid        : std_logic_vector( 4 downto 0);
-    signal    o_last         : std_logic_vector( 4 downto 0);
+    signal    z_valid        : std_logic;
 begin
     -------------------------------------------------------------------------------
     -- 
@@ -200,31 +200,16 @@ begin
       i_valid   => i_valid  ,
       a_in      => a_in     ,
       b_in      => b_in     ,
-      z_out     => z_out
+      z_out     => z_out    ,
+      z_valid   => z_valid
     );
     i_valid  <= I_TVALID;
     a_in     <= I_TDATA(31 downto  0);
     b_in     <= I_TDATA(63 downto 32);
     I_TREADY <= '1';
-    process(CLOCK, RESET) begin
-        if (RESET = '1') then
-            o_valid <= (others => '0');
-            o_last  <= (others => '0');
-        elsif (CLOCK'event and CLOCK = '1') then
-            for i in o_valid'range loop
-                if (i = 0) then
-                    o_valid(i) <= I_TVALID;
-                    o_last(i)  <= I_TLAST;
-                else
-                    o_valid(i) <= o_valid(i-1);
-                    o_last(i)  <= o_last(i-1);
-                end if;
-            end loop;
-        end if;
-    end process;
     O_TDATA  <= z_out;
-    O_TVALID <= o_valid(o_valid'high);
-    O_TLAST  <= o_last(o_last'high);
+    O_TVALID <= z_valid;
+    O_TLAST  <= '0';
     O_TKEEP  <= (others => '1');
     O_TUSER  <= (others => '0');
     -------------------------------------------------------------------------------

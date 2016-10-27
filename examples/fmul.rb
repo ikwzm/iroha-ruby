@@ -21,6 +21,7 @@ design = IDesign :design do
       ExtInput  :i_valid             => Unsigned(0)
 
       ExtOutput :z_out               => Unsigned(o_width)
+      ExtOutput :z_valid             => Unsigned(0) <= 0
 
       Constant  :a_exponent_offset   => Unsigned(a_exponent_width) <= 2**(a_exponent_width-1)-1
       Constant  :a_exponent_all_0    => Unsigned(a_exponent_width) <= 0
@@ -285,7 +286,8 @@ design = IDesign :design do
         Wire     :exponent_o         => Unsigned(o_exponent_width) <= Select(set_zero, exponent_o1 , zero_exponent)
 
         Wire     :result             => Unsigned(o_width)          <= BitConcat(sign_o, exponent_o, fraction_o)
-        z_out <= result
+        z_out   <= result
+        z_valid <= To_Unsigned(1,1)
       }
     end
   end

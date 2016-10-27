@@ -8,7 +8,7 @@ void test(int i, float a, float b, float z)
   uint32_t *z_ptr  = (uint32_t*)&z;
   uint32_t  z_out;
 
-  printf("---\n");
+  // printf("---\n");
   if       ((((*a_ptr & 0x7F800000) == 0x00000000) && ((*a_ptr & 0x007FFFFF) != 0x00000000)) ||
             (((*b_ptr & 0x7F800000) == 0x00000000) && ((*b_ptr & 0x007FFFFF) != 0x00000000)))
   {
