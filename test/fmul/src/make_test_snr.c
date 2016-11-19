@@ -35,7 +35,7 @@ int main(argc, argv)
 {
   int      i;
   float    a,b,z;
-  int      max_snr = 1000;
+  int      max_snr = 10000;
   uint32_t *a_ptr  = (uint32_t*)&a;
   uint32_t *b_ptr  = (uint32_t*)&b;
 

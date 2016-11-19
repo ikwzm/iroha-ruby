@@ -9,6 +9,7 @@ set device_parts            "xc7z010clg400-1"
 # Create project
 #
 create_project -force $project_name $project_directory
+cd $project_directory
 #
 # Set project properties
 #
@@ -93,6 +94,7 @@ set_property "top" "fmul"  $obj
 set obj [get_filesets sim_1]
 set_property "top" "TEST_BENCH"  $obj
 set_property "generic" "SCENARIO_FILE=../../../../src/test.snr" $obj
+set_property -name {xsim.simulate.runtime} -value {500000ns} -objects [get_filesets sim_1]
 
 update_compile_order -fileset sources_1
 update_compile_order -fileset sim_1
